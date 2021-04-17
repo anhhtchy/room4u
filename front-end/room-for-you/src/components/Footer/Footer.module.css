@@ -1,0 +1,40 @@
+.footer {
+    font-size: 16px;
+    color: #fafafa;
+    display: flex;
+    flex-direction: column;
+}
+
+.topFooter {
+    background: #262626;
+}
+
+@media screen and (max-width: 600px) {
+    .topFooter {
+        padding: 20px;
+    }
+}
+
+.bottomFooter {
+    background: #000000;
+}
+
+.containerFooter {
+    max-width: 1200px;
+    margin: 0px auto;
+    padding: 20px 0px;
+}
+
+.social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footerContent {
+    width: 100%;
+}
+
+.footerContent > img {
+    margin-right: 20px;
+}
