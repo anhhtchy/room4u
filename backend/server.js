@@ -1,4 +1,6 @@
 // load config variables from .env file
+// don't need to load in every files,
+// only need to load in server.js, then you can use in other files
 require("dotenv").config();
 
 // init express app
