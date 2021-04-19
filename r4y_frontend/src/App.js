@@ -12,12 +12,28 @@ import {
 //import components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import Login from './components/Login/Login';
+import Home from './components/Homepage/Home';
+import Register from './components/Register/Register';
 
 function App() {
   return (
     <div>
-      <Header />
-      <Footer />
+      <Router>
+        <Header />
+        <Switch>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/register">
+            <Register />
+          </Route>
+          <Route exact path="/">
+            <Home />
+          </Route>
+        </Switch>
+        <Footer />
+      </Router>
     </div>
   );
 }
