@@ -1,0 +1,40 @@
+.slick-dots {
+    bottom: -20px;
+    font-size: 50px !important;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    font-size: 32px;
+    color: #000;
+    opacity: 0.75;
+}
+
+.slick-prev {
+    left: -35px;
+}
+
+.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+    border: 1px solid #ffad14;
+    box-shadow: none;
+}
+
+.ant-input-affix-wrapper-focused {
+    box-shadow: none;
+}
+
+.ant-btn:hover, .ant-btn:focus {
+    border: 1px solid #ffad14;
+}
+
+@media screen and (max-width: 600px) {
+
+    .slick-prev:before,
+    .slick-next:before {
+        font-size: 18px;
+    }
+
+    .slick-prev {
+        left: -30px;
+    }
+}

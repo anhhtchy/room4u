@@ -18,7 +18,7 @@ import Register from './components/Register/Register';
 
 function App() {
   return (
-    <div>
+    <div className="app">
       <Router>
         <Header />
         <Switch>

@@ -12,11 +12,14 @@ const Home = () => {
                         placeholder="Tìm kiếm phòng bạn muốn..."
                         allowClear
                         // onSearch={onSearch}
-                        style={{ maxWidth: 320 }}
+                        className={styles.inputSearch}
                         size="large"
                     />
                 </div>
                 <CarouselTop />
+                <div>
+                    
+                </div>
             </div>
         </div>
     )

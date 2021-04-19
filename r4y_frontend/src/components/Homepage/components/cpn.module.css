@@ -1,0 +1,20 @@
+.carousel {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 2px 8px rgba(174, 195, 210, 0.25);
+    border-radius: 4px;
+    height: fit-content;
+}
+
+@media screen and (max-width: 600px) {
+    .carousel {
+        margin: 20px;
+        padding: 10px;
+    }
+}
+
+.banner {
+    width: 100%;
+}
