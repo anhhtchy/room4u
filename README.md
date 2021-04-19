@@ -8,3 +8,10 @@ cd backend
 npm install
 npm install mysql2
 ```
+## Install front-end
+
+```console
+cd r4y_frontend
+npm install
+npm start
+```
