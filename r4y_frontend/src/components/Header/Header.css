@@ -1,0 +1,74 @@
+.header {
+    min-height: 100px;
+    background: #faad14;
+}
+
+.container {
+    margin: 0px auto;
+    max-width: 1200px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    max-width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.logo-title {
+    font-size: 24px;
+    margin-left: 8px;
+    font-weight: 500;
+    color: #fafafa;
+}
+
+.ant-menu {
+    background: #faad14;
+}
+
+.ant-menu-horizontal {
+    border: none;
+}
+
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item:hover,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu:hover,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-active,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-active,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-open,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-open,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-selected,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-selected {
+    color: #fafafa;
+    border-bottom: 2px solid #fafafa;
+}
+
+.ant-menu-horizontal > .ant-menu-item a:hover {
+    color: #fafafa;
+}
+.ant-menu-horizontal > .ant-menu-item-selected a {
+    color: #fafafa;
+}
+
+.menu {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.ant-input-affix-wrapper {
+    border: 1px solid #faad14;
+}
+
+.ant-btn {
+    border: 1px solid #faad14;
+}
