@@ -1,6 +1,4 @@
-.home {
-
-}
+.home {}
 
 .container {
     max-width: 1200px;
@@ -19,8 +17,179 @@
     max-width: 450px;
 }
 
+.body {
+    display: flex;
+    justify-content: center;
+}
+
+.leftCard {
+    background: #ffffff;
+    box-shadow: 0px 2px 8px rgba(174, 195, 210, 0.25);
+    border-radius: 4px;
+    width: 25%;
+}
+
+.rightCard {
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 2px 8px rgba(174, 195, 210, 0.25);
+    border-radius: 4px;
+    margin-left: 20px;
+    width: 75%;
+}
+
+.leftTitle {
+    background: #feb800;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.leftSubtitle {
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    /* border-bottom: 1px solid #feb800; */
+    margin-top: 20px;
+}
+
+
+.checkedboxGroup {
+    margin: 0px 25px;
+}
+
+.checkedboxStyle {
+    margin-top: 5px;
+}
+
+.checkedboxStyle:first-child {
+    margin-left: 8px;
+}
+
+.radioGroup {
+    margin: 0px 25px;
+}
+
+.radioStyle {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+}
+
+.price {
+    margin: 10px 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btnApply {
+    margin: 30px 20px;
+}
+
+.button {
+    height: 48px;
+    padding: 6px 30px;
+    background: #faad14;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    width: 100%;
+}
+
+.borderFilter {
+    border-top: 1.5px solid #feb800;
+    margin: 20px;
+}
+
+.subGroup {
+    margin-bottom: 50px;
+}
+
+.rightTitle {
+    font-size: 24px;
+    font-weight: 500;
+    color: #faad14;
+    margin-bottom: 20px;
+}
+
+.rightTitle:hover {
+    cursor: pointer;
+    color: #1890ff;
+    transition-duration: 0.5s;
+}
+
+.item {
+    background: #f0f0f0;
+    box-shadow: 0px 2px 8px rgba(174, 195, 210, 0.25);
+    border-radius: 8px;
+}
+
+.imgItem {
+    border-radius: 8px 8px 0px 0px;
+    background-image: url("../../img/item1.jpg");
+    height: 150px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+}
+
+.imgItem:hover {
+    cursor: pointer;
+}
+
+.itemContent {
+    padding: 20px;
+}
+
+.itemType {
+    color: #c0c0c0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.itemTitle {
+    font-size: 15px;
+    font-weight: 500;
+    color: #181818;
+}
+
+.itemTitle:hover {
+    color: #feb800;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.itemPrice {
+    font-size: 15px;
+    font-weight: 500;
+    color: #181818;
+}
+
+.seeMore {
+    font-size: 14px;
+    color: #feb800;
+    float: right;
+    margin: 15px;
+}
+
+.seeMore:hover {
+    cursor: pointer;
+    color: #1890ff;
+    transition-duration: 0.3s;
+}
+
 @media screen and (max-width: 600px) {
     .inputSearch {
         max-width: 300px;
+    }
+
+    .leftCard {
+        display: none;
+    }
+
+    .rightCard {
+        width: 100%;
+        margin: 20px;
     }
 }

@@ -35,13 +35,13 @@ class Header extends React.Component {
                                 </Link>
                                 </Menu.Item>
                                 <Menu.Item key="2">
-                                    <Link to="/">
+                                    <Link to="/phong-tro-sv">
                                         PHÒNG TRỌ SINH VIÊN
                                 </Link>
                                 </Menu.Item>
                                 <Menu.Item key="3">
-                                    <Link to="/">
-                                        TRUNG CƯ MINI
+                                    <Link to="/chung-cu-mini">
+                                        CHUNG CƯ MINI
                                 </Link>
                                 </Menu.Item>
                                 <Menu.Item key="4">
