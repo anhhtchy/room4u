@@ -6,13 +6,13 @@ exports.searchPost = (req, res) => {
   let maxArea = 0;
 
   // Các tiêu chí lọc
-  if (req.body.area === 0) {
+  if (req.body.area == 0) {
     minArea = 0;
     maxArea = 20;
-  } else if (req.body.area === 1) {
+  } else if (req.body.area == 1) {
     minArea = 20;
     maxArea = 50;
-  } else if (req.body.area === 2) {
+  } else if (req.body.area == 2) {
     minArea = 50;
     maxArea = 100;
   } else {
@@ -46,7 +46,7 @@ exports.searchPost = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some errors occur while creating new account",
+        message: err.message || "Some errors occur while searching posts",
       });
     });
 };

@@ -3,5 +3,6 @@ module.exports = function (app) {
   //API register
   app.route("/register").post(accountsController.createAccount);
   // search
+  let postsController = require("../controllers/postsController");
   app.route("/search").post(postsController.searchPost);
 };
