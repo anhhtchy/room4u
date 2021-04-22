@@ -12,7 +12,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(1024),
         allowNull: false,
       },
-
       estatetype: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -99,7 +98,8 @@ module.exports = (sequelize, Sequelize) => {
   );
   // const Users = require("./accountsModel");
   // Users.hasOne(PostsModel, {
-  //   foreignKey: "userId",
+  //   foreignKey: "userid",
+  //   allowNull:false
   // });
   // PostsModel.belongsTo(Users);
 

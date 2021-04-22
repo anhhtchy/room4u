@@ -16,6 +16,14 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.accounts = require('./accountsModel')(sequelize, Sequelize);
-db.posts = require('./postsModel')(sequelize, Sequelize)
+db.posts = require('./postsModel')(sequelize, Sequelize);
+
+
+db.accounts.hasOne(db.posts, {
+    foreignKey: "userid",
+    allowNull: false
+});
+db.posts.belongsTo(db.accounts);
+
 //db.roompost = require('./post.model.js')(sequelize, Sequelize);
 module.exports = db;
