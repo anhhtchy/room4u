@@ -14,16 +14,18 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, pr
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
+//
 db.accounts = require('./accountsModel')(sequelize, Sequelize);
 db.posts = require('./postsModel')(sequelize, Sequelize);
-
-
-db.accounts.hasOne(db.posts, {
+//db.images = require('./imagesModels')(sequelize, Sequelize);
+//
+db.accounts.hasMany(db.posts, {
     foreignKey: "userid",
     allowNull: false
 });
-db.posts.belongsTo(db.accounts);
+//db.posts.belongsTo(db.accounts);
+//
+
 
 //db.roompost = require('./post.model.js')(sequelize, Sequelize);
 module.exports = db;
