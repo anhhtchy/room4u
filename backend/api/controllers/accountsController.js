@@ -2,6 +2,14 @@ const db = require('../models');
 let bcrypt = require('bcrypt');
 const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
 const { Op } = require("sequelize");
+let jwtHelper = require("../../helpers/jwtHelper");
+
+const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "900";
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ROOM4U";
+const refreshTokenLife = process.env.REFRESH_TOKEN_LIFE || "3h";
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "ROOM4U";
+
+tokenList = {};
 
 exports.createAccount = async (req, res) => {
     try {
@@ -58,6 +66,91 @@ exports.createAccount = async (req, res) => {
             status: 0,
             message:
             error.message || "Some errors occur while creating new account"
+        });
+    }
+};
+
+exports.login = async (req, res) => {
+    try {
+        let user = await db.accounts.findOne({
+            where: {
+                username: req.body.username
+            }
+        });
+
+        if (user == null) {
+            return res.status(400).send({
+                status: 0,
+                message: "username incorrect"
+            });
+        }
+
+        const match = await bcrypt.compare(req.body.password, user.password);
+
+        if (!match) {
+            return res.status(400).send({
+                status: 0,
+                message: "password incorrect",
+            });
+        }
+
+        user.password = undefined;
+
+        let userData = user;
+
+        const accessToken = await jwtHelper.generateToken(userData, accessTokenSecret, accessTokenLife);
+
+        const refreshToken = await jwtHelper.generateToken(userData, refreshTokenSecret, refreshTokenLife);
+
+        tokenList[refreshToken] = {
+            userData
+        };
+
+        return res.json({
+            status: 1,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            userData: userData
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: 0,
+            message:
+                error.message || "Some errors occur while login"
+        });
+    }
+}
+
+exports.refreshToken = async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (refreshToken && tokenList[refreshToken]) {
+        try {
+            const userData = await jwtHelper.verifyToken(
+                refreshToken,
+                refreshTokenSecret
+            );
+
+            const accessToken = await jwtHelper.generateToken(
+                userData,
+                accessTokenSecret,
+                accessTokenLife
+            );
+            return res.json({
+                status: 1,
+                accessToken: accessToken,
+            });
+        } catch (error) {
+            return res.status(400).send({
+                status: 0,
+                message:
+                    error.message || "Some errors occur while refresh token"
+            });
+        }
+    } else {
+        return res.status(400).send({
+            status: 0,
+            message: "refreshToken invalid"
         });
     }
 };
