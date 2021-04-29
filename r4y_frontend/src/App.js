@@ -1,5 +1,6 @@
 //import css
 import './App.css';
+import { Input } from 'antd';
 import 'antd/dist/antd.css';
 
 //import react router
@@ -24,6 +25,15 @@ function App() {
     <div className="app">
       <Router>
         <Header />
+        <div className="search">
+          <Input.Search
+            placeholder="Tìm kiếm phòng bạn muốn..."
+            allowClear
+            // onSearch={onSearch}
+            className="inputSearch"
+            size="large"
+          />
+        </div>
         <Switch>
           <Route path="/login">
             <Login />

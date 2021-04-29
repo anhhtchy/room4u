@@ -116,7 +116,7 @@ const Home = () => {
     return (
         <div className={styles.home}>
             <div className={styles.container}>
-                <div className={styles.search}>
+                {/* <div className={styles.search}>
                     <Input.Search
                         placeholder="Tìm kiếm phòng bạn muốn..."
                         allowClear
@@ -124,7 +124,7 @@ const Home = () => {
                         className={styles.inputSearch}
                         size="large"
                     />
-                </div>
+                </div> */}
                 <CarouselTop />
                 <div className={styles.body}>
                     <div className={styles.leftCard}>
