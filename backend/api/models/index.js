@@ -29,7 +29,6 @@ db.accounts.hasMany(db.posts, {
   allowNull: false,
 });
 //db.posts.belongsTo(db.accounts);
-//
+db.districts = require("./locationsModels")(sequelize, Sequelize);
 
-//db.roompost = require('./post.model.js')(sequelize, Sequelize);
 module.exports = db;
