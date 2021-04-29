@@ -127,7 +127,7 @@
 
 .imgItem {
     border-radius: 8px 8px 0px 0px;
-    background-image: url("../../img/item1.jpg");
+    /* background-image: url("../../img/item1.jpg"); */
     height: 150px;
     background-repeat: no-repeat;
     background-position: center center;
@@ -163,6 +163,10 @@
 .itemPrice {
     font-size: 15px;
     font-weight: 500;
+    color: #181818;
+}
+
+.square {
     color: #181818;
 }
 
