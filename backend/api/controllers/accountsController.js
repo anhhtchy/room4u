@@ -41,7 +41,7 @@ exports.createAccount = async (req, res) => {
                     fullname: req.body.name,
                     password: hash,
                     email : req.body.email,
-                    usertype: req.body.role,
+                    usertype: req.body.roles,
                     created: Date.now()
                 }
                 db.accounts.create(account)

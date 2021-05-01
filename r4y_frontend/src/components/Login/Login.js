@@ -28,29 +28,18 @@ const mockData = [
 
 const Login = () => {
     const [userData, setUserData] = useState("");
-    // const [check, setCheck] = useState(null);
+    const [check, setCheck] = useState(null);
 
-    // async function getUser() {
-    //     try {
-    //       const response = await axios.get('/...');
-    //       console.log(response);
-    //       setUserData(response.data);
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-    //   }
-
-    const onFinish = async (value) => {
-        console.log("login", value);
-        let check = false;
-        const check1 = await mockData.filter((i) => i.username == value.username);
-        const check2 = await mockData.filter((i) => i.password == value.password);
-
-        check1 && check2 ? check = true : check = false;
-        console.log("check", check);
-        check ? message.success('Login success!') : message.error('Login failed!');
+    const onFinish = async (values) => {
+        console.log('form login: ', values);
+        try {
+            const response = await axios.post('http://localhost:3001/login', { ...values });
+            console.log("res", response);
+            setUserData(response.data);
+        } catch (error) {
+            console.error("err", error);
+        }
     }
-
     return (
         <div className={styles.login}>
             <div className={styles.container}>
