@@ -70,6 +70,7 @@ exports.searchPost = async (req, res) => {
       },
     })
     .then((data) => {
+      //console.log(len(data));
       res.json(data);
     })
     .catch((err) => {

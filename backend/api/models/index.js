@@ -29,6 +29,7 @@ db.accounts.hasMany(db.posts, {
   allowNull: false,
 });
 //db.posts.belongsTo(db.accounts);
+// Location
 db.districts = require("./locationsModels")(sequelize, Sequelize);
 
 module.exports = db;

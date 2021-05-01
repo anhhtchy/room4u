@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(30),
         allowNull: false,
       },
-
+      // temps
       cityid: {
         type: Sequelize.STRING(5),
         allowNull: false,
