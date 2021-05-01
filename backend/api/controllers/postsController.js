@@ -36,7 +36,8 @@ exports.searchPost = async (req, res) => {
   }
 
   if (req.body.district !== "") {
-    district = req.body.district.split(" ").join("").split(",");
+    //district = req.body.district.split(" ").join("").split(",");
+    district = req.body.district;
   } else {
     district = await Promise.all([
       db.districts
@@ -49,21 +50,21 @@ exports.searchPost = async (req, res) => {
     district = district[0];
   }
 
-  if (req.body.estatetype !== "") {
-    estatetype = req.body.estatetype
-      .split(" ")
-      .join("")
-      .split(",")
-      .map((value) => Number(value));
-    //console.log(typeof estatetype);
-  } else {
-    estatetype = [0, 1, 2, 3];
-  }
+  // if (req.body.estatetype !== "") {
+  //   estatetype = req.body.estatetype
+  //     .split(" ")
+  //     .join("")
+  //     .split(",")
+  //     .map((value) => Number(value));
+  //   //console.log(typeof estatetype);
+  // } else {
+  //   estatetype = [0, 1, 2, 3];
+  // }
 
   db.posts
     .findAll({
       where: {
-        estatetype: estatetype,
+        //estatetype: estatetype,
         district: district,
         price: { [Op.between]: [minPrice, maxPrice] },
         area: { [Op.between]: [minArea, maxArea] },
