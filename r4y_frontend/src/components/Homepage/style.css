@@ -23,9 +23,9 @@
     box-shadow: none;
 }
 
-.ant-btn:hover, .ant-btn:focus {
+/* .ant-btn:hover, .ant-btn:focus {
     border: 1px solid #ffad14;
-}
+} */
 
 a {
     color: #ffad14;
