@@ -27,7 +27,7 @@ const Register = () => {
             console.log("success");
             console.log("res", res);
         } catch (error) {
-            console.log(error);
+            console.log(error.response.data);
         }
     };
 
