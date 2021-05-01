@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import CarouselTop from './components/CarouselTop';
 import Item from './components/Item';
 import styles from './Home.module.css';
@@ -76,7 +77,7 @@ const mockData = [
     {
         id: 5,
         name: 'name5',
-        img: [img3, item2, img, img1, img2 ],
+        img: [img3, item2, img, img1, img2],
         type: 'CHUNG CƯ MINI',
         title: 'Số 80, ngõ 317 Tây Sơn',
         location: 'Ngã Tư Sở, Đống Đa, Hà Nội',
@@ -89,28 +90,50 @@ const mockData = [
 ]
 
 const Home = () => {
+    const [estateType, setEstateType] = React.useState();
+    const [district, setDistrict] = React.useState();
     const [area, setArea] = React.useState();
-    const [valueRadio, setValueRadio] = React.useState();
-    const [price, setPrice] = React.useState();
+    const [minPrice, setMinPrice] = React.useState(0);
+    const [maxPrice, setMaxPrice] = React.useState("");
 
-    const onChangeSelect = (checkedValues) => {
-        console.log('checked = ', checkedValues);
-        setArea(checkedValues)
+    const chooseDistrict = (checkedValues) => {
+        console.log('select checked = ', checkedValues);
+        setDistrict(checkedValues);
     }
 
-    const onChangeRadio = e => {
+    const chooseArea = e => {
         console.log('radio checked', e.target.value);
-        setValueRadio(e.target.value);
+        setArea(e.target.value);
     };
 
     const onChangeMinPrice = (value) => {
         console.log("minPrice", value);
-        setPrice(value);
+        setMinPrice(value);
     }
 
     const onChangeMaxPrice = (value) => {
         console.log("maxPrice", value);
-        setPrice(value);
+        setMaxPrice(value);
+    }
+
+    const onFilter = async () => {
+        const values = {
+            district: district,
+            area: area,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+        }
+
+        console.log(values);
+
+        try {
+            const response = await axios.post('http://localhost:3001/search', {
+                area: area,
+            });
+            console.log("res", response);
+        } catch (error) {
+            console.error("err", error);
+        }
     }
 
     return (
@@ -136,19 +159,19 @@ const Home = () => {
                             Khu vực
                         </div>
                         <div>
-                            <Checkbox.Group onChange={onChangeSelect} className={styles.checkedboxGroup}>
-                                <Checkbox className={styles.checkedboxStyle} value="0">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="2">Quận Ba Đình</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="3">Quận Hoàng Mai</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="4">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="5">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="6">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="7">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="8">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="9">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="10">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="12">Quận Hai Bà Trưng</Checkbox>
-                                <Checkbox className={styles.checkedboxStyle} value="13">Quận Hai Bà Trưng</Checkbox>
+                            <Checkbox.Group onChange={chooseDistrict} className={styles.checkedboxGroup}>
+                                <Checkbox className={styles.checkedboxStyle} value="001">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="002">Quận Ba Đình</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="003">Quận Hoàng Mai</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="004">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="005">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="006">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="007">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="008">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="009">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="010">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="012">Quận Hai Bà Trưng</Checkbox>
+                                <Checkbox className={styles.checkedboxStyle} value="013">Quận Hai Bà Trưng</Checkbox>
                             </Checkbox.Group>
                         </div>
                         <div className={styles.borderFilter} ></div>
@@ -156,12 +179,12 @@ const Home = () => {
                             Diện tích
                         </div>
                         <div className={styles.radioGroup}>
-                            <Radio.Group onChange={onChangeRadio} value={valueRadio}>
-                                <Radio className={styles.radioStyle} value={1}>{"< 20m2"}</Radio>
-                                <Radio className={styles.radioStyle} value={2}>20m2 - 50m2</Radio>
-                                <Radio className={styles.radioStyle} value={3}>50m2 - 100m2</Radio>
-                                <Radio className={styles.radioStyle} value={4}>100m2 - 200m2</Radio>
-                                <Radio className={styles.radioStyle} value={4}>{"> 200m2"}</Radio>
+                            <Radio.Group onChange={chooseArea} value={area}>
+                                <Radio className={styles.radioStyle} value={1}>{"< 20m"}<sup>2</sup></Radio>
+                                <Radio className={styles.radioStyle} value={2}>20m<sup>2</sup> - 50m<sup>2</sup></Radio>
+                                <Radio className={styles.radioStyle} value={3}>50m<sup>2</sup> - 100m<sup>2</sup></Radio>
+                                <Radio className={styles.radioStyle} value={4}>100m<sup>2</sup> - 200m<sup>2</sup></Radio>
+                                <Radio className={styles.radioStyle} value={4}>{"> 200m"}<sup>2</sup></Radio>
                             </Radio.Group>
                         </div>
                         <div className={styles.borderFilter} ></div>
@@ -184,7 +207,7 @@ const Home = () => {
                             />
                         </div>
                         <div className={styles.btnApply}>
-                            <Button className={styles.button}>ÁP DỤNG</Button>
+                            <Button className={styles.button} onClick={onFilter}>ÁP DỤNG</Button>
                         </div>
                     </div>
                     <div className={styles.rightCard}>

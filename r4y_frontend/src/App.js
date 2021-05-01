@@ -25,7 +25,7 @@ function App() {
     <div className="app">
       <Router>
         <Header />
-        <div className="search">
+        {/* <div className="search">
           <Input.Search
             placeholder="Tìm kiếm phòng bạn muốn..."
             allowClear
@@ -33,7 +33,7 @@ function App() {
             className="inputSearch"
             size="large"
           />
-        </div>
+        </div> */}
         <Switch>
           <Route path="/login">
             <Login />
