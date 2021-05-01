@@ -20,14 +20,15 @@ import logo from '../../img/logo.png';
 const Register = () => {
     const [form] = Form.useForm();
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         console.log('Received values of form: ', values);
-        // try {
-        //     const res = await axios.post('https://localhost...', {...values});
-        //     console.log("success");
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const res = await axios.post('http://localhost:3001/register', {...values});
+            console.log("success");
+            console.log("res", res);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (

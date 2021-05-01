@@ -24,7 +24,6 @@ import img1 from '../../img/img1.jpg';
 import img2 from '../../img/img2.jpg';
 import img3 from '../../img/img3.jpg';
 import avatar from '../../img/hello.jpg';
-import location_icon from '../../img/location_icon.png';
 
 const mockData = {
     id: 1,
