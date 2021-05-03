@@ -31,5 +31,15 @@ db.accounts.hasMany(db.posts, {
 //db.posts.belongsTo(db.accounts);
 // Location
 db.districts = require("./locationsModels")(sequelize, Sequelize);
+// review (rating and comment)
+db.reviews = require('./reviewsModel')(sequelize, Sequelize);
+db.accounts.hasMany(db.reviews, {
+  foreignKey: "userid",
+  allowNull: false,
+});
+db.posts.hasMany(db.reviews, {
+  foreignKey: "postid",
+  allowNull: false,
+});
 
 module.exports = db;
