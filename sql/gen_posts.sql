@@ -41,26 +41,16 @@ CREATE TABLE `images` (
    FOREIGN KEY (postid) REFERENCES posts(postid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `ratings` (
+CREATE TABLE `reviews` (
     `postid` BIGINT(35) NOT NULL,
     `userid` BIGINT(35) NOT NULL,
-    `rate` INT DEFAULT 0,
+    `rating` INT NOT NULL,
+    `comment` varchar(2048) DEFAULT NULL,
     `created` DATETIME NOT NULL,
     `updated` DATETIME NOT NULL,
     FOREIGN KEY (postid) REFERENCES posts(postid),
     FOREIGN KEY (userid) REFERENCES accounts(userid)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
-
-
-CREATE TABLE `comments` (
-  `postid` bigint(35) NOT NULL,
-  `userid` bigint(35) NOT NULL,
-  `content` varchar(2048) NOT NULL,
-  `created` datetime NOT NULL,
-  `updated` datetime NOT NULL,
-  FOREIGN KEY (postid) REFERENCES posts(postid),
-  FOREIGN KEY (userid) REFERENCES accounts(userid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Sửa đường dẫn TUYỆT ĐỐI đến file posts_data chứa 100 bản ghi cho bảng posts ngay bên dưới. Lưu ý dấu "\" cần  chuyển thành "\"  */
 

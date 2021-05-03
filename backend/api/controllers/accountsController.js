@@ -11,6 +11,29 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "ROOM4U";
 
 tokenList = {};
 
+exports.getAccount = async (req, res) => {
+    try {
+        const user = await db.accounts.findOne({where: {userid: req.params.userid}});
+        if(user == null){
+            return res.status(400).send({
+                status: 0,
+                message: "user does not exist"
+            });
+        } else {
+            user.password = null;
+            return res.json({
+                status: 1,
+                user: user
+            })
+        }
+    } catch (error) {
+        return res.status(500).send({
+            status: 0,
+            message: error.message || "Some errors occur while finding account"
+        });
+    }
+};
+
 exports.createAccount = async (req, res) => {
     try {
         const [username, email] = await Promise.all([
@@ -46,10 +69,11 @@ exports.createAccount = async (req, res) => {
                 }
                 db.accounts.create(account)
                 .then(data =>{
+                    data.password = null;
                     return res.json({
                         status: 1,
                         data: data
-                    })
+                    });
                     console.log("account created");
                 })
                 .catch(err =>{
@@ -64,8 +88,7 @@ exports.createAccount = async (req, res) => {
     } catch (error) {
         return res.status(500).send({
             status: 0,
-            message:
-            error.message || "Some errors occur while creating new account"
+            message: error.message || "Some errors occur while creating new account"
         });
     }
 };
