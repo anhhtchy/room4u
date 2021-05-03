@@ -227,3 +227,17 @@ exports.deleteAllPostByUserId = (req, res, next) => {
       });
     });
 };
+
+exports.getDistricts = (req, res, next) =>{
+  db.districts.findAll({
+    where:{
+      cityid: '01'
+    }
+  }).then((data)=>{
+    res.json(data);
+  }).catch(err=>{
+    res.status(500).send({
+      message:err.message || "Cannot get disctricts"
+    });
+  });
+}

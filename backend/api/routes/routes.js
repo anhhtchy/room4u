@@ -17,4 +17,5 @@ module.exports = function (app) {
   app
     .route("/:id/deleteAllPosts")
     .delete(postsController.deleteAllPostByUserId);
+  app.route('/getDistricts').get(postsController.getDistricts);
 };
