@@ -137,10 +137,21 @@ exports.createPost = (req, res, next) => {
     updated: Date.now(),
     expired: req.body.expired,
   };
+  const images = req.files;
   db.posts
     .create(postFile)
     .then((data) => {
-      res.status(200).send("Successfully create post");
+      // if (images != null) {
+      //   for(var i = 0; i < images.length; i++){
+      //     const image = {
+      //       postid = data.postid,
+      //       url =images[i].path.trim('..'),
+      //       created: Date.now()
+      //     }
+      //   }
+      // }
+      // db.images.create(){};
+      res.status(200).send(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -240,4 +251,37 @@ exports.getDistricts = (req, res, next) =>{
       message:err.message || "Cannot get disctricts"
     });
   });
+}
+exports.getHomePosts = async (req, res, next) => {
+  try{
+    const[data0,data1,data2,data3] = await Promise.all([
+      db.posts.findAll({
+        where:{estatetype:0},
+        order:[["updated","DESC"]],
+        limit:10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 1 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 2 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 3 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      })
+    ]);
+    res.send({data0,data1,data2,data3})
+  }
+  catch(error){
+    res.status(500).send({
+      status:0,
+      message:error.message || "Error when trying to get data"
+    })
+  }
 }

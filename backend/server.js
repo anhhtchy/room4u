@@ -7,6 +7,9 @@ require("dotenv").config();
 let express = require("express");
 app = express();
 
+// Dòng này để khi load ảnh = địa chỉ localhost thì dùng đc nhé
+app.use('/uploads', express.static('../uploads'));
+
 port = process.env.PORT || 3001
 
 // middleware for CORS access control
