@@ -34,6 +34,20 @@ db.accounts.hasMany(db.posts, {
 db.posts.hasMany(db.images, {
   foreignKey:"postid",
   allowNull:false
-})
-
+});
+db.reviews = require("./reviewsModel")(sequelize, Sequelize);
+db.accounts.hasMany(db.reviews, {
+  foreignKey: "userid",
+  allowNull: false,
+});
+// db.reviews.belongsTo(db.accounts, {
+//   foreignKey: "userid"
+// });
+db.posts.hasMany(db.reviews, {
+  foreignKey: "postid",
+  allowNull:false
+});
+// db.reviews.belongsTo(db.posts, {
+//   foreignKey: "postid",
+// });
 module.exports = db;

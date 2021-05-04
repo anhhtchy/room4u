@@ -2,6 +2,12 @@ module.exports = (sequelize, Sequelize) => {
     const ReviewsModel = sequelize.define(
         "reviews",
         {
+            reviewid: {
+                type: Sequelize.BIGINT(35),
+                allowNull: false,
+                autoIncrement: true,
+                primaryKey: true,
+            },
             rating: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
