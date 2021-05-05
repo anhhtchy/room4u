@@ -9,12 +9,12 @@ const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ROOM4U";
 const refreshTokenLife = process.env.REFRESH_TOKEN_LIFE || "3h";
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "ROOM4U";
 
-tokenList = {};
+let tokenList = {};
 
 exports.getAccount = async (req, res) => {
     try {
-        const user = await db.accounts.findOne({where: {userid: req.params.userid}});
-        if(user == null){
+        const user = await db.accounts.findOne({ where: { userid: req.params.userid } });
+        if (user == null) {
             return res.status(400).send({
                 status: 0,
                 message: "user does not exist"
@@ -37,52 +37,52 @@ exports.getAccount = async (req, res) => {
 exports.createAccount = async (req, res) => {
     try {
         const [username, email] = await Promise.all([
-            db.accounts.findOne({where: {username: req.body.username}}),
-            db.accounts.findOne({where: {email: req.body.email}})
+            db.accounts.findOne({ where: { username: req.body.username } }),
+            db.accounts.findOne({ where: { email: req.body.email } })
         ]);
-        if(username !== null){
+        if (username !== null) {
             return res.status(400).send({
                 status: 0,
                 message: "username already exists"
             });
-        } else if (email !== null){
+        } else if (email !== null) {
             return res.status(400).send({
                 status: 0,
                 message: "email already exists"
             });
-        } else{
+        } else {
             bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-                if(err){
+                if (err) {
                     return res.status(500).send({
                         status: 0,
                         message:
-                        err.message || "Some errors occur while creating new account"
+                            err.message || "Some errors occur while creating new account"
                     });
                 }
                 const account = {
                     username: req.body.username,
                     fullname: req.body.name,
                     password: hash,
-                    email : req.body.email,
+                    email: req.body.email,
                     usertype: req.body.roles,
                     created: Date.now()
                 }
                 db.accounts.create(account)
-                .then(data =>{
-                    data.password = null;
-                    return res.json({
-                        status: 1,
-                        data: data
+                    .then(data => {
+                        data.password = null;
+                        return res.json({
+                            status: 1,
+                            data: data
+                        });
+                        console.log("account created");
+                    })
+                    .catch(err => {
+                        return res.status(500).send({
+                            status: 0,
+                            message:
+                                err.message || "Some errors occur while creating new account"
+                        });
                     });
-                    console.log("account created");
-                })
-                .catch(err =>{
-                    return res.status(500).send({
-                        status: 0,
-                        message:
-                        err.message || "Some errors occur while creating new account"
-                    });
-                });
             });
         }
     } catch (error) {
@@ -177,3 +177,33 @@ exports.refreshToken = async (req, res) => {
         });
     }
 };
+
+exports.logout = async function (req, res) {
+    const { refreshToken } = req.body;
+    if (refreshToken && (tokenList[refreshToken])) {
+        try {
+            delete tokenList[refreshToken];
+            return res.json({
+                status: 1,
+            });
+        } catch (error) {
+            return res.status(500).send({
+                status: 0,
+                message:
+                    error.message || "Some errors occur while logout"
+            });
+        }
+    } else if (refreshToken){
+        console.log(refreshToken);
+        console.log(tokenList);
+        return res.status(400).send({
+            status: 0,
+            message: 'Invalid refreshToken',
+        });
+    } else {
+        return res.status(400).send({
+            status: 0,
+            message: 'No refreshToken provided',
+        });
+    }
+}

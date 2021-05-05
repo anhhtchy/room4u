@@ -12,6 +12,8 @@ module.exports = function (app) {
     app.route("/search").post(postsController.searchPost);
     // login
     app.route("/login").post(accountsController.login);
+    // logout
+    app.route("/logout").post(accountsController.logout);
     app.route("/user/:userid").get(accountsController.getAccount);
     // refresh token
     app.route("/refreshtoken").post(accountsController.refreshToken);
