@@ -69,6 +69,7 @@ exports.searchPost = async (req, res) => {
         price: { [Op.between]: [minPrice, maxPrice] },
         area: { [Op.between]: [minArea, maxArea] },
       },
+      order: [["updated", "DESC"]],
     })
     .then((data) => {
       //console.log(len(data));
@@ -239,49 +240,51 @@ exports.deleteAllPostByUserId = (req, res, next) => {
     });
 };
 
-exports.getDistricts = (req, res, next) =>{
-  db.districts.findAll({
-    where:{
-      cityid: '01'
-    }
-  }).then((data)=>{
-    res.json(data);
-  }).catch(err=>{
-    res.status(500).send({
-      message:err.message || "Cannot get disctricts"
+exports.getDistricts = (req, res, next) => {
+  db.districts
+    .findAll({
+      where: {
+        cityid: "01",
+      },
+    })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Cannot get disctricts",
+      });
     });
-  });
-}
+};
 exports.getHomePosts = async (req, res, next) => {
-  try{
-    const[data0,data1,data2,data3] = await Promise.all([
+  try {
+    const [data0, data1, data2, data3] = await Promise.all([
       db.posts.findAll({
-        where:{estatetype:0},
-        order:[["updated","DESC"]],
-        limit:10
+        where: { estatetype: 0 },
+        order: [["updated", "DESC"]],
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 1 },
         order: [["updated", "DESC"]],
-        limit: 10
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 2 },
         order: [["updated", "DESC"]],
-        limit: 10
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 3 },
         order: [["updated", "DESC"]],
-        limit: 10
-      })
+        limit: 10,
+      }),
     ]);
-    res.send({data0,data1,data2,data3})
-  }
-  catch(error){
+    res.send({ data0, data1, data2, data3 });
+  } catch (error) {
     res.status(500).send({
-      status:0,
-      message:error.message || "Error when trying to get data"
-    })
+      status: 0,
+      message: error.message || "Error when trying to get data",
+    });
   }
-}
+};
