@@ -1,10 +1,8 @@
-const fileUpload = require("../middleware/file-upload.js");
-
 module.exports = function (app) {
     let accountsController = require("../controllers/accountsController");
     let postsController = require("../controllers/postsController");
-    let upload = require('../middleware/file-upload.js');
-
+    let fileUpload = require('../middleware/file-upload.js');
+    let imagesComtroller = require('../controllers/imagesController');
 
     // register
     app.route("/register").post(accountsController.createAccount);
@@ -17,7 +15,7 @@ module.exports = function (app) {
     app.route("/refreshtoken").post(accountsController.refreshToken);
     app.route("/home").get(postsController.getHomePosts);
     app.route("/home/:id").get(postsController.getPostsByUserId);
-    app.route("/:id/createPost").post(postsController.createPost);
+    app.route("/:id/createPost").post(postsController.createPostWithImages);
     app.route("/:id/updatePost").put(postsController.updatePost);
     app.route("/:id/deletePost/:pid").delete(postsController.deletePost);
     app
@@ -31,8 +29,5 @@ module.exports = function (app) {
     app.route("/reviews/update").put(reviewsController.updateReview);
     app.route("/reviews/delete/:reviewid").delete(reviewsController.deleteReview);
     // Đây là đoạn test up ảnh nhé
-    app.post(':id/:pid/upload', fileUpload.any(), (req, res, next) => {
-        file = req.files;
-        res.send(file);
-    })
+    app.route('/upload').post(fileUpload.any(),imagesComtroller.uploadImages)
 };

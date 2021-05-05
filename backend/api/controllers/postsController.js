@@ -95,14 +95,25 @@ exports.getAllPosts = (req, res, next) => {
     });
 };
 
-exports.getPostsByUserId = (req, res, next) => {
+exports.getPostsByUserId = async (req, res, next) => {
   let userId = req.params.id;
   db.posts
     .findAll({
       where: { userid: userId },
     })
     .then((data) => {
-      res.json(data);
+      ids = []
+      for(var i = 0; i < data.length; i++)
+      {
+        ids.push(data[i].postid);
+      }
+      db.images.findAll({
+        where:{
+          postid:ids
+        }
+      }).then(image_data=>{
+        res.json({data,image_data});
+      })
     })
     .catch((err) => {
       res.status(500).send({
@@ -137,20 +148,9 @@ exports.createPost = (req, res, next) => {
     updated: Date.now(),
     expired: req.body.expired,
   };
-  const images = req.files;
   db.posts
     .create(postFile)
     .then((data) => {
-      // if (images != null) {
-      //   for(var i = 0; i < images.length; i++){
-      //     const image = {
-      //       postid = data.postid,
-      //       url =images[i].path.trim('..'),
-      //       created: Date.now()
-      //     }
-      //   }
-      // }
-      // db.images.create(){};
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -161,8 +161,9 @@ exports.createPost = (req, res, next) => {
     });
 };
 
-exports.updatePost = (req, res, next) => {
-  const updatePost = {
+exports.createPostWithImages = (req, res, next) => {
+  const postFile = {
+    userid: req.params.id,
     title: req.body.title,
     estatetype: req.body.estatetype,
     address: req.body.address,
@@ -179,46 +180,101 @@ exports.updatePost = (req, res, next) => {
     wifi: req.body.wifi,
     ultility: req.body.ultility,
     rented: req.body.rented,
+    created: Date.now(),
     updated: Date.now(),
     expired: req.body.expired,
   };
   db.posts
-    .update(updatePost, {
-      where: {
-        postid: req.body.postid,
-      },
-    })
+    .create(postFile)
     .then((data) => {
-      res.status(200).send({
-        message: "Ok updated!",
-      });
+      const images = req.body.images;
+      if (images != null) {
+        for (var i = 0; i < images.length; i++) {
+          const image = {
+            postid: data.postid,
+            url: images[i],
+            created: Date.now()
+          }
+          db.images.create(image).then((result) => {data.images.push(result)});
+        }
+      }
+      res.status(200).send(data);
     })
     .catch((err) => {
       res.status(500).send({
         status: 0,
-        message:
-          err.message || "Error when update post with id ${req.body.postid}",
+        message: err.message || "Error when add posts",
       });
     });
 };
 
-exports.deletePost = (req, res, next) => {
-  db.posts
-    .destroy({
-      where: { postid: req.params.pid },
-    })
-    .then((data) => {
-      res.status(200).send({
-        message: "Deleted post with id ${req.params.pid}",
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        status: 0,
-        message: err.message || "Cannot delete that post!",
-      });
-    });
+
+exports.updatePost = (req, res, next) => {
+  file = req.files
+  res.send(file)
+  // const updatePost = {
+  //   title: req.body.title,
+  //   estatetype: req.body.estatetype,
+  //   address: req.body.address,
+  //   ward: req.body.ward,
+  //   district: req.body.district,
+  //   city: req.body.city,
+  //   area: req.body.area,
+  //   price: req.body.price,
+  //   description: req.body.description,
+  //   roomnum: req.body.roomnum,
+  //   restroom: req.body.restroom,
+  //   electricity: req.body.electricity,
+  //   water: req.body.water,
+  //   wifi: req.body.wifi,
+  //   ultility: req.body.ultility,
+  //   rented: req.body.rented,
+  //   updated: Date.now(),
+  //   expired: req.body.expired,
+  // };
+  // db.posts
+  //   .update(updatePost, {
+  //     where: {
+  //       postid: req.body.postid,
+  //     },
+  //   })
+  //   .then((data) => {
+  //     res.status(200).send({
+  //       message: "Ok updated!",
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       status: 0,
+  //       message:
+  //         err.message || "Error when update post with id ${req.body.postid}",
+  //     });
+  //   });
 };
+
+exports.deletePost = async(req, res, next) => {
+  try{
+    const [del_imng, del_post] = await Promise.all([
+      db.images.destroy({
+        where:{
+          postid:req.params.pid
+        }}),
+      db.posts.destroy({
+        where:{
+          postid: req.params.pid },
+        })
+    ])
+    res.status(200).send({
+      message: "Deleted post with id ${req.params.pid}",
+    });
+  }
+  catch(err) {
+    res.status(500).send({
+      status: 0,
+      message: err.message || "Cannot delete that post!",
+    });
+  };
+}
 
 exports.deleteAllPostByUserId = (req, res, next) => {
   db.posts
@@ -252,6 +308,7 @@ exports.getDistricts = (req, res, next) =>{
     });
   });
 }
+
 exports.getHomePosts = async (req, res, next) => {
   try{
     const[data0,data1,data2,data3] = await Promise.all([
@@ -276,7 +333,40 @@ exports.getHomePosts = async (req, res, next) => {
         limit: 10
       })
     ]);
-    res.send({data0,data1,data2,data3})
+    var ids = [];
+
+    // for(var i = 0; i < data0.length;i++)
+    //   ids.push(data0[i].postid);
+
+    // for (var i = 0; i < data1.length; i++)
+    //   ids.push(data1[i].postid);
+
+    // for (var i = 0; i < data2.length; i++)
+    //   ids.push(data2[i].postid);
+
+    // for (var i = 0; i < data3.length; i++)
+    //   ids.push(data3[i].postid);
+
+    var dataX = [data0,data1,data2,data3]
+    for(var i = 0; i < 4; i++){
+      k = Object.keys(dataX[i]).length// cái này để đếm số phần tử mỗi loại
+      for(var j = 0; j <k; j++){
+        ids.push(dataX[i][j].postid);
+      }
+    }
+
+    db.images.findAll({
+      where:{
+        postid:ids
+      }
+    }).then(image_data=>{
+      res.send({ data0, data1, data2, data3, image_data})
+    }).catch(err=>{
+      res.status(500).send({
+        message: err.message||"Failed to get images"
+      })
+    });
+    
   }
   catch(error){
     res.status(500).send({
