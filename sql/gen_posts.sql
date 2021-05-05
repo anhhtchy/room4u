@@ -30,7 +30,7 @@ CREATE TABLE `posts` (
   `expired` datetime NOT NULL,
   PRIMARY KEY(postid),
   FOREIGN KEY (userid) REFERENCES accounts(userid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `images` (
   `imageid` bigint(35) NOT NULL AUTO_INCREMENT,
@@ -42,12 +42,14 @@ CREATE TABLE `images` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `reviews` (
+    `reviewid` BIGINT(35) NOT NULL AUTO_INCREMENT,
     `postid` BIGINT(35) NOT NULL,
     `userid` BIGINT(35) NOT NULL,
     `rating` INT NOT NULL,
     `comment` varchar(2048) DEFAULT NULL,
     `created` DATETIME NOT NULL,
     `updated` DATETIME NOT NULL,
+    PRIMARY KEY(reviewid),
     FOREIGN KEY (postid) REFERENCES posts(postid),
     FOREIGN KEY (userid) REFERENCES accounts(userid)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
