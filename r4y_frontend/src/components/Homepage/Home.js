@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import CarouselTop from "./components/CarouselTop";
 import Item from "./components/Item";
@@ -11,7 +11,7 @@ import img from "../../img/img.jpg";
 import img1 from "../../img/img1.jpg";
 import img2 from "../../img/img2.jpg";
 import img3 from "../../img/img3.jpg";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 const mockData = [
   {
@@ -82,11 +82,33 @@ const mockData = [
 ];
 
 const Home = () => {
+  const history = useHistory();
+
   const [estateType, setEstateType] = React.useState();
   const [district, setDistrict] = React.useState();
   const [area, setArea] = React.useState();
   const [minPrice, setMinPrice] = React.useState(0);
   const [maxPrice, setMaxPrice] = React.useState("");
+  const [disData, setDisData] = React.useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/getDistricts");
+        console.log("res", res);
+        if (res.status == 200) {
+          const temp = await res.data.filter((item, ind) => item.type == "Quận");
+          setDisData(temp);
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [])
+
+
+
 
   const chooseDistrict = (checkedValues) => {
     console.log("select checked = ", checkedValues);
@@ -117,7 +139,6 @@ const Home = () => {
     };
 
     console.log(values);
-
     try {
       const response = await axios.post("http://localhost:3001/search", {
         district: district,
@@ -126,9 +147,13 @@ const Home = () => {
         maxPrice: maxPrice,
       });
       console.log("res", response);
+      if (response.status == 200) {
+        history.push(`/search`);
+      }
     } catch (error) {
       console.error("err", error);
     }
+
   };
 
   return (
@@ -161,42 +186,15 @@ const Home = () => {
                 onChange={chooseDistrict}
                 className={styles.checkedboxGroup}
               >
-                <Checkbox className={styles.checkedboxStyle} value="001">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="002">
-                  Quận Ba Đình
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="003">
-                  Quận Hoàng Mai
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="004">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="005">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="006">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="007">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="008">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="009">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="010">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="012">
-                  Quận Hai Bà Trưng
-                </Checkbox>
-                <Checkbox className={styles.checkedboxStyle} value="013">
-                  Quận Hai Bà Trưng
-                </Checkbox>
+                {
+                  disData && disData.map((item, ind) => (
+                    <div key={ind}>
+                      <Checkbox className={styles.checkedboxStyle} value={item.districtid} >
+                        {item.name}
+                      </Checkbox>
+                    </div>
+                  ))
+                }
               </Checkbox.Group>
             </div>
             <div className={styles.borderFilter}></div>
@@ -216,7 +214,7 @@ const Home = () => {
                 <Radio className={styles.radioStyle} value={4}>
                   100m<sup>2</sup> - 200m<sup>2</sup>
                 </Radio>
-                <Radio className={styles.radioStyle} value={4}>
+                <Radio className={styles.radioStyle} value={5}>
                   {"> 200m"}
                   <sup>2</sup>
                 </Radio>
@@ -245,6 +243,7 @@ const Home = () => {
               </Button>
             </div>
           </div>
+
           <div className={styles.rightCard}>
             <div className={styles.subGroup}>
               <div className={styles.rightTitle}>
@@ -275,6 +274,36 @@ const Home = () => {
               </div>
             </div>
             <div className={styles.borderFilter}></div>
+
+            <div className={styles.subGroup}>
+              <div className={styles.rightTitle}>
+                <Link to="/chung-cu">CHUNG CƯ</Link>
+              </div>
+              <Row gutter={[32, 32]}>
+                {mockData.slice(0, 3).map((item, idx) => (
+                  <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                    <Link to={`/chung-cu/${item.id}-${item.name}`}>
+                      <Item
+                        img={item.img[0]}
+                        type={item.type}
+                        title={item.title}
+                        location={item.location}
+                        rating={item.rating}
+                        price={item.price}
+                        square={item.square}
+                        count_room={item.count_room}
+                      />
+                    </Link>
+                  </Col>
+                ))}
+              </Row>
+              <div className={styles.seeMore}>
+                <i>
+                  <Link to="/chung-cu">Xem thêm</Link>
+                </i>
+              </div>
+            </div>
+
             <div className={styles.subGroup}>
               <div className={styles.rightTitle}>
                 <Link to="/chung-cu-mini">CHUNG CƯ MINI</Link>
@@ -303,6 +332,37 @@ const Home = () => {
                 </i>
               </div>
             </div>
+            <div className={styles.borderFilter}></div>
+
+            <div className={styles.subGroup}>
+              <div className={styles.rightTitle}>
+                <Link to="/nha-nguyen-can">NHÀ NGUYÊN CĂN</Link>
+              </div>
+              <Row gutter={[32, 32]}>
+                {mockData.slice(0, 3).map((item, idx) => (
+                  <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                    <Link to={`/nha-nguyen-can/${item.id}-${item.name}`}>
+                      <Item
+                        img={item.img[0]}
+                        type={item.type}
+                        title={item.title}
+                        location={item.location}
+                        rating={item.rating}
+                        price={item.price}
+                        square={item.square}
+                        count_room={item.count_room}
+                      />
+                    </Link>
+                  </Col>
+                ))}
+              </Row>
+              <div className={styles.seeMore}>
+                <i>
+                  <Link to="/nha-nguyen-can">Xem thêm</Link>
+                </i>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

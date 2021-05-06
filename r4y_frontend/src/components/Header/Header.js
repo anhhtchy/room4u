@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 
 import { Menu, Input } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
+import { MenuOutlined, DownOutlined } from '@ant-design/icons';
 
 import './Header.css';
 
@@ -21,7 +21,7 @@ class Header extends React.Component {
                             <Link to="/">
                                 <img src={logo} alt="logo-room-for-you" width={80} />
                             </Link>
-                            {/* <div className="logo-title">RFY</div> */}
+                            <div className="logo-title">Room For You</div>
                         </div>
                         <div >
                             <Menu
@@ -34,7 +34,29 @@ class Header extends React.Component {
                                         TRANG CHỦ
                                 </Link>
                                 </Menu.Item>
-                                <Menu.Item key="2">
+                                <Menu.SubMenu key="sub1" title={<span>{`THỂ LOẠI PHÒNG `} <b><DownOutlined /></b></span>}>
+                                    <Menu.Item key="2">
+                                        <Link to="/phong-tro-sv">
+                                            <b>Phòng trọ sinh viên</b>
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="3">
+                                        <Link to="/chung-cu">
+                                            <b>Chung cư</b>
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="4">
+                                        <Link to="/chung-cu-mini">
+                                            <b>Chung cư mini</b>
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="5">
+                                        <Link to="/nha-nguyen-can">
+                                            <b>Nhà nguyên căn</b>
+                                        </Link>
+                                    </Menu.Item>
+                                </Menu.SubMenu>
+                                {/* <Menu.Item key="2">
                                     <Link to="/phong-tro-sv">
                                         PHÒNG TRỌ SINH VIÊN
                                 </Link>
@@ -43,19 +65,19 @@ class Header extends React.Component {
                                     <Link to="/chung-cu-mini">
                                         CHUNG CƯ MINI
                                 </Link>
-                                </Menu.Item>
-                                <Menu.Item key="4">
+                                </Menu.Item> */}
+                                <Menu.Item key="6">
                                     <Link to="/">
                                         KÊNH NGƯỜI BÁN
                                 </Link>
                                 </Menu.Item>
-                                <Menu.SubMenu key="sub1" title={<img src={user} alt="avatar" width={32} />}>
-                                    <Menu.Item key="5">
+                                <Menu.SubMenu key="sub2" title={<img src={user} alt="avatar" width={32} />}>
+                                    <Menu.Item key="7">
                                         <Link to="/login">
                                             <b>Đăng nhập</b>
                                         </Link>
                                     </Menu.Item>
-                                    <Menu.Item key="6">
+                                    <Menu.Item key="8">
                                         <Link to="/register">
                                             <b>Đăng ký</b>
                                         </Link>
