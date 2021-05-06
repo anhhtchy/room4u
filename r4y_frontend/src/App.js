@@ -18,7 +18,10 @@ import Home from './components/Homepage/Home';
 import Register from './components/Register/Register';
 import PhongTroSV from './components/PhongTroSV';
 import ChungCuMini from './components/ChungCuMini';
+import ChungCu from './components/ChungCu';
 import PageDetail from './components/PageDetail/PageDetail';
+import NhaNguyenCan from './components/NhaNguyenCan';
+import SearchResult from './components/SearchResult';
 
 function App() {
   return (
@@ -52,6 +55,21 @@ function App() {
           </Route>
           <Route path="/chung-cu-mini/:id">
             <PageDetail />
+          </Route>
+          <Route path="/chung-cu" exact>
+            <ChungCu />
+          </Route>
+          <Route path="/chung-cu/:id">
+            <PageDetail />
+          </Route>
+          <Route path="/nha-nguyen-can" exact>
+            <NhaNguyenCan />
+          </Route>
+          <Route path="/nha-nguyen-can/:id">
+            <PageDetail />
+          </Route>
+          <Route path="/search">
+            <SearchResult />
           </Route>
           <Route exact path="/">
             <Home />
