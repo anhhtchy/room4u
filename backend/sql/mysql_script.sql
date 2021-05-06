@@ -69,3 +69,12 @@ CREATE TABLE `comments` (
   FOREIGN KEY (postid) REFERENCES posts(postid),
   FOREIGN KEY (userid) REFERENCES accounts(userid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `savedPosts` (
+    `saveid` bigint(35) NOT NULL AUTO_INCREMENT,
+    `postid` BIGINT(35) NOT NULL,
+    `userid` BIGINT(35) NOT NULL,
+    PRIMARY KEY(saveid),
+    FOREIGN KEY (postid) REFERENCES posts(postid),
+    FOREIGN KEY (userid) REFERENCES accounts(userid)
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;

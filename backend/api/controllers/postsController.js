@@ -15,8 +15,11 @@ exports.searchPost = async (req, res) => {
     } else if (req.body.area == 2) {
       minArea = 50;
       maxArea = 100;
-    } else {
+    } else if (req.body.area == 3) {
       minArea = 100;
+      maxArea = 200;
+    } else {
+      minArea = 200;
       maxArea = 10000000;
     }
   } else {
@@ -287,4 +290,80 @@ exports.getHomePosts = async (req, res, next) => {
       message: error.message || "Error when trying to get data",
     });
   }
+};
+
+// Luu bai dang
+exports.savePosts = async (req, res) => {
+  let newRow = {
+    postid: req.body.postid,
+    userid: req.body.userid,
+  };
+  console.log(newRow);
+  const saved = await db.savedPosts.findOne({
+    where: { userid: newRow.userid, postid: newRow.postid },
+  });
+
+  if (saved == null) {
+    db.savedPosts
+      .create(newRow)
+      .then((data) => {
+        res.status(200).send({
+          status: "1",
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: 0,
+          message: err.message || "Error when add post in user's saved list",
+        });
+      });
+  } else {
+    return res.status(200).send({
+      status: "1",
+      message: "Đã lưu bài đăng trước đó",
+    });
+  }
+};
+
+// Xem danh sách bài đăng đã lưu theo userid
+exports.getSavePostsByUserid = async (req, res) => {
+  await db.savedPosts
+    .findAll({
+      attributes: ["saveid", "userid"],
+      where: { userid: req.params.userid },
+      include: [db.posts],
+    })
+    .then((data) => {
+      //console.log(len(data));
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some errors occur while searching posts",
+      });
+    });
+};
+
+// Xóa bài đăng đã lưu
+exports.deleteSavePosts = async (req, res) => {
+  await db.savedPosts
+    .destroy({
+      where: { postid: req.params.postid, userid: req.params.userid },
+    })
+    .then((data) => {
+      res.status(200).send({
+        status: "1",
+        message:
+          "Userid " +
+          req.params.userid +
+          " unsaved Postid " +
+          req.params.postid,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        status: 0,
+        message: err.message || "Cannot delete!",
+      });
+    });
 };
