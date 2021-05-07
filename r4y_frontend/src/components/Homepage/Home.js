@@ -148,7 +148,7 @@ const Home = () => {
       });
       console.log("res", response);
       if (response.status == 200) {
-        history.push(`/search`);
+        history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
       }
     } catch (error) {
       console.error("err", error);

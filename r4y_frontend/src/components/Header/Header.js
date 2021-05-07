@@ -19,7 +19,7 @@ class Header extends React.Component {
                     <div className="container">
                         <div className="logo">
                             <Link to="/">
-                                <img src={logo} alt="logo-room-for-you" width={80} />
+                                <img src={logo} alt="logo-room-for-you" width={60} />
                             </Link>
                             <div className="logo-title">Room For You</div>
                         </div>
@@ -67,8 +67,8 @@ class Header extends React.Component {
                                 </Link>
                                 </Menu.Item> */}
                                 <Menu.Item key="6">
-                                    <Link to="/">
-                                        KÊNH NGƯỜI BÁN
+                                    <Link to="/kenh-chu-nha">
+                                        KÊNH CHỦ NHÀ
                                 </Link>
                                 </Menu.Item>
                                 <Menu.SubMenu key="sub2" title={<img src={user} alt="avatar" width={32} />}>

@@ -22,6 +22,7 @@ import ChungCu from './components/ChungCu';
 import PageDetail from './components/PageDetail/PageDetail';
 import NhaNguyenCan from './components/NhaNguyenCan';
 import SearchResult from './components/SearchResult';
+import KenhChuNha from './components/KenhChuNha';
 
 function App() {
   return (
@@ -70,6 +71,9 @@ function App() {
           </Route>
           <Route path="/search">
             <SearchResult />
+          </Route>
+          <Route  path="/kenh-chu-nha">
+            <KenhChuNha />
           </Route>
           <Route exact path="/">
             <Home />
