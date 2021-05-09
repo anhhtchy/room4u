@@ -1,0 +1,85 @@
+.tab {
+    width: 100%;
+    background: white;
+    box-shadow: 0px 0px 8px rgb(0 0 0 / 10%);
+    padding: 30px;
+}
+
+.tabTitle {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content {
+    padding: 20px;
+    /* background:#ffe58f; */
+    font-size: 16px;
+    display: flex;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.value {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.itemTitle {
+    color: #9b9b9b;
+    margin-right: 10px;
+}
+
+.itemValue {
+
+}
+
+.leftContent {
+    width: 50%;
+}
+
+.rightContent {
+    width: 50%;
+    border-left: 1px solid rgb(197, 195, 195);
+    padding-left: 20px;
+}
+
+.button {
+    height: 48px;
+    padding: 6px 30px;
+    background: #faad14;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+}
+
+.bottomItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #dfdfdf;
+    margin: 0px 10px;
+}
+
+.oneItem {
+    width: 50%;
+    text-align: center;
+    /* margin: 5px; */
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+.oneItem:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
