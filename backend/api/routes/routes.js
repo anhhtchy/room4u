@@ -32,4 +32,5 @@ module.exports = function (app) {
     app.route("/reviews/delete/:reviewid").delete(reviewsController.deleteReview);
     // Đây là đoạn test up ảnh nhé
     app.route('/upload').post(fileUpload.any(),imagesComtroller.uploadImages)
+    app.route('/:pid/imgs').get(imagesComtroller.getImagesByPostId);
 };

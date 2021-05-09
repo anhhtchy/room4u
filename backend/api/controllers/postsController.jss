@@ -112,8 +112,7 @@ exports.getPostsByUserId = async (req, res, next) => {
           postid:ids
         }
       }).then(image_data=>{
-        const posts = convertImg1D(data, image_data);
-        return res.json({posts});
+        res.json({data,image_data});
       })
     })
     .catch((err) => {
@@ -311,8 +310,75 @@ exports.getDistricts = (req, res, next) =>{
 }
 
 exports.getHomePosts = async (req, res, next) => {
+  try{
+    const [data0,data1,data2,data3] = await Promise.all([
+      db.posts.findAll({
+        where:{estatetype:0},
+        order:[["updated","DESC"]],
+        limit:10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 1 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 2 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      }),
+      db.posts.findAll({
+        where: { estatetype: 3 },
+        order: [["updated", "DESC"]],
+        limit: 10
+      })
+    ]);
+    var ids = [];
+
+    // for(var i = 0; i < data0.length;i++)
+    //   ids.push(data0[i].postid);
+
+    // for (var i = 0; i < data1.length; i++)
+    //   ids.push(data1[i].postid);
+
+    // for (var i = 0; i < data2.length; i++)
+    //   ids.push(data2[i].postid);
+
+    // for (var i = 0; i < data3.length; i++)
+    //   ids.push(data3[i].postid);
+
+    var dataX = [data0,data1,data2,data3]
+    for(var i = 0; i < 4; i++){
+      k = Object.keys(dataX[i]).length// cái này để đếm số phần tử mỗi loại
+      for(var j = 0; j <k; j++){
+        ids.push(dataX[i][j].postid);
+      }
+    }
+
+    db.images.findAll({
+      where:{
+        postid:ids
+      }
+    }).then(image_data=>{
+      res.send({ data0, data1, data2, data3, image_data})
+    }).catch(err=>{
+      res.status(500).send({
+        message: err.message||"Failed to get images"
+      })
+    });
+    
+  }
+  catch(error){
+    res.status(500).send({
+      status:0,
+      message:error.message || "Error when trying to get data"
+    })
+  }
+}
+
+exports.getHomePosts1 = async (req, res, next) => {
   try {
-    let dataX= await Promise.all([
+    const dataX= await Promise.all([
       db.posts.findAll({
         where: { estatetype: 0 },
         order: [["updated", "DESC"]],
@@ -347,8 +413,9 @@ exports.getHomePosts = async (req, res, next) => {
         postid: ids
       }
     }).then(image_data => {
-      const posts = convertImg2D(dataX,image_data);
-      res.send({posts})
+      const dict = convertImg(dataX,image_data);
+      dataX[1][1].test = 5;
+      res.send({da:dataX[1][1],di:dict["3"]})
     }).catch(err => {
       res.status(500).send({
         message: err.message || "Failed to get images"
@@ -363,49 +430,25 @@ exports.getHomePosts = async (req, res, next) => {
     })
   }
 }
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-function convertImg1D(data, imgs) {
+function convertImg(data,imgs){
   var dict = {};
-  var res_data = [];
-  for (var i = 0; i < imgs.length; i++) {
-    if (dict.hasOwnProperty(String(imgs[i].postid))) {
+  for(var i = 0; i < imgs.length;i++)
+  { 
+    if(dict.hasOwnProperty(String(imgs[i].postid))){
       dict[String(imgs[i].postid)].push(imgs[i].url);
     }
-    else {
+    else{
       dict[String(imgs[i].postid)] = [];
-      dict[String(imgs[i].postid)].push(imgs[i].url);
     }
   }
   len = Object.keys(data).length;
-  for (var i = 0; i < len; i++) {
-    res_data[i] = {}
-    res_data[i].data = data[i];
-    res_data[i]["images"] = dict[String(data[i].postid)];
-  }
-  return res_data;
-}
-function convertImg2D(data, imgs) {
-  var dict = {};
-  var res_data = [];
-  for (var i = 0; i < imgs.length; i++) {
-    if (dict.hasOwnProperty(String(imgs[i].postid))) {
-      dict[String(imgs[i].postid)].push(imgs[i].url);
-    }
-    else {
-      dict[String(imgs[i].postid)] = [];
-      dict[String(imgs[i].postid)].push(imgs[i].url);
-    }
-  }
-  len = Object.keys(data).length;
-  for (var i = 0; i < len; i++) {
+  for(var i = 0; i <len; i++)
+  {
     l = Object.keys(data[i]).length;
-    res_data[i] = [];
-    for (var j = 0; j < l; j++) {
-      res_data[i][j] = {};
-      res_data[i][j].data = data[i][j];
-      res_data[i][j]["images"] = dict[String(data[i][j].postid)];
+    for(var j = 0; j < l; j++)
+    {
+      data[i][j].images = dict[String(1)]
     }
   }
-  return res_data;
+  return dict;
 }
