@@ -71,8 +71,23 @@ exports.searchPost = async (req, res) => {
       },
     })
     .then((data) => {
+
+
+      ids = [];
+      len = Object.keys(data).length;
+      for (var i = 0; i < len; i++) {
+        ids.push(data[i].postid);
+      }
+      db.images.findAll({
+        where: { postid: ids }
+      }).then(image_data => {
+        const posts = convertImg1D(data, image_data);
+        return res.json({posts:posts});
+      })
+
+      //const posts = GetImgaesByPosts(data);
       //console.log(len(data));
-      res.json(data);
+      //res.json(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -80,6 +95,8 @@ exports.searchPost = async (req, res) => {
       });
     });
 };
+
+
 
 exports.getAllPosts = (req, res, next) => {
   db.posts
