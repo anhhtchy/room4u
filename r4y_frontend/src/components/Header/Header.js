@@ -87,15 +87,16 @@ class Header extends React.Component {
                         </div>
                     </div>
                 </div>
-                {/* <div className="search">
-                    <Input.Search
+                <div className="search">
+                    {/* <Input.Search
                         placeholder="Tìm kiếm phòng bạn muốn..."
                         allowClear
                         // onSearch={onSearch}
                         style={{ maxWidth: 320 }}
                         size="large"
-                    />
-                </div> */}
+                    /> */}
+                    Lưu ý: chạy backend trước khi chạy frontend
+                </div>
 
             </div>
         )
