@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rate } from 'antd';
+import { Rate, Button } from 'antd';
 import img1 from '../../../img/item1.jpg';
 import styles from '../Home.module.css';
 

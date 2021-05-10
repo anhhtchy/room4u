@@ -282,7 +282,7 @@ const ChungCuMini = () => {
                                     </Col>
                                 ))}
                             </Row>
-
+                            <br />
                             <Row gutter={[32, 32]}>
                                 {mockData.slice(0, 3).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
@@ -301,7 +301,7 @@ const ChungCuMini = () => {
                                     </Col>
                                 ))}
                             </Row>
-
+                            <br />
                             <Row gutter={[32, 32]}>
                                 {mockData.slice(0, 3).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
