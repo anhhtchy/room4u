@@ -13,6 +13,8 @@ module.exports = function (app) {
     // logout
     app.route("/logout").post(accountsController.logout);
     app.route("/user/:userid").get(accountsController.getAccount);
+    app.route("/changePassword").post(accountsController.changePassword);
+    
     // refresh token
     app.route("/refreshtoken").post(accountsController.refreshToken);
     app.route("/home").get(postsController.getHomePosts);

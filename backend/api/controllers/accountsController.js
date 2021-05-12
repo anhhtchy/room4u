@@ -207,3 +207,57 @@ exports.logout = async function (req, res) {
         });
     }
 }
+
+exports.changePassword = async (req, res) => {
+    try {
+        let user = await db.accounts.findOne({
+            where: {
+                username: req.body.username
+            }
+        });
+
+        if (user == null) {
+            return res.status(400).send({
+                status: 0,
+                message: "username incorrect"
+            });
+        }
+
+        const match = await bcrypt.compare(req.body.password, user.password);
+
+        if (!match) {
+            return res.status(400).send({
+                status: 0,
+                message: "password incorrect",
+            });
+        }
+
+        bcrypt.hash(req.body.newPassword, saltRounds, function (err, hash) {
+            if (err) {
+                return res.status(500).send({
+                    status: 0,
+                    message:
+                        err.message || "Some errors occur while changing password"
+                });
+            }
+            db.accounts.update({
+                password: hash,
+            }, {
+                where: { username: req.body.username },
+                returning: true,
+                plain: true
+            })
+            .then(function () {
+                return res.json({
+                    status: 1,
+                });
+            });
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: 0,
+            message:
+                error.message || "Some errors occur while changing password"
+        });
+    }
+}
