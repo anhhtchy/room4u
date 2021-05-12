@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const e = require("express");
+const { updateProfile } = require("./accountsController");
 
 exports.searchPost = async (req, res) => {
   let minArea, maxArea, estatetype, minPrice, maxPrice, district;
@@ -227,29 +228,47 @@ exports.createPostWithImages = (req, res, next) => {
 };
 
 
-exports.updatePost = (req, res, next) => {
+exports.updatePost =  async(req, res, next) => {
   file = req.files
   res.send(file)
-  // const updatePost = {
-  //   title: req.body.title,
-  //   estatetype: req.body.estatetype,
-  //   address: req.body.address,
-  //   ward: req.body.ward,
-  //   district: req.body.district,
-  //   city: req.body.city,
-  //   area: req.body.area,
-  //   price: req.body.price,
-  //   description: req.body.description,
-  //   roomnum: req.body.roomnum,
-  //   restroom: req.body.restroom,
-  //   electricity: req.body.electricity,
-  //   water: req.body.water,
-  //   wifi: req.body.wifi,
-  //   ultility: req.body.ultility,
-  //   rented: req.body.rented,
-  //   updated: Date.now(),
-  //   expired: req.body.expired,
-  // };
+  const updatePost = {
+    title: req.body.title,
+    estatetype: req.body.estatetype,
+    address: req.body.address,
+    ward: req.body.ward,
+    district: req.body.district,
+    city: req.body.city,
+    area: req.body.area,
+    price: req.body.price,
+    description: req.body.description,
+    roomnum: req.body.roomnum,
+    restroom: req.body.restroom,
+    electricity: req.body.electricity,
+    water: req.body.water,
+    wifi: req.body.wifi,
+    ultility: req.body.ultility,
+    rented: req.body.rented,
+    updated: Date.now(),
+    expired: req.body.expired,
+  };
+  //const imgs = req.body.images;
+  try{
+    const[pst, image_data] = await Promise.all([
+      db.posts.updatePost(updateProfile,{where:{postid:req.params.pid}}),
+      db.images.findAll({where:{postid:req.params.pid}})
+    ]);
+    img_urls = []
+    for(var i = 0;i < image_data.length;i++)
+    {
+      img_urls.push(image_data[i].url);
+    }
+    
+    return res.send({
+      data: img_urls
+    })
+
+  }
+  catch{}
   // db.posts
   //   .update(updatePost, {
   //     where: {
