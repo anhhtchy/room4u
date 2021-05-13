@@ -109,9 +109,9 @@
     border-radius: 8px;
     cursor: pointer;
     color: #181818;
-  }
+}
 
-  .buttonOutline {
+.buttonOutline {
     border: 1px solid #faad14;
     color: #faad14;
     height: 48px;
@@ -129,4 +129,24 @@
     font-weight: 500;
     font-size: 16px;
     border-radius: 8px;
+}
+
+.uploads {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    border: 1px solid #c4d5e6;
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 8px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+
+.img {
+    border-radius: 6px;
+    width: 80px;
+    height: 80px;
 }
