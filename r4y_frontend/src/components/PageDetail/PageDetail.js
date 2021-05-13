@@ -137,6 +137,10 @@ const PageDetail = () => {
                                                 allowHalf
                                                 disabled
                                                 defaultValue={mockData.rating}
+                                                style={{
+                                                    fontSize: '14px',
+                                                    color: '#faad14',
+                                                }}
                                             />
                                             <div>
                                                 {`${mockData.rating}/5 của ${mockData.count_rat_room} đánh giá`}

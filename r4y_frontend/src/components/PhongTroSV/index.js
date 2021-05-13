@@ -193,8 +193,8 @@ const PhongTroSV = () => {
                                 width={24}
                                 style={{ marginRight: "10px" }}
                             />
-              BỘ LỌC TÌM KIẾM
-            </div>
+                            BỘ LỌC TÌM KIẾM
+                        </div>
                         <div className={styles.leftSubtitle}>Khu vực</div>
                         <div>
                             <Checkbox.Group

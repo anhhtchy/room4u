@@ -111,6 +111,9 @@
     font-weight: 500;
     color: #faad14;
     margin-bottom: 20px;
+    background-color: #434343;
+    padding: 6px;
+    padding-left: 20px;
 }
 
 .rightTitle:hover {

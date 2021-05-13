@@ -303,6 +303,7 @@ const Home = () => {
                 </i>
               </div>
             </div>
+            <div className={styles.borderFilter}></div>
 
             <div className={styles.subGroup}>
               <div className={styles.rightTitle}>
