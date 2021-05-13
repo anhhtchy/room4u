@@ -16,12 +16,16 @@ const Item = (props) => {
                         allowHalf
                         disabled
                         defaultValue={props.rating}
+                        // style={{
+                        //     fontSize: '14px',
+                        //     color: '#faad14',
+                        // }}
                     />
                 </div>
                 <div className={styles.itemPrice}>{new Intl.NumberFormat().format(props.price)}{" đ/tháng"}</div>
                 <div className={styles.square}>{props.square}m<sup>2</sup>{" - "}{props.count_room}{" phòng"}</div>
-            <br/>
-            <Button className={styles.button}>Xem chi tiết</Button>
+                <br />
+                <Button className={styles.button}>Xem chi tiết</Button>
             </div>
         </div>
     )

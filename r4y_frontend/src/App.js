@@ -23,6 +23,8 @@ import PageDetail from './components/PageDetail/PageDetail';
 import NhaNguyenCan from './components/NhaNguyenCan';
 import SearchResult from './components/SearchResult';
 import KenhChuNha from './components/KenhChuNha';
+import GuestView from './components/TrangCaNhan_GuestView';
+import TrangCaNhan from './components/TrangCaNhan';
 
 function App() {
   return (
@@ -72,8 +74,14 @@ function App() {
           <Route path="/search">
             <SearchResult />
           </Route>
-          <Route  path="/kenh-chu-nha">
+          <Route path="/kenh-chu-nha">
             <KenhChuNha />
+          </Route>
+          <Route path="/xem-trang-ca-nhan">
+            <GuestView />
+          </Route>
+          <Route path="/trang-ca-nhan">
+            <TrangCaNhan />
           </Route>
           <Route exact path="/">
             <Home />

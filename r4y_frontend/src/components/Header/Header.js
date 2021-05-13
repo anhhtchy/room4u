@@ -82,6 +82,11 @@ class Header extends React.Component {
                                             <b>Đăng ký</b>
                                         </Link>
                                     </Menu.Item>
+                                    <Menu.Item key="8">
+                                        <Link to="/trang-ca-nhan">
+                                            <b>Trang cá nhân</b>
+                                        </Link>
+                                    </Menu.Item>
                                 </Menu.SubMenu>
                             </Menu>
                         </div>

@@ -7,9 +7,8 @@ import {
     HeartOutlined,
     TagsOutlined,
     WhatsAppOutlined,
-
 } from '@ant-design/icons';
-
+import { Link } from 'react-router-dom';
 import Slider from "react-slick";
 
 import styles from './PageDetail.module.css';
@@ -169,7 +168,9 @@ const PageDetail = () => {
                                     <Avatar size="large" src={avatar} />
                                     <div className={styles.username}>User Name</div>
                                 </div>
-                                <Button className={styles.btnOutline}>Xem trang</Button>
+                                <Link to="/xem-trang-ca-nhan">
+                                    <Button className={styles.btnOutline}>Xem trang</Button>
+                                </Link>
                             </div>
                             <div className={styles.btn}>
                                 <Button className={styles.button1} icon={<PhoneOutlined />}>LIÊN HỆ</Button>
