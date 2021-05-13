@@ -7,7 +7,7 @@ exports.uploadImages = (req, res, next)=>{
         data = []
         for (var i = 0; i < files.length; i++) {
 
-            data.push(process.env.DB_HOST+":"+process.env.PORT + files[i].path.substring(2));
+            data.push(process.env.BACKEND_HOST+":"+process.env.PORT + files[i].path.substring(2));
         }
         res.send({data})
     }
