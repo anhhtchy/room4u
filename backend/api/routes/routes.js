@@ -3,6 +3,7 @@ module.exports = function (app) {
     let postsController = require("../controllers/postsController");
     let fileUpload = require('../middleware/file-upload.js');
     let imagesComtroller = require('../controllers/imagesController');
+    let authMiddleWare = require("../middleware/authMiddleware");
 
     // register
     app.route("/register").post(accountsController.createAccount);
@@ -22,7 +23,7 @@ module.exports = function (app) {
     app.route('/:id/changeProfile').post(accountsController.updateProfile);
 
     app.route("/home").get(postsController.getHomePosts);
-    app.route("/home/:id").get(postsController.getPostsByUserId);
+    app.route("/home/:id").get(authMiddleWare.isOwner, postsController.getPostsByUserId);
     app.route("/:id/createPost").post(postsController.createPostWithImages);
     app.route("/:id/updatePost").put(postsController.updatePost);
     app.route("/:id/deletePost/:pid").delete(postsController.deletePost);

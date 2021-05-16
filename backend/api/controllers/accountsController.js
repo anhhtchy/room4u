@@ -4,7 +4,7 @@ const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
 const { Op } = require("sequelize");
 let jwtHelper = require("../../helpers/jwtHelper");
 
-const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "900";
+const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "0.5h";
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ROOM4U";
 const refreshTokenLife = process.env.REFRESH_TOKEN_LIFE || "3h";
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "ROOM4U";
@@ -122,7 +122,6 @@ exports.login = async (req, res) => {
         let userData = user;
 
         const accessToken = await jwtHelper.generateToken(userData, accessTokenSecret, accessTokenLife);
-
         const refreshToken = await jwtHelper.generateToken(userData, refreshTokenSecret, refreshTokenLife);
 
         tokenList[refreshToken] = {
@@ -149,13 +148,13 @@ exports.refreshToken = async (req, res) => {
 
     if (refreshToken && tokenList[refreshToken]) {
         try {
-            const userData = await jwtHelper.verifyToken(
+            const { data } = await jwtHelper.verifyToken(
                 refreshToken,
                 refreshTokenSecret
             );
 
             const accessToken = await jwtHelper.generateToken(
-                userData,
+                data,
                 accessTokenSecret,
                 accessTokenLife
             );
