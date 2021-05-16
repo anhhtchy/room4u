@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import {
@@ -19,13 +19,17 @@ import logo from '../../img/logo.png';
 
 const Register = () => {
     const [form] = Form.useForm();
+    const history = useHistory();
 
     const onFinish = async (values) => {
         console.log('Received values of form: ', values);
         try {
-            const res = await axios.post('http://localhost:3001/register', {...values});
-            console.log("success");
-            console.log("res", res);
+            const res = await axios.post('http://localhost:3001/register', { ...values });
+            if (res.status == 200) {
+                console.log("success");
+                console.log("res", res);
+                history.push("/login");
+            }
         } catch (error) {
             console.log(error.response.data);
         }

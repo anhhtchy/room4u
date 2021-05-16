@@ -4,6 +4,7 @@ export const GET_DATA_NHA_NGUYEN_CAN = 'GET_DATA_NHA_NGUYEN_CAN';
 export const GET_DATA_VAN_PHONG = 'GET_DATA_VAN_PHONG';
 export const GET_DATA_CHUNG_CU = 'GET_DATA_CHUNG_CU';
 export const GET_SEARCH_RESULT = 'GET_SEARCH_RESULT';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 
 export const estate = [
     "PHÒNG TRỌ SINH VIÊN",

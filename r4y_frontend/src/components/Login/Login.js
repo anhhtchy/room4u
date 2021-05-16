@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { Form, Input, Button, Checkbox, message } from 'antd';
@@ -8,6 +8,8 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import styles from './Login.module.css';
 
 import logo from '../../img/logo.png';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginSuccess } from '../../actions/auth';
 
 const mockData = [
     {
@@ -27,6 +29,12 @@ const mockData = [
 ]
 
 const Login = () => {
+    const history = useHistory();
+    const dispatch = useDispatch();
+
+    const user = useSelector(state => state.auth);
+    console.log("user", user);
+
     const [userData, setUserData] = useState("");
     const [check, setCheck] = useState(null);
 
@@ -35,11 +43,18 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:3001/login', { ...values });
             console.log("res", response);
-            setUserData(response.data);
+
+            if (response.status == 200) {
+                setUserData(response.data);
+                dispatch(loginSuccess(response.data));
+                history.push("/");
+            }
+
         } catch (error) {
             console.error("err", error.response.data);
         }
     }
+
     return (
         <div className={styles.login}>
             <div className={styles.container}>
