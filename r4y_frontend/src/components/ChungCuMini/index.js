@@ -27,6 +27,12 @@ import img3 from "../../img/img3.jpg";
 
 import { Link, useHistory } from "react-router-dom";
 
+import { useSelector, useDispatch } from 'react-redux';
+import { estate } from "../../constants/ActionType";
+import { getData } from "../../actions/homepage";
+
+import Loading from "../loading";
+
 const mockData = [
     {
         id: 1,
@@ -98,12 +104,19 @@ const mockData = [
 const ChungCuMini = () => {
     const history = useHistory();
 
+    const dispatch = useDispatch();
+
+    const data = useSelector(state => state.homepage.list);
+
+    const [dataVanPhong, setDataVanPhong] = React.useState([]);
+
     const [estateType, setEstateType] = React.useState();
     const [district, setDistrict] = React.useState();
     const [area, setArea] = React.useState();
     const [minPrice, setMinPrice] = React.useState(0);
     const [maxPrice, setMaxPrice] = React.useState("");
     const [disData, setDisData] = React.useState("");
+    const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         (async () => {
@@ -121,7 +134,23 @@ const ChungCuMini = () => {
         })();
     }, [])
 
-
+    useEffect(() => {
+        (async () => {
+          try {
+            const res = await axios.get("http://localhost:3001/home");
+            if (res.status == 200) {
+              console.log("res", res.data.posts);
+              dispatch(getData(res.data.posts));
+              setDataVanPhong(res.data.posts[2]);
+              setLoading(false);
+            } else {
+              console.log("res", res);
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        })();
+      }, [getData]);
 
 
     const chooseDistrict = (checkedValues) => {
@@ -180,11 +209,12 @@ const ChungCuMini = () => {
                             <span>Trang chủ</span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item href="">
-                            <span>Chung cư mini</span>
+                            <span>Văn phòng - Mặt bằng kinh doanh</span>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </div>
-                <div className={styles.body}>
+                {loading && <Loading />}
+                {!loading && <div className={styles.body}>
                     <div className={styles.leftCard}>
                         <div className={styles.leftTitle}>
                             <img
@@ -262,64 +292,27 @@ const ChungCuMini = () => {
                     <div className={styles.rightCard}>
                         <div className={styles.subGroup}>
                             <div className={styles.rightTitle}>
-                                CHUNG CƯ MINI
+                                VĂN PHÒNG - MẶT BẰNG KINH DOANH
                             </div>
                             <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
+                                {dataVanPhong && dataVanPhong.map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/chung-cu-mini/${item.id}-${item.name}`}>
+                                        <Link to={`/chung-cu-mini/${item.data.postid}-${item.data.title}`}>
                                             <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
+                                                img={item.images[0]}
+                                                type={estate[item.data.estatetype]}
+                                                title={item.data.title}
+                                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                                rating={4.5}
+                                                price={item.data.price}
+                                                square={item.data.area}
+                                                count_room={item.data.room_num}
                                             />
                                         </Link>
                                     </Col>
                                 ))}
                             </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/chung-cu-mini/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`chung-cu-mini/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
+                            
                             {/* <div className={styles.seeMore}>
                                 <i>
                                     <Link to="/phong-tro-sv">Xem thêm</Link>
@@ -328,6 +321,7 @@ const ChungCuMini = () => {
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </div>
     );

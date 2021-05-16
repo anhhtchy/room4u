@@ -27,6 +27,12 @@ import img3 from "../../img/img3.jpg";
 
 import { Link, useHistory } from "react-router-dom";
 
+import { useSelector, useDispatch } from 'react-redux';
+import { estate } from "../../constants/ActionType";
+import { getData } from "../../actions/homepage";
+
+import Loading from "../loading";
+
 const mockData = [
     {
         id: 1,
@@ -98,12 +104,19 @@ const mockData = [
 const NhaNguyenCan = () => {
     const history = useHistory();
 
+    const dispatch = useDispatch();
+
+    const data = useSelector(state => state.homepage.list);
+
+    const [dataNhaNguyenCan, setDataNhaNguyenCan] = React.useState([]);
+
     const [estateType, setEstateType] = React.useState();
     const [district, setDistrict] = React.useState();
     const [area, setArea] = React.useState();
     const [minPrice, setMinPrice] = React.useState(0);
     const [maxPrice, setMaxPrice] = React.useState("");
     const [disData, setDisData] = React.useState("");
+    const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         (async () => {
@@ -119,9 +132,25 @@ const NhaNguyenCan = () => {
                 console.log(err);
             }
         })();
-    }, [])
+    }, []);
 
-
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("http://localhost:3001/home");
+                if (res.status == 200) {
+                    console.log("res", res.data.posts);
+                    dispatch(getData(res.data.posts));
+                    setDataNhaNguyenCan(res.data.posts[1]);
+                    setLoading(false);
+                } else {
+                    console.log("res", res);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [getData]);
 
 
     const chooseDistrict = (checkedValues) => {
@@ -184,7 +213,10 @@ const NhaNguyenCan = () => {
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </div>
-                <div className={styles.body}>
+
+                {loading && <Loading />}
+
+                {!loading && <div className={styles.body}>
                     <div className={styles.leftCard}>
                         <div className={styles.leftTitle}>
                             <img
@@ -265,56 +297,18 @@ const NhaNguyenCan = () => {
                                 NHÀ NGUYÊN CĂN
                             </div>
                             <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
+                                {dataNhaNguyenCan && dataNhaNguyenCan.map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/nha-nguyen-can/${item.id}-${item.name}`}>
+                                        <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
                                             <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/nha-nguyen-can/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/nha-nguyen-can/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
+                                                img={item.images[0]}
+                                                type={estate[item.data.estatetype]}
+                                                title={item.data.title}
+                                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                                rating={4.5}
+                                                price={item.data.price}
+                                                square={item.data.area}
+                                                count_room={item.data.room_num}
                                             />
                                         </Link>
                                     </Col>
@@ -328,6 +322,7 @@ const NhaNguyenCan = () => {
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </div>
     );

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CarouselTop from "./components/CarouselTop";
 import Item from "./components/Item";
 import styles from "./Home.module.css";
-import { Input, Checkbox, Radio, InputNumber, Button, Row, Col } from "antd";
+import { Input, Checkbox, Radio, InputNumber, Button, Row, Col, Spin } from "antd";
 import filter from "../../img/filter.png";
 import item1 from "../../img/item1.jpg";
 import item2 from "../../img/item2.jpg";
@@ -12,6 +12,10 @@ import img1 from "../../img/img1.jpg";
 import img2 from "../../img/img2.jpg";
 import img3 from "../../img/img3.jpg";
 import { Link, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { getData, getDataChungCu, getDataNhaNguyenCan, getDataPhongTroSV, getDataVanPhong } from '../../actions/homepage';
+import Loading from "../loading";
+import { estate } from "../../constants/ActionType";
 
 const mockData = [
   {
@@ -83,13 +87,22 @@ const mockData = [
 
 const Home = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
 
-  const [estateType, setEstateType] = React.useState();
-  const [district, setDistrict] = React.useState();
-  const [area, setArea] = React.useState();
-  const [minPrice, setMinPrice] = React.useState(0);
-  const [maxPrice, setMaxPrice] = React.useState("");
-  const [disData, setDisData] = React.useState("");
+  const data = useSelector(state => state.homepage.list);
+  const [dataPhongTroSV, setDataPhongTroSV] = useState([]);
+  const [dataChungCu, setDataChungCu] = useState([]);
+  const [dataVanPhong, setDataVanPhong] = useState([]);
+  const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
+  console.log("data", data);
+
+  const [estateType, setEstateType] = useState();
+  const [district, setDistrict] = useState();
+  const [area, setArea] = useState();
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState("");
+  const [disData, setDisData] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -99,16 +112,35 @@ const Home = () => {
         if (res.status == 200) {
           const temp = await res.data.filter((item, ind) => item.type == "Quận");
           setDisData(temp);
+          setLoading(false);
         }
 
       } catch (err) {
         console.log(err);
       }
     })();
-  }, [])
+  }, []);
 
-
-
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/home");
+        if (res.status == 200) {
+          console.log("res", res.data.posts);
+          dispatch(getData(res.data.posts));
+          setDataPhongTroSV(res.data.posts[0]);
+          setDataNhaNguyenCan(res.data.posts[1]);
+          setDataVanPhong(res.data.posts[2]);
+          setDataChungCu(res.data.posts[3]);
+          setLoading(false);
+        } else {
+          console.log("res", res);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [getData]);
 
   const chooseDistrict = (checkedValues) => {
     console.log("select checked = ", checkedValues);
@@ -169,7 +201,9 @@ const Home = () => {
                     />
                 </div> */}
         <CarouselTop />
-        <div className={styles.body}>
+        {loading && <Loading />}
+
+        {!loading && <div className={styles.body}>
           <div className={styles.leftCard}>
             <div className={styles.leftTitle}>
               <img
@@ -250,18 +284,18 @@ const Home = () => {
                 <Link to="/phong-tro-sv">PHÒNG TRỌ SINH VIÊN</Link>
               </div>
               <Row gutter={[32, 32]}>
-                {mockData.slice(0, 3).map((item, idx) => (
+                {dataPhongTroSV && dataPhongTroSV.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/phong-tro-sv/${item.id}-${item.name}`}>
+                    <Link to={`/phong-tro-sv/${item.data.postid}-${item.data.title}`}>
                       <Item
-                        img={item.img[0]}
-                        type={item.type}
-                        title={item.title}
-                        location={item.location}
-                        rating={item.rating}
-                        price={item.price}
-                        square={item.square}
-                        count_room={item.count_room}
+                        img={item.images[0]}
+                        type={estate[item.data.estatetype]}
+                        title={item.data.title}
+                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                        rating={4.5}
+                        price={item.data.price}
+                        square={item.data.area}
+                        count_room={item.data.room_num}
                       />
                     </Link>
                   </Col>
@@ -280,18 +314,18 @@ const Home = () => {
                 <Link to="/chung-cu">CHUNG CƯ</Link>
               </div>
               <Row gutter={[32, 32]}>
-                {mockData.slice(0, 3).map((item, idx) => (
+                {dataChungCu && dataChungCu.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/chung-cu/${item.id}-${item.name}`}>
+                    <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
                       <Item
-                        img={item.img[0]}
-                        type={item.type}
-                        title={item.title}
-                        location={item.location}
-                        rating={item.rating}
-                        price={item.price}
-                        square={item.square}
-                        count_room={item.count_room}
+                        img={item.images[0]}
+                        type={estate[item.data.estatetype]}
+                        title={item.data.title}
+                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                        rating={4.5}
+                        price={item.data.price}
+                        square={item.data.area}
+                        count_room={item.data.room_num}
                       />
                     </Link>
                   </Col>
@@ -307,21 +341,21 @@ const Home = () => {
 
             <div className={styles.subGroup}>
               <div className={styles.rightTitle}>
-                <Link to="/chung-cu-mini">CHUNG CƯ MINI</Link>
+                <Link to="/chung-cu-mini">VĂN PHÒNG - MẶT BẰNG KINH DOANH</Link>
               </div>
               <Row gutter={[32, 32]}>
-                {mockData.slice(0, 3).map((item, idx) => (
+                {dataVanPhong && dataVanPhong.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/chung-cu-mini/${item.id}-${item.name}`}>
+                    <Link to={`/chung-cu-mini/${item.data.postid}-${item.data.title}`}>
                       <Item
-                        img={item.img[0]}
-                        type={item.type}
-                        title={item.title}
-                        location={item.location}
-                        rating={item.rating}
-                        price={item.price}
-                        square={item.square}
-                        count_room={item.count_room}
+                        img={item.images[0]}
+                        type={estate[item.data.estatetype]}
+                        title={item.data.title}
+                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                        rating={4.5}
+                        price={item.data.price}
+                        square={item.data.area}
+                        count_room={item.data.room_num}
                       />
                     </Link>
                   </Col>
@@ -340,18 +374,18 @@ const Home = () => {
                 <Link to="/nha-nguyen-can">NHÀ NGUYÊN CĂN</Link>
               </div>
               <Row gutter={[32, 32]}>
-                {mockData.slice(0, 3).map((item, idx) => (
+                {dataNhaNguyenCan && dataNhaNguyenCan.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/nha-nguyen-can/${item.id}-${item.name}`}>
+                    <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
                       <Item
-                        img={item.img[0]}
-                        type={item.type}
-                        title={item.title}
-                        location={item.location}
-                        rating={item.rating}
-                        price={item.price}
-                        square={item.square}
-                        count_room={item.count_room}
+                        img={item.images[0]}
+                        type={estate[item.data.estatetype]}
+                        title={item.data.title}
+                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                        rating={4.5}
+                        price={item.data.price}
+                        square={item.data.area}
+                        count_room={item.data.room_num}
                       />
                     </Link>
                   </Col>
@@ -363,9 +397,9 @@ const Home = () => {
                 </i>
               </div>
             </div>
-
           </div>
         </div>
+        }
       </div>
     </div>
   );

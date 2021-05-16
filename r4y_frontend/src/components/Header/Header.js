@@ -47,7 +47,7 @@ class Header extends React.Component {
                                     </Menu.Item>
                                     <Menu.Item key="4">
                                         <Link to="/chung-cu-mini">
-                                            <b>Chung cư mini</b>
+                                            <b>Văn phòng - Mặt bằng kinh doanh</b>
                                         </Link>
                                     </Menu.Item>
                                     <Menu.Item key="5">
