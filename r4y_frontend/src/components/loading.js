@@ -3,7 +3,7 @@ import React from 'react';
 
 const Loading = () => {
     return (
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', height: '100vh' }}>
             <Spin size="large" />
         </div>
     )

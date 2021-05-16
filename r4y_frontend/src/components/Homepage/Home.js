@@ -12,10 +12,12 @@ import img1 from "../../img/img1.jpg";
 import img2 from "../../img/img2.jpg";
 import img3 from "../../img/img3.jpg";
 import { Link, useHistory } from "react-router-dom";
+
 import { useDispatch, useSelector } from 'react-redux';
-import { getData, getDataChungCu, getDataNhaNguyenCan, getDataPhongTroSV, getDataVanPhong } from '../../actions/homepage';
-import Loading from "../loading";
+import { getData, getSearchResult } from '../../actions/homepage';
 import { estate } from "../../constants/ActionType";
+
+import Loading from "../loading";
 
 const mockData = [
   {
@@ -90,14 +92,16 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const data = useSelector(state => state.homepage.list);
+  const searchResult = useSelector(state => state.homepage.searchResult);
+
   const [dataPhongTroSV, setDataPhongTroSV] = useState([]);
   const [dataChungCu, setDataChungCu] = useState([]);
   const [dataVanPhong, setDataVanPhong] = useState([]);
   const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
-  console.log("data", data);
+  console.log("data search", searchResult);
 
   const [estateType, setEstateType] = useState();
-  const [district, setDistrict] = useState();
+  const [district, setDistrict] = useState("");
   const [area, setArea] = useState();
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState("");
@@ -149,6 +153,8 @@ const Home = () => {
 
   const chooseArea = (e) => {
     console.log("radio checked", e.target.value);
+    // const area = [...area];
+    // area = area.push(e.target.value);
     setArea(e.target.value);
   };
 
@@ -171,6 +177,7 @@ const Home = () => {
     };
 
     console.log(values);
+    setLoading(true);
     try {
       const response = await axios.post("http://localhost:3001/search", {
         district: district,
@@ -178,8 +185,10 @@ const Home = () => {
         minPrice: minPrice,
         maxPrice: maxPrice,
       });
-      console.log("res", response);
+
       if (response.status == 200) {
+        await dispatch(getSearchResult(response.data.posts));
+        setLoading(false);
         history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
       }
     } catch (error) {

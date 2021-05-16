@@ -34,3 +34,10 @@ export const getDataVanPhong = (data) => {
         payload: data,
     }
 }
+
+export const getSearchResult = (data) => {
+    return {
+        type: Types.GET_SEARCH_RESULT,
+        payload: data,
+    }
+}
