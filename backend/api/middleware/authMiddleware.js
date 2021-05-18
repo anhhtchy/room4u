@@ -1,6 +1,6 @@
 let jwtHelper = require("../../helpers/jwtHelper");
 
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ROOM4U";
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "room4u_access_secret";
 
 exports.isOwner = async function (req, res, next) {
     const accessToken = req.body.accessToken || req.headers["x-access-token"];

@@ -176,6 +176,9 @@ exports.createAccount = async (req, res) => {
                     password: hash,
                     email: req.body.email,
                     usertype: req.body.roles,
+                    avatar: req.body.images,
+                    address: req.body.address,
+                    phone: req.body.phone,
                     created: Date.now()
                 }
                 db.accounts.create(account)
