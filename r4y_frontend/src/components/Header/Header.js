@@ -11,16 +11,13 @@ import './Header.css';
 import logo from '../../img/logo.png';
 import user from '../../img/user.png';
 import Modal from 'antd/lib/modal/Modal';
+import axios from 'axios';
 
 const Header = () => {
     const history = useHistory();
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisible1, setIsModalVisible1] = useState(false);
     const [userData, setUserData] = useState(JSON.parse((window.localStorage.getItem('userData'))));
-
-    useEffect(() => {
-        setUserData(JSON.parse(window.localStorage.getItem('userData')));
-        console.log("header user data", userData);
-    }, []);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -35,18 +32,35 @@ const Header = () => {
         setIsModalVisible(false);
     };
 
+    // const handleOk1 = () => {
+    //     setIsModalVisible1(false);
+    //     history.push("/login");
+    // };
+
+    // const handleCancel1 = () => {
+    //     setIsModalVisible1(false);
+    // };
+
     const handleLogout = () => {
         window.localStorage.removeItem('userData');
         window.location.reload();
         history.push("/");
     }
 
-    const handleUserType = () => {
-        userData && userData.userData.usertype ? history.push("/kenh-chu-nha") : history.push("/trang-ca-nhan");
+    const handleUserType1 = () => {
+        if (userData) {
+            userData.userData.usertype ? history.push("/trang-ca-nhan") : history.push("/kenh-chu-nha");
+        } else {
+            history.push("/login");
+        }
     }
 
-    const handleUserType1 = () => {
-        userData && userData.userData.usertype ? history.push("/kenh-chu-nha") : setIsModalVisible(true);;
+    const handleUserType = () => {
+        if (userData) {
+            userData.userData.usertype ? setIsModalVisible(true) : history.push("/kenh-chu-nha");
+        } else {
+            setIsModalVisible(true);
+        }
     }
 
     return (
@@ -102,7 +116,7 @@ const Header = () => {
                                         CHUNG CƯ MINI
                                 </Link>
                                 </Menu.Item> */}
-                            <Menu.Item key="6" onClick={handleUserType1}>
+                            <Menu.Item key="6" onClick={handleUserType}>
                                 <Link>
                                     KÊNH CHỦ NHÀ
                                 </Link>
@@ -138,11 +152,14 @@ const Header = () => {
                                         </Menu.Item>
                                     </>
                                 }
-                                <Menu.Item key="9" onClick={handleUserType}>
+                                <Menu.Item key="9" onClick={handleUserType1}>
                                     <Link>
                                         <b>Trang cá nhân</b>
                                     </Link>
                                 </Menu.Item>
+                                {/* <Modal title="Bạn chưa đăng nhập" visible={isModalVisible1} onOk={handleOk1} onCancel={handleCancel1}>
+                                    <p>Đăng nhập ngay</p>
+                                </Modal> */}
                             </Menu.SubMenu>
                         </Menu>
                     </div>

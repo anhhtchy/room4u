@@ -104,7 +104,6 @@ const Home = () => {
   const [dataVanPhong, setDataVanPhong] = useState([]);
   const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
   console.log("data search", searchResult);
-  console.log("home user data", window.localStorage.getItem('userData'));
 
   const [estateType, setEstateType] = useState();
   const [district, setDistrict] = useState("");
@@ -315,7 +314,7 @@ const Home = () => {
                         rating={4.5}
                         price={item.data.price}
                         square={item.data.area}
-                        count_room={item.data.room_num}
+                        count_room={item.data.roomnum}
                       />
                     </Link>
                   </Col>

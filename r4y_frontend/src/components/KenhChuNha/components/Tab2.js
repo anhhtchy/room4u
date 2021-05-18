@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
+import { Link, useHistory } from "react-router-dom";
+import { estate } from "../../../constants/ActionType";
 
 import {
     Button,
@@ -108,6 +110,34 @@ const Tab2 = () => {
     const [fileList, setFileList] = useState([]);
     const [visibleImg, setVisibleImg] = useState(false);
     const [srcPre, setSrcPre] = useState();
+    const [userData, setUserData] = useState(JSON.parse((window.localStorage.getItem('userData'))));
+    const [userPost, setUserPost] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            await setUserData(JSON.parse(window.localStorage.getItem('userData')));
+            console.log("user id", userData.userData.userid);
+
+            try {
+                const res = await axios.get(`http://localhost:3001/home/${userData.userData.userid}`, {
+                    headers: {
+                        // 'content-type': 'application/x-www-form-urlencoded',
+                        'x-access-token': userData.accessToken,
+                    }
+                });
+                if (res.status == 200) {
+                    console.log("post", res);
+                    setUserPost(res.data.posts);
+                } else {
+                    console.log("post", res)
+                }
+
+            } catch (err) {
+                console.log("err mes:", err.response.data);
+            }
+
+        })();
+    }, []);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -146,7 +176,7 @@ const Tab2 = () => {
     return (
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
-                <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>8 tin đã đăng</span></div>
+                <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userPost.length}`} tin đã đăng</span></div>
                 <Button
                     className={styles.button}
                     icon={<PlusCircleOutlined />}
@@ -155,20 +185,20 @@ const Tab2 = () => {
             </div>
             <div className={styles.content}>
                 <Row gutter={[32, 32]}>
-                    {mockData.slice(0, 3).map((item, idx) => (
+                    {userPost && userPost.map((item, idx) => (
                         <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                            {/* <Link to={`/phong-tro-sv/${item.id}-${item.name}`}> */}
-                            <Item
-                                img={item.img[0]}
-                                type={item.type}
-                                title={item.title}
-                                location={item.location}
-                                rating={item.rating}
-                                price={item.price}
-                                square={item.square}
-                                count_room={item.count_room}
-                            />
-                            {/* </Link> */}
+                            <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
+                                <Item
+                                    img={item.images[0]}
+                                    type={estate[item.data.estatetype]}
+                                    title={`${item.data.title}`}
+                                    location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                    rating={4.5}
+                                    price={item.data.price}
+                                    square={item.data.area}
+                                    count_room={item.data.roomnum}
+                                />
+                            </Link>
                         </Col>
                     ))}
                 </Row>
