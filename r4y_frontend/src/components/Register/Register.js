@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
@@ -9,31 +9,57 @@ import {
     Button,
     Radio,
     Upload,
+    notification,
 } from 'antd';
 
-import { UploadOutlined } from '@ant-design/icons';
+import {
+    PlusOutlined,
+    LoadingOutlined,
+} from '@ant-design/icons';
 
 import styles from '../Login/Login.module.css';
 
 import logo from '../../img/logo.png';
 
+const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
 const Register = () => {
     const [form] = Form.useForm();
     const history = useHistory();
 
-    const onFinish = async (values) => {
+    const [uploading, setUploading] = useState(false);
+    const [fileList, setFileList] = useState([]);
+    const [visibleImg, setVisibleImg] = useState(false);
+    const [srcPre, setSrcPre] = useState();
+
+    const onFinish = async (values, images) => {
         console.log('Received values of form: ', values);
         try {
-            const res = await axios.post('http://localhost:3001/register', { ...values });
+            const res = await axios.post('http://localhost:3001/register', { 
+                ...values,
+                images,
+             });
             if (res.status == 200) {
                 console.log("success");
                 console.log("res", res);
+                notification.success({
+                    message: 'Register Success',
+                  });
                 history.push("/login");
             }
         } catch (error) {
             console.log(error.response.data);
+            notification.error({
+                message: 'Register Error',
+                description: error.response.data.message,
+              });
         }
     };
+
+    const onPreview = (src) => {
+        setVisibleImg(true);
+        setSrcPre(src);
+    }
 
     return (
         <div className={styles.login}>
@@ -46,7 +72,12 @@ const Register = () => {
                     <Form
                         form={form}
                         name="register"
-                        onFinish={onFinish}
+                        onFinish={(values) =>
+                            onFinish(
+                              values,
+                              fileList.map((file) => file.originFileObj.url),
+                            )
+                          }
                     >
                         <div style={{ marginBottom: '6px' }}>Tên người dùng: <span style={{ color: '#f5222d' }}>*</span></div>
                         <Form.Item
@@ -194,12 +225,102 @@ const Register = () => {
                         </Form.Item>
 
                         <div>Chọn ảnh đại diện: </div>
+                        <br />
                         <Form.Item
                             name="upload"
                         >
-                            <Upload name="logo" action="/upload.do" listType="picture">
+                            {/* <Upload name="logo" action="/upload.do" listType="picture">
                                 <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-                            </Upload>
+                            </Upload> */}
+                            <div className={styles.uploads}>
+                                {fileList
+                                    // .filter((file) => file.originFileObj.url)
+                                    .map((file, idx) => {
+                                        return (
+                                            <div
+                                                className={styles.card} key={idx}
+                                                onClick={() => onPreview(file.originFileObj.url)}
+                                            >
+                                                <img src={file.originFileObj.url} className={styles.img} />
+                                            </div>
+                                        );
+                                    })
+                                }
+                                {console.log("file list", fileList)}
+                                <Upload
+                                    style={{ marginTop: '10px' }}
+                                    beforeUpload={(file) => {
+                                        console.log("file before", file);
+                                        if (!file.type.includes('image/')) {
+                                            notification.error({
+                                                message: `${file.name} is not a image file`,
+                                            });
+                                        }
+                                        return file.type.includes('image/');
+                                    }}
+                                    onChange={async (info) => {
+                                        console.log("onchange info", info.file)
+                                        if (info.file.status === 'uploading') {
+                                            console.log("onchange", info.file.status);
+                                            setUploading(true);
+                                        } else {
+                                            console.log("onchange", info.file.status);
+                                            setUploading(false);
+                                        }
+                                        if (info.file.status === 'done') {
+                                            console.log(" if done", info.fileList);
+                                            let lastItem = await fileList[fileList.length - 1]
+                                            setFileList(info.fileList);
+                                        } else if (info.file.status === 'error') {
+                                            console.log(" if error", info.file.error);
+                                            notification.error({
+                                                message: info.file.error.status
+                                                    ? info.file.error.status
+                                                    : 'An error occurred',
+                                            });
+                                        }
+                                    }}
+                                    accept="image/*"
+                                    multiple={true}
+                                    showUploadList={false}
+                                    customRequest={async ({ onSuccess, onError, file }) => {
+                                        const form = new FormData();
+                                        form.append('files', file);
+                                        try {
+                                            const res = await axios.post(
+                                                "http://localhost:3001/upload",
+                                                form,
+                                            );
+                                            if (res.status === 200) {
+                                                let url = "http://" + res.data.data[0].replace(/\\/g, "/")
+                                                file.url = url;
+                                                console.log("200", url);
+                                                onSuccess(null, file);
+                                            } else {
+                                                console.log("not 200", res)
+                                                onError(res);
+                                            }
+                                        } catch (error) {
+                                            console.log("axios err", error);
+                                            onError(error);
+                                        }
+                                    }}
+                                >
+                                    <div className={styles.upload}>
+                                        {uploading ? (
+                                            loadingIcon
+                                        ) : (
+                                            <>
+                                                <PlusOutlined />
+                                                <div style={{ marginTop: 8 }}>
+                                                    Upload
+                                    </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </Upload>
+                            </div>
+
                         </Form.Item>
 
                         <Form.Item

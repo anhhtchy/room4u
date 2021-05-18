@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
-import { Form, Input, Button, Checkbox, message } from 'antd';
+import { Form, Input, Button, Checkbox, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import styles from './Login.module.css';
@@ -10,33 +10,24 @@ import styles from './Login.module.css';
 import logo from '../../img/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess } from '../../actions/auth';
-
-const mockData = [
-    {
-        "key": 1,
-        "username": "user1",
-        "password": "123456",
-    },
-    {
-        "key": 1,
-        "username": "user2",
-        "password": "123456",
-    }, {
-        "key": 1,
-        "username": "user3",
-        "password": "123456",
-    }
-]
+// import { saveState } from '../../localStorage';
+import { useStore } from 'react-redux';
 
 const Login = () => {
     const history = useHistory();
     const dispatch = useDispatch();
+    const store = useStore();
 
     const user = useSelector(state => state.auth);
     console.log("user", user);
+    console.log("user storage", window.localStorage.getItem('userData'));
 
     const [userData, setUserData] = useState("");
     const [check, setCheck] = useState(null);
+
+    // store.subscribe(() => {
+    //     saveState(store.getState.auth);
+    //   });
 
     const onFinish = async (values) => {
         console.log('form login: ', values);
@@ -46,12 +37,22 @@ const Login = () => {
 
             if (response.status == 200) {
                 setUserData(response.data);
-                dispatch(loginSuccess(response.data));
+                await window.localStorage.setItem('userData', JSON.stringify(response.data));
+                setTimeout(() => window.localStorage.removeItem('userData'), 1200000);
+                await dispatch(loginSuccess(response.data));
+                notification.success({
+                    message: 'Login Success',
+                });
                 history.push("/");
-            }
+                window.location.reload();
+            };
 
         } catch (error) {
             console.error("err", error.response.data);
+            notification.error({
+                message: 'Login error',
+                description: error.response.data.message,
+            });
         }
     }
 
