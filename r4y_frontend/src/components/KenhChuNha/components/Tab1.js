@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
+import moment from 'moment';
 
 import {
     Avatar,
@@ -35,6 +36,12 @@ const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const Tab1 = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [userData, setUserData] = useState(JSON.parse((window.localStorage.getItem('userData'))));
+
+    useEffect(() => {
+        setUserData(JSON.parse(window.localStorage.getItem('userData')));
+        console.log("header user data", userData);
+    }, []);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -338,35 +345,35 @@ const Tab1 = () => {
                         <div className={styles.value}>Tên đăng nhập</div>
                     </div>
                     <div className={styles.item}>
-                        <div className={styles.itemTitle}><SendOutlined style={{ marginRight: '5px' }} />Tên người dùng:</div>
-                        <div className={styles.itemValue}>Nguyễn Văn A</div>
+                        <div className={styles.itemTitle}><SendOutlined style={{ marginRight: '5px' }} />Họ và tên:</div>
+                        <div className={styles.itemValue}>{userData.userData.fullname}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><SendOutlined style={{ marginRight: '5px' }} />Tên đăng nhập:</div>
-                        <div className={styles.itemValue}>nguyenabc123</div>
+                        <div className={styles.itemValue}>{userData.userData.username}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><EnvironmentOutlined style={{ marginRight: '5px' }} />Địa chỉ:</div>
-                        <div className={styles.itemValue}>BĐS 68 trần hưng đạo</div>
+                        <div className={styles.itemValue}>{userData.userData.address}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><PhoneOutlined style={{ marginRight: '5px' }} />Số điện thoại:</div>
-                        <div className={styles.itemValue}>0987654321</div>
+                        <div className={styles.itemValue}>{userData.userData.phone}</div>
                     </div>
                 </div>
                 <div className={styles.rightContent}>
                     <br /><br />
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><MailOutlined style={{ marginRight: '5px' }} />Email:</div>
-                        <div className={styles.itemValue}>abc@gmail.com</div>
+                        <div className={styles.itemValue}>{userData.userData.email}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Số tin đã đăng:</div>
-                        <div className={styles.itemValue}>Nguyễn Văn A</div>
+                        <div className={styles.itemValue}>8</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><FieldTimeOutlined style={{ marginRight: '5px' }} />Ngày tham gia:</div>
-                        <div className={styles.itemValue}>abc@gmail.com</div>
+                        <div className={styles.itemValue}>{moment(userData.userData.created).format("MMMM Do YYYY")}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><HeartOutlined style={{ marginRight: '5px' }} />Đánh giá:</div>

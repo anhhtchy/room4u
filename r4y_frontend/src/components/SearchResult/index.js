@@ -27,6 +27,12 @@ import img3 from "../../img/img3.jpg";
 
 import { Link, useHistory } from "react-router-dom";
 
+import { useDispatch, useSelector } from 'react-redux';
+import { getData, getSearchResult } from '../../actions/homepage';
+import { estate } from "../../constants/ActionType";
+
+import Loading from "../loading";
+
 const mockData = [
     {
         id: 1,
@@ -97,6 +103,9 @@ const mockData = [
 
 const SearchResult = () => {
     const history = useHistory();
+    const dispatch = useDispatch();
+
+    const searchResult = useSelector(state => state.homepage.searchResult);
 
     const [estateType, setEstateType] = React.useState();
     const [district, setDistrict] = React.useState();
@@ -104,6 +113,8 @@ const SearchResult = () => {
     const [minPrice, setMinPrice] = React.useState(0);
     const [maxPrice, setMaxPrice] = React.useState("");
     const [disData, setDisData] = React.useState("");
+    const [loading, setLoading] = React.useState(true);
+    // const [dataSearch, setDataSearch] = React.useState([]);
 
     useEffect(() => {
         (async () => {
@@ -113,6 +124,7 @@ const SearchResult = () => {
                 if (res.status == 200) {
                     const temp = await res.data.filter((item, ind) => item.type == "Quận");
                     setDisData(temp);
+                    setLoading(false);
                 }
 
             } catch (err) {
@@ -153,6 +165,7 @@ const SearchResult = () => {
         };
 
         console.log(values);
+        setLoading(true);
         try {
             const response = await axios.post("http://localhost:3001/search", {
                 district: district,
@@ -160,8 +173,10 @@ const SearchResult = () => {
                 minPrice: minPrice,
                 maxPrice: maxPrice,
             });
-            console.log("res", response);
             if (response.status == 200) {
+                console.log("res search", response);
+                await dispatch(getSearchResult(response.data.posts));
+                setLoading(false);
                 history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
             }
         } catch (error) {
@@ -184,7 +199,9 @@ const SearchResult = () => {
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </div>
-                <div className={styles.body}>
+
+                {loading && <Loading />}
+                {!loading && <div className={styles.body}>
                     <div className={styles.leftCard}>
                         <div className={styles.leftTitle}>
                             <img
@@ -262,49 +279,31 @@ const SearchResult = () => {
                     <div className={styles.rightCard}>
                         <div className={styles.subGroup}>
                             <div className={styles.rightTitle}>
-                                <SearchOutlined style={{marginRight: '10px'}}/>
+                                <SearchOutlined style={{ marginRight: '10px' }} />
                                 KẾT QUẢ TÌM KIẾM
                                 {``}
                             </div>
                             <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
+                                {!searchResult.length && <div>Không tìm thấy kết quả nào!</div>}
+                                {searchResult && searchResult.map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/phong-tro-sv/${item.id}-${item.name}`}>
+                                        <Link to={`/phong-tro-sv/${item.data.postid}-${item.data.title}`}>
                                             <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
+                                                img={item.images[0]}
+                                                type={estate[item.data.estatetype]}
+                                                title={item.data.title}
+                                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                                rating={4.5}
+                                                price={item.data.price}
+                                                square={item.data.area}
+                                                count_room={item.data.room_num}
                                             />
                                         </Link>
                                     </Col>
                                 ))}
                             </Row>
 
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/chung-cu-mini/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-
-                            <Row gutter={[32, 32]}>
+                            {/* <Row gutter={[32, 32]}>
                                 {mockData.slice(0, 3).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                         <Link to={`chung-cu/${item.id}-${item.name}`}>
@@ -321,7 +320,7 @@ const SearchResult = () => {
                                         </Link>
                                     </Col>
                                 ))}
-                            </Row>
+                            </Row> */}
                             {/* <div className={styles.seeMore}>
                                 <i>
                                     <Link to="/phong-tro-sv">Xem thêm</Link>
@@ -330,6 +329,7 @@ const SearchResult = () => {
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </div>
     );

@@ -37,7 +37,9 @@
     margin-right: 10px;
 }
 
-.itemValue {}
+.itemValue {
+    font-weight: 500;
+}
 
 .leftContent {
     width: 50%;
@@ -75,11 +77,14 @@
     padding: 8px;
     border-radius: 4px;
     font-size: 18px;
+    color: #434343;
 }
 
 .oneItem:hover {
     background-color: #f0f0f0;
+    color: #faad14;
     cursor: pointer;
+    transition-duration: 0.35s;
 }
 
 .field {

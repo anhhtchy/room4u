@@ -3,13 +3,124 @@ let bcrypt = require('bcrypt');
 const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
 const { Op } = require("sequelize");
 let jwtHelper = require("../../helpers/jwtHelper");
+let nodemailer = require('nodemailer');
 
-const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "900";
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ROOM4U";
+const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "0.5h";
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "room4u_access_secret";
 const refreshTokenLife = process.env.REFRESH_TOKEN_LIFE || "3h";
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "ROOM4U";
-
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "room4u_refresh_secret";
+const emailService = process.env.EMAIL_SERVICE || "gmail";
+const emailUser = process.env.EMAIL_USER || "team5rsit4613@gmail.com";
+const emailPassword = process.env.EMAIL_PASSWORD || "btl123456";
+const otpTokenLife = process.env.OTP_TOKEN_LIFE || "3m"
+const otpTokenSecret = process.env.OTP_TOKEN_SECRET || "room4u_otp_secret"
 let tokenList = {};
+
+exports.forgetPassword = async (req, res) => {
+    const otpToken = req.body.otpToken
+    if (otpToken) {
+        try {
+            const { data } = await jwtHelper.verifyToken(otpToken, otpTokenSecret);
+            bcrypt.hash(req.body.newPassword, saltRounds, function (err, hash) {
+                if (err) {
+                    return res.status(500).send({
+                        status: 0,
+                        message:
+                            err.message || "Some errors occur while changing password"
+                    });
+                }
+                db.accounts.update({
+                    password: hash,
+                }, {
+                    where: { username: data.username },
+                    returning: true,
+                    plain: true
+                })
+                .then(function () {
+                    return res.json({
+                        status: 1,
+                    });
+                });
+            });
+        } catch (error) {
+            return res.status(400).json({
+                status: 0,
+                message: error.message || 'Some errors occur while changing password',
+            });
+        }
+    } else {
+        return res.status(400).send({
+            status: 0,
+            message: 'No otp token provided',
+        });
+    }
+}
+
+exports.sendOtp = async (req, res) => {
+    const option = {
+        service: emailService,
+        auth: {
+            user: emailUser,
+            pass: emailPassword
+        }
+    };
+    let transporter = nodemailer.createTransport(option);
+    try {
+        const user = await db.accounts.findOne({
+            where: {
+                [Op.or]: [
+                    { username: req.body.username },
+                    { email: req.body.email }
+                ]
+            }
+        });
+        if (user == null) {
+            return res.status(400).send({
+                status: 0,
+                message: "user does not exist"
+            });
+        } else {
+            transporter.verify(function(error, success) {
+                if (error) {
+                    return res.status(500).send({
+                        status: 0,
+                        message: error.message || "Some errors occur while sending email"
+                    });
+                } else {
+                    let otp = Math.floor(100000 + Math.random() * 900000);
+                    let mail = {
+                        from: emailUser,
+                        to: user.email, 
+                        subject: 'Xác thực tài khoản Room4U',
+                        text: 'Mã xác thực của bạn là ' + otp + '. Mã này có hiệu lực trong vòng 3 phút',
+                    };
+                    transporter.sendMail(mail, async function(error, info) {
+                        if (error) {
+                            return res.status(500).send({
+                                status: 0,
+                                message: error.message || "Some errors occur while sending email"
+                            });
+                        } else {
+                            user.password = undefined;
+                            let userData = user;
+                            let otpToken = await jwtHelper.generateToken(userData, otpTokenSecret, otpTokenLife);
+                            return res.json({
+                                status: 1,
+                                otp: otp,
+                                otpToken: otpToken
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    } catch (error) {
+        return res.status(500).send({
+            status: 0,
+            message: error.message || "Some errors occur while sending email"
+        });
+    }
+}
 
 exports.getAccount = async (req, res) => {
     try {
@@ -122,7 +233,6 @@ exports.login = async (req, res) => {
         let userData = user;
 
         const accessToken = await jwtHelper.generateToken(userData, accessTokenSecret, accessTokenLife);
-
         const refreshToken = await jwtHelper.generateToken(userData, refreshTokenSecret, refreshTokenLife);
 
         tokenList[refreshToken] = {
@@ -149,13 +259,13 @@ exports.refreshToken = async (req, res) => {
 
     if (refreshToken && tokenList[refreshToken]) {
         try {
-            const userData = await jwtHelper.verifyToken(
+            const { data } = await jwtHelper.verifyToken(
                 refreshToken,
                 refreshTokenSecret
             );
 
             const accessToken = await jwtHelper.generateToken(
-                userData,
+                data,
                 accessTokenSecret,
                 accessTokenLife
             );
@@ -193,7 +303,7 @@ exports.logout = async function (req, res) {
                     error.message || "Some errors occur while logout"
             });
         }
-    } else if (refreshToken){
+    } else if (refreshToken) {
         console.log(refreshToken);
         console.log(tokenList);
         return res.status(400).send({
@@ -247,11 +357,11 @@ exports.changePassword = async (req, res) => {
                 returning: true,
                 plain: true
             })
-            .then(function () {
-                return res.json({
-                    status: 1,
+                .then(function () {
+                    return res.json({
+                        status: 1,
+                    });
                 });
-            });
         });
     } catch (error) {
         return res.status(500).send({
@@ -261,23 +371,23 @@ exports.changePassword = async (req, res) => {
         });
     }
 }
-exports.updateProfile = (req,res, next) =>{
+exports.updateProfile = (req, res, next) => {
     const user = {
         fullname: req.body.fullname,
-        email:req.body.email,
+        email: req.body.email,
         avatar: req.body.avatar,
         address: req.body.address,
-        phone:req.body.phone
+        phone: req.body.phone
     }
-    db.accounts.update(user,{where:{userid:req.params.id}})
-    .then(data=>{
-        return res.status(200).send({
-            status:1
-        });
-    })
-    .catch(err=>{
-        return res.send({
-            message:err.message || "Cannot update account"
+    db.accounts.update(user, { where: { userid: req.params.id } })
+        .then(data => {
+            return res.status(200).send({
+                status: 1
+            });
         })
-    })
+        .catch(err => {
+            return res.send({
+                message: err.message || "Cannot update account"
+            })
+        })
 }

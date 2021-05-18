@@ -10,7 +10,8 @@ const Item = (props) => {
             <div className={styles.imgItem} style={{ backgroundImage: `url(${props.img})` }}></div>
             <div className={styles.itemContent}>
                 <div className={styles.itemType}>{props.type}</div>
-                <div className={styles.itemTitle}>{props.title}{", "}{props.location}</div>
+                <div className={styles.itemTitle}>{props.title.slice(0,50)}...</div>
+                <div className={styles.addressPost}>{props.location.slice(0,40)}...</div>
                 <div className={styles.itemRating}>
                     <Rate
                         allowHalf

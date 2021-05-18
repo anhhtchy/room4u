@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import Item from "../Homepage/components/Item";
+import Loading from "../loading";
 import styles from "../Homepage/Home.module.css";
 import '../Homepage/style.css';
 
@@ -14,6 +15,7 @@ import {
     Row,
     Col,
     Breadcrumb,
+    Pagination,
 } from "antd";
 import { HomeOutlined, DoubleRightOutlined, ShopOutlined } from '@ant-design/icons';
 
@@ -27,16 +29,28 @@ import img3 from "../../img/img3.jpg";
 
 import { Link, useHistory } from "react-router-dom";
 
+//redux
+import { useSelector, useDispatch } from 'react-redux';
+import { estate } from "../../constants/ActionType";
+import { getData } from "../../actions/homepage";
+
 
 const ChungCu = () => {
     const history = useHistory();
+    const dispatch = useDispatch();
 
-    const [estateType, setEstateType] = React.useState();
-    const [district, setDistrict] = React.useState();
-    const [area, setArea] = React.useState();
-    const [minPrice, setMinPrice] = React.useState(0);
-    const [maxPrice, setMaxPrice] = React.useState("");
-    const [disData, setDisData] = React.useState("");
+    const data = useSelector(state => state.homepage.list);
+
+    const [dataChungCu, setDataChungCu] = useState([]);
+    const [estateType, setEstateType] = useState();
+    const [district, setDistrict] = useState();
+    const [area, setArea] = useState();
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState("");
+    const [disData, setDisData] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(1);
 
     useEffect(() => {
         (async () => {
@@ -54,7 +68,23 @@ const ChungCu = () => {
         })();
     }, [])
 
-
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("http://localhost:3001/home");
+                if (res.status == 200) {
+                    console.log("res", res.data.posts);
+                    dispatch(getData(res.data.posts));
+                    setDataChungCu(res.data.posts[3]);
+                    setLoading(false);
+                } else {
+                    console.log("res", res);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [getData]);
 
 
     const chooseDistrict = (checkedValues) => {
@@ -103,9 +133,16 @@ const ChungCu = () => {
 
     };
 
+    const handleChangePage = (page) => {
+        console.log(page);
+        setStart(page - 1);
+        setEnd(page);
+    }
+
     return (
         <div className={styles.home}>
             <div className={styles.container}>
+                {loading && <Loading />}
                 <div style={{ marginBottom: '20px' }}>
                     <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
                         <Breadcrumb.Item href="/">
@@ -117,7 +154,8 @@ const ChungCu = () => {
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </div>
-                <div className={styles.body}>
+
+                {!loading && <div className={styles.body}>
                     <div className={styles.leftCard}>
                         <div className={styles.leftTitle}>
                             <img
@@ -197,71 +235,47 @@ const ChungCu = () => {
                             <div className={styles.rightTitle}>
                                 {/* <ShopOutlined style={{ marginRight: "10px" }} /> */}
                                 CHUNG CƯ
+                                <span
+                                    style={{
+                                        fontSize: '20px',
+                                        color: '#52c41a',
+                                        marginLeft: '10px'
+                                    }}
+                                >
+                                    {`${dataChungCu.length}`} bài viết
+                                </span>
                             </div>
                             <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
+                                {dataChungCu && dataChungCu.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/chung-cu/${item.id}-${item.name}`}>
+                                        <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
                                             <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
+                                                img={item.images[0]}
+                                                type={estate[item.data.estatetype]}
+                                                title={item.data.title}
+                                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                                rating={4.5}
+                                                price={item.data.price}
+                                                square={item.data.area}
+                                                count_room={item.data.room_num}
                                             />
                                         </Link>
                                     </Col>
                                 ))}
                             </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/chung-cu/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-                            <br />
-                            <Row gutter={[32, 32]}>
-                                {mockData.slice(0, 3).map((item, idx) => (
-                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`chung-cu/${item.id}-${item.name}`}>
-                                            <Item
-                                                img={item.img[0]}
-                                                type={item.type}
-                                                title={item.title}
-                                                location={item.location}
-                                                rating={item.rating}
-                                                price={item.price}
-                                                square={item.square}
-                                                count_room={item.count_room}
-                                            />
-                                        </Link>
-                                    </Col>
-                                ))}
-                            </Row>
-                            {/* <div className={styles.seeMore}>
-                                <i>
-                                    <Link to="/phong-tro-sv">Xem thêm</Link>
-                                </i>
-                            </div> */}
                         </div>
+
+                        <Pagination
+                            defaultCurrent={1}
+                            defaultPageSize={6}
+                            total={dataChungCu.length}
+                            responsive={true}
+                            style={{ textAlign: 'right' }}
+                            onChange={handleChangePage}
+                        />
                     </div>
                 </div>
+                }
             </div>
         </div>
     );
