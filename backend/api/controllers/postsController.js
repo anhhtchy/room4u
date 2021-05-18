@@ -16,8 +16,11 @@ exports.searchPost = async (req, res) => {
     } else if (req.body.area == 2) {
       minArea = 50;
       maxArea = 100;
-    } else {
+    } else if (req.body.area == 3) {
       minArea = 100;
+      maxArea = 200;
+    } else {
+      minArea = 200;
       maxArea = 10000000;
     }
   } else {
@@ -72,19 +75,19 @@ exports.searchPost = async (req, res) => {
       },
     })
     .then((data) => {
-
-
       ids = [];
       len = Object.keys(data).length;
       for (var i = 0; i < len; i++) {
         ids.push(data[i].postid);
       }
-      db.images.findAll({
-        where: { postid: ids }
-      }).then(image_data => {
-        const posts = convertImg1D(data, image_data);
-        return res.json({posts:posts});
-      })
+      db.images
+        .findAll({
+          where: { postid: ids },
+        })
+        .then((image_data) => {
+          const posts = convertImg1D(data, image_data);
+          return res.json({ posts: posts });
+        });
 
       //const posts = GetImgaesByPosts(data);
       //console.log(len(data));
@@ -96,8 +99,6 @@ exports.searchPost = async (req, res) => {
       });
     });
 };
-
-
 
 exports.getAllPosts = (req, res, next) => {
   db.posts
@@ -120,19 +121,20 @@ exports.getPostsByUserId = async (req, res, next) => {
       where: { userid: userId },
     })
     .then((data) => {
-      ids = []
-      for(var i = 0; i < data.length; i++)
-      {
+      ids = [];
+      for (var i = 0; i < data.length; i++) {
         ids.push(data[i].postid);
       }
-      db.images.findAll({
-        where:{
-          postid:ids
-        }
-      }).then(image_data=>{
-        const posts = convertImg1D(data, image_data);
-        return res.json({posts});
-      })
+      db.images
+        .findAll({
+          where: {
+            postid: ids,
+          },
+        })
+        .then((image_data) => {
+          const posts = convertImg1D(data, image_data);
+          return res.json({ posts });
+        });
     })
     .catch((err) => {
       res.status(500).send({
@@ -212,9 +214,11 @@ exports.createPostWithImages = (req, res, next) => {
           const image = {
             postid: data.postid,
             url: images[i],
-            created: Date.now()
-          }
-          db.images.create(image).then((result) => {data.images.push(result)});
+            created: Date.now(),
+          };
+          db.images.create(image).then((result) => {
+            data.images.push(result);
+          });
         }
       }
       res.status(200).send(data);
@@ -227,10 +231,9 @@ exports.createPostWithImages = (req, res, next) => {
     });
 };
 
-
-exports.updatePost =  async(req, res, next) => {
-  file = req.files
-  res.send(file)
+exports.updatePost = async (req, res, next) => {
+  file = req.files;
+  res.send(file);
   const updatePost = {
     title: req.body.title,
     estatetype: req.body.estatetype,
@@ -252,23 +255,20 @@ exports.updatePost =  async(req, res, next) => {
     expired: req.body.expired,
   };
   //const imgs = req.body.images;
-  try{
-    const[pst, image_data] = await Promise.all([
-      db.posts.updatePost(updateProfile,{where:{postid:req.params.pid}}),
-      db.images.findAll({where:{postid:req.params.pid}})
+  try {
+    const [pst, image_data] = await Promise.all([
+      db.posts.updatePost(updateProfile, { where: { postid: req.params.pid } }),
+      db.images.findAll({ where: { postid: req.params.pid } }),
     ]);
-    img_urls = []
-    for(var i = 0;i < image_data.length;i++)
-    {
+    img_urls = [];
+    for (var i = 0; i < image_data.length; i++) {
       img_urls.push(image_data[i].url);
     }
-    
-    return res.send({
-      data: img_urls
-    })
 
-  }
-  catch{}
+    return res.send({
+      data: img_urls,
+    });
+  } catch {}
   // db.posts
   //   .update(updatePost, {
   //     where: {
@@ -289,29 +289,30 @@ exports.updatePost =  async(req, res, next) => {
   //   });
 };
 
-exports.deletePost = async(req, res, next) => {
-  try{
+exports.deletePost = async (req, res, next) => {
+  try {
     const [del_imng, del_post] = await Promise.all([
       db.images.destroy({
-        where:{
-          postid:req.params.pid
-        }}),
+        where: {
+          postid: req.params.pid,
+        },
+      }),
       db.posts.destroy({
-        where:{
-          postid: req.params.pid },
-        })
-    ])
+        where: {
+          postid: req.params.pid,
+        },
+      }),
+    ]);
     res.status(200).send({
       message: "Deleted post with id ${req.params.pid}",
     });
-  }
-  catch(err) {
+  } catch (err) {
     res.status(500).send({
       status: 0,
       message: err.message || "Cannot delete that post!",
     });
-  };
-}
+  }
+};
 
 exports.deleteAllPostByUserId = (req, res, next) => {
   db.posts
@@ -332,73 +333,77 @@ exports.deleteAllPostByUserId = (req, res, next) => {
     });
 };
 
-exports.getDistricts = (req, res, next) =>{
-  db.districts.findAll({
-    where:{
-      cityid: '01'
-    }
-  }).then((data)=>{
-    res.json(data);
-  }).catch(err=>{
-    res.status(500).send({
-      message:err.message || "Cannot get disctricts"
+exports.getDistricts = (req, res, next) => {
+  db.districts
+    .findAll({
+      where: {
+        cityid: "01",
+      },
+    })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Cannot get disctricts",
+      });
     });
-  });
-}
+};
 
 exports.getHomePosts = async (req, res, next) => {
   try {
-    let dataX= await Promise.all([
+    let dataX = await Promise.all([
       db.posts.findAll({
         where: { estatetype: 0 },
         order: [["updated", "DESC"]],
-        limit: 10
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 1 },
         order: [["updated", "DESC"]],
-        limit: 10
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 2 },
         order: [["updated", "DESC"]],
-        limit: 10
+        limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 3 },
         order: [["updated", "DESC"]],
-        limit: 10
-      })
+        limit: 10,
+      }),
     ]);
     var ids = [];
     for (var i = 0; i < 4; i++) {
-      k = Object.keys(dataX[i]).length// cái này để đếm số phần tử mỗi loại
+      k = Object.keys(dataX[i]).length; // cái này để đếm số phần tử mỗi loại
       for (var j = 0; j < k; j++) {
         ids.push(dataX[i][j].postid);
       }
     }
 
-    db.images.findAll({
-      where: {
-        postid: ids
-      }
-    }).then(image_data => {
-      const posts = convertImg2D(dataX,image_data);
-      res.send({posts})
-    }).catch(err => {
-      res.status(500).send({
-        message: err.message || "Failed to get images"
+    db.images
+      .findAll({
+        where: {
+          postid: ids,
+        },
       })
-    });
-
-  }
-  catch (error) {
+      .then((image_data) => {
+        const posts = convertImg2D(dataX, image_data);
+        res.send({ posts });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Failed to get images",
+        });
+      });
+  } catch (error) {
     res.status(500).send({
       status: 0,
-      message: error.message || "Error when trying to get data"
-    })
+      message: error.message || "Error when trying to get data",
+    });
   }
-}
+};
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 function convertImg1D(data, imgs) {
@@ -407,15 +412,14 @@ function convertImg1D(data, imgs) {
   for (var i = 0; i < imgs.length; i++) {
     if (dict.hasOwnProperty(String(imgs[i].postid))) {
       dict[String(imgs[i].postid)].push(imgs[i].url);
-    }
-    else {
+    } else {
       dict[String(imgs[i].postid)] = [];
       dict[String(imgs[i].postid)].push(imgs[i].url);
     }
   }
   len = Object.keys(data).length;
   for (var i = 0; i < len; i++) {
-    res_data[i] = {}
+    res_data[i] = {};
     res_data[i].data = data[i];
     res_data[i]["images"] = dict[String(data[i].postid)];
   }
@@ -427,8 +431,7 @@ function convertImg2D(data, imgs) {
   for (var i = 0; i < imgs.length; i++) {
     if (dict.hasOwnProperty(String(imgs[i].postid))) {
       dict[String(imgs[i].postid)].push(imgs[i].url);
-    }
-    else {
+    } else {
       dict[String(imgs[i].postid)] = [];
       dict[String(imgs[i].postid)].push(imgs[i].url);
     }
@@ -445,3 +448,79 @@ function convertImg2D(data, imgs) {
   }
   return res_data;
 }
+
+// Luu bai dang
+exports.savePosts = async (req, res) => {
+  let newRow = {
+    postid: req.body.postid,
+    userid: req.body.userid,
+  };
+  console.log(newRow);
+  const saved = await db.savedPosts.findOne({
+    where: { userid: newRow.userid, postid: newRow.postid },
+  });
+
+  if (saved == null) {
+    db.savedPosts
+      .create(newRow)
+      .then((data) => {
+        res.status(200).send({
+          status: "1",
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: 0,
+          message: err.message || "Error when add post in user's saved list",
+        });
+      });
+  } else {
+    return res.status(200).send({
+      status: "1",
+      message: "Đã lưu bài đăng trước đó",
+    });
+  }
+};
+
+// Xem danh sách bài đăng đã lưu theo userid
+exports.getSavePostsByUserid = async (req, res) => {
+  await db.savedPosts
+    .findAll({
+      attributes: ["saveid", "userid"],
+      where: { userid: req.params.userid },
+      include: [db.posts],
+    })
+    .then((data) => {
+      //console.log(len(data));
+      res.json(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some errors occur while searching posts",
+      });
+    });
+};
+
+// Xóa bài đăng đã lưu
+exports.deleteSavePosts = async (req, res) => {
+  await db.savedPosts
+    .destroy({
+      where: { postid: req.params.postid, userid: req.params.userid },
+    })
+    .then((data) => {
+      res.status(200).send({
+        status: "1",
+        message:
+          "Userid " +
+          req.params.userid +
+          " unsaved Postid " +
+          req.params.postid,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        status: 0,
+        message: err.message || "Cannot delete!",
+      });
+    });
+};
