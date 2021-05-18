@@ -15,6 +15,7 @@ import {
     Row,
     Col,
     Breadcrumb,
+    Pagination,
 } from "antd";
 import { HomeOutlined, DoubleRightOutlined, ShopOutlined } from '@ant-design/icons';
 
@@ -116,6 +117,8 @@ const ChungCu = () => {
     const [maxPrice, setMaxPrice] = useState("");
     const [disData, setDisData] = useState("");
     const [loading, setLoading] = useState(true);
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(1);
 
     useEffect(() => {
         (async () => {
@@ -133,23 +136,23 @@ const ChungCu = () => {
         })();
     }, [])
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get("http://localhost:3001/home");
-        if (res.status == 200) {
-          console.log("res", res.data.posts);
-          dispatch(getData(res.data.posts));
-          setDataChungCu(res.data.posts[3]);
-          setLoading(false);
-        } else {
-          console.log("res", res);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-  }, [getData]);
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("http://localhost:3001/home");
+                if (res.status == 200) {
+                    console.log("res", res.data.posts);
+                    dispatch(getData(res.data.posts));
+                    setDataChungCu(res.data.posts[3]);
+                    setLoading(false);
+                } else {
+                    console.log("res", res);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [getData]);
 
 
     const chooseDistrict = (checkedValues) => {
@@ -197,6 +200,12 @@ const ChungCu = () => {
         }
 
     };
+
+    const handleChangePage = (page) => {
+        console.log(page);
+        setStart(page - 1);
+        setEnd(page);
+    }
 
     return (
         <div className={styles.home}>
@@ -294,9 +303,18 @@ const ChungCu = () => {
                             <div className={styles.rightTitle}>
                                 {/* <ShopOutlined style={{ marginRight: "10px" }} /> */}
                                 CHUNG CƯ
+                                <span
+                                    style={{
+                                        fontSize: '20px',
+                                        color: '#52c41a',
+                                        marginLeft: '10px'
+                                    }}
+                                >
+                                    {`${dataChungCu.length}`} bài viết
+                                </span>
                             </div>
                             <Row gutter={[32, 32]}>
-                                {dataChungCu && dataChungCu.map((item, idx) => (
+                                {dataChungCu && dataChungCu.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                         <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
                                             <Item
@@ -313,12 +331,16 @@ const ChungCu = () => {
                                     </Col>
                                 ))}
                             </Row>
-                            {/* <div className={styles.seeMore}>
-                                <i>
-                                    <Link to="/phong-tro-sv">Xem thêm</Link>
-                                </i>
-                            </div> */}
                         </div>
+
+                        <Pagination
+                            defaultCurrent={1}
+                            defaultPageSize={6}
+                            total={dataChungCu.length}
+                            responsive={true}
+                            style={{ textAlign: 'right' }}
+                            onChange={handleChangePage}
+                        />
                     </div>
                 </div>
                 }
