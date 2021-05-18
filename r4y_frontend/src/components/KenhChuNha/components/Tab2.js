@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { Link, useHistory } from "react-router-dom";
 import { estate } from "../../../constants/ActionType";
+import { estateLink } from "../../../constants/ActionType";
 
 import {
     Button,
@@ -14,6 +15,7 @@ import {
     Select,
     notification,
     Upload,
+    Pagination,
 } from 'antd';
 
 import {
@@ -112,28 +114,31 @@ const Tab2 = () => {
     const [srcPre, setSrcPre] = useState();
     const [userData, setUserData] = useState(JSON.parse((window.localStorage.getItem('userData'))));
     const [userPost, setUserPost] = useState([]);
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(1);
 
     useEffect(() => {
         (async () => {
             await setUserData(JSON.parse(window.localStorage.getItem('userData')));
             console.log("user id", userData.userData.userid);
-
-            try {
-                const res = await axios.get(`http://localhost:3001/home/${userData.userData.userid}`, {
-                    headers: {
-                        // 'content-type': 'application/x-www-form-urlencoded',
-                        'x-access-token': userData.accessToken,
+            if (userData) {
+                try {
+                    const res = await axios.get(`http://localhost:3001/home/${userData.userData.userid}`, {
+                        headers: {
+                            // 'content-type': 'application/x-www-form-urlencoded',
+                            'x-access-token': userData.accessToken,
+                        }
+                    });
+                    if (res.status == 200) {
+                        console.log("post", res);
+                        setUserPost(res.data.posts);
+                    } else {
+                        console.log("post", res)
                     }
-                });
-                if (res.status == 200) {
-                    console.log("post", res);
-                    setUserPost(res.data.posts);
-                } else {
-                    console.log("post", res)
-                }
 
-            } catch (err) {
-                console.log("err mes:", err.response.data);
+                } catch (err) {
+                    console.log("err mes:", err.response.data);
+                }
             }
 
         })();
@@ -173,6 +178,12 @@ const Tab2 = () => {
         setVisibleImg(false);
     }
 
+    const handleChangePage = (page) => {
+        console.log(page);
+        setStart(page - 1);
+        setEnd(page);
+    }
+
     return (
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
@@ -185,9 +196,9 @@ const Tab2 = () => {
             </div>
             <div className={styles.content}>
                 <Row gutter={[32, 32]}>
-                    {userPost && userPost.map((item, idx) => (
+                    {userPost && userPost.slice(start * 3, end * 3).map((item, idx) => (
                         <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                            <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
+                            <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}>
                                 <Item
                                     img={item.images[0]}
                                     type={estate[item.data.estatetype]}
@@ -203,6 +214,14 @@ const Tab2 = () => {
                     ))}
                 </Row>
             </div>
+            <Pagination
+                defaultCurrent={1}
+                defaultPageSize={3}
+                total={userPost.length}
+                responsive={true}
+                style={{ textAlign: 'right' }}
+                onChange={handleChangePage}
+            />
 
             <Modal
                 title={<div

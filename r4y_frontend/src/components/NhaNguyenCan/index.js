@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import Item from "../Homepage/components/Item";
@@ -14,6 +14,7 @@ import {
     Row,
     Col,
     Breadcrumb,
+    Pagination,
 } from "antd";
 import { HomeOutlined, DoubleRightOutlined } from '@ant-design/icons';
 
@@ -108,15 +109,17 @@ const NhaNguyenCan = () => {
 
     const data = useSelector(state => state.homepage.list);
 
-    const [dataNhaNguyenCan, setDataNhaNguyenCan] = React.useState([]);
+    const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
 
-    const [estateType, setEstateType] = React.useState();
-    const [district, setDistrict] = React.useState();
-    const [area, setArea] = React.useState();
-    const [minPrice, setMinPrice] = React.useState(0);
-    const [maxPrice, setMaxPrice] = React.useState("");
-    const [disData, setDisData] = React.useState("");
-    const [loading, setLoading] = React.useState(true);
+    const [estateType, setEstateType] = useState();
+    const [district, setDistrict] = useState();
+    const [area, setArea] = useState();
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState("");
+    const [disData, setDisData] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(1);
 
     useEffect(() => {
         (async () => {
@@ -198,6 +201,12 @@ const NhaNguyenCan = () => {
         }
 
     };
+
+    const handleChangePage = (page) => {
+        console.log(page);
+        setStart(page - 1);
+        setEnd(page);
+    }
 
     return (
         <div className={styles.home}>
@@ -295,9 +304,12 @@ const NhaNguyenCan = () => {
                         <div className={styles.subGroup}>
                             <div className={styles.rightTitle}>
                                 NHÀ NGUYÊN CĂN
+                                <span
+                                    style={{ fontSize: '20px', color: '#52c41a', marginLeft: '10px' }}
+                                >{`${dataNhaNguyenCan.length}`} bài viết</span>
                             </div>
                             <Row gutter={[32, 32]}>
-                                {dataNhaNguyenCan && dataNhaNguyenCan.map((item, idx) => (
+                                {dataNhaNguyenCan && dataNhaNguyenCan.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                         <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
                                             <Item
@@ -314,17 +326,20 @@ const NhaNguyenCan = () => {
                                     </Col>
                                 ))}
                             </Row>
-                            {/* <div className={styles.seeMore}>
-                                <i>
-                                    <Link to="/phong-tro-sv">Xem thêm</Link>
-                                </i>
-                            </div> */}
                         </div>
+                        <Pagination
+                            defaultCurrent={1}
+                            defaultPageSize={6}
+                            total={dataNhaNguyenCan.length}
+                            responsive={true}
+                            style={{ textAlign: 'right' }}
+                            onChange={handleChangePage}
+                        />
                     </div>
                 </div>
                 }
             </div>
-        </div>
+        </div >
     );
 };
 

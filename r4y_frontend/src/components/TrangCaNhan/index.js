@@ -28,7 +28,7 @@ const TrangCaNhan = () => {
 
     const chooseTab = (value) => {
         if (value === 1) {
-            setTab1(true);
+            setTab1(true); 
             setTab2(false);
             setTab3(false)
         } else if (value === 2) {

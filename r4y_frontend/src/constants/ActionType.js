@@ -13,6 +13,13 @@ export const estate = [
     "CHUNG CƯ",
   ]
 
+  export const estateLink = [
+    "phong-tro-sv",
+    "nha-nguyen-can",
+    "chung-cu-mini",
+    "chung-cu",
+  ]
+
 // Mô tả data 
 // 0: phòng trọ sinh viên
 // 1: nhà nguyên căn

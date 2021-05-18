@@ -49,7 +49,7 @@ const Header = () => {
 
     const handleUserType1 = () => {
         if (userData) {
-            userData.userData.usertype ? history.push("/trang-ca-nhan") : history.push("/kenh-chu-nha");
+            history.push("/trang-ca-nhan");
         } else {
             history.push("/login");
         }
