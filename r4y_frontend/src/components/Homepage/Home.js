@@ -16,8 +16,12 @@ import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { getData, getSearchResult } from '../../actions/homepage';
 import { estate } from "../../constants/ActionType";
+import { useStore } from 'react-redux';
+
+import { saveState } from '../../localStorage';
 
 import Loading from "../loading";
+import Header from "../Header/Header";
 
 const mockData = [
   {
@@ -90,6 +94,7 @@ const mockData = [
 const Home = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const store = useStore();
 
   const data = useSelector(state => state.homepage.list);
   const searchResult = useSelector(state => state.homepage.searchResult);
@@ -99,6 +104,7 @@ const Home = () => {
   const [dataVanPhong, setDataVanPhong] = useState([]);
   const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
   console.log("data search", searchResult);
+  console.log("home user data", window.localStorage.getItem('userData'));
 
   const [estateType, setEstateType] = useState();
   const [district, setDistrict] = useState("");
@@ -107,6 +113,10 @@ const Home = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const [disData, setDisData] = useState("");
   const [loading, setLoading] = useState(true);
+
+  store.subscribe(() => {
+    saveState(store.getState().auth);
+  });
 
   useEffect(() => {
     (async () => {
@@ -123,6 +133,7 @@ const Home = () => {
         console.log(err);
       }
     })();
+    setTimeout(() => window.localStorage.removeItem('userData'), 1200000);
   }, []);
 
   useEffect(() => {

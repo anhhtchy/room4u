@@ -37,7 +37,9 @@
     margin-right: 10px;
 }
 
-.itemValue {}
+.itemValue {
+    font-weight: 500;
+}
 
 .leftContent {
     width: 50%;

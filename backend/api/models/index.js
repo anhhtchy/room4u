@@ -22,7 +22,7 @@ db.sequelize = sequelize;
 //
 db.accounts = require("./accountsModel")(sequelize, Sequelize);
 db.posts = require("./postsModel")(sequelize, Sequelize);
-db.images = require('./imagesModels')(sequelize, Sequelize);
+db.images = require("./imagesModels")(sequelize, Sequelize);
 db.districts = require("./locationsModels")(sequelize, Sequelize);
 //
 db.accounts.hasMany(db.posts, {
@@ -32,8 +32,8 @@ db.accounts.hasMany(db.posts, {
 //db.posts.belongsTo(db.accounts);
 // Location
 db.posts.hasMany(db.images, {
-  foreignKey:"postid",
-  allowNull:false
+  foreignKey: "postid",
+  allowNull: false,
 });
 db.reviews = require("./reviewsModel")(sequelize, Sequelize);
 db.accounts.hasMany(db.reviews, {
@@ -45,9 +45,23 @@ db.accounts.hasMany(db.reviews, {
 // });
 db.posts.hasMany(db.reviews, {
   foreignKey: "postid",
-  allowNull:false
+  allowNull: false,
 });
 // db.reviews.belongsTo(db.posts, {
 //   foreignKey: "postid",
 // });
+// Luu bai dang
+db.savedPosts = require("./savedPostsModel")(sequelize, Sequelize);
+db.accounts.hasMany(db.savedPosts, {
+  foreignKey: "userid",
+  allowNull: false,
+});
+db.posts.hasMany(db.savedPosts, {
+  foreignKey: "postid",
+  allowNull: false,
+});
+db.savedPosts.belongsTo(db.posts, {
+  foreignKey: "postid",
+});
+
 module.exports = db;
