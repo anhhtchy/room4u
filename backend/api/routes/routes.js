@@ -28,6 +28,9 @@ module.exports = function (app) {
   app
     .route("/home/:id")
     .get(authMiddleWare.isOwner, postsController.getPostsByUserId);
+
+  app.route('/getPost/:pid').get(postsController.getPostById);
+
   app.route("/:id/createPost").post(postsController.createPostWithImages);
   app.route("/:id/updatePost").put(postsController.updatePost);
   app.route("/:id/deletePost/:pid").delete(postsController.deletePost);

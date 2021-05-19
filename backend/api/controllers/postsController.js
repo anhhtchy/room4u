@@ -423,6 +423,15 @@ function convertImg1D(data, imgs) {
     res_data[i].data = data[i];
     res_data[i]["images"] = dict[String(data[i].postid)];
   }
+  // Chỗ này là tạo data cho save posts
+  if (res_data[0].images == null){
+    for (var i = 0; i < len; i++) {
+      res_data[i] = {};
+      res_data[i].saveid = data[i].saveid
+      res_data[i].post = data[i].post;
+      res_data[i]["images"] = dict[String(data[i].post.postid)];
+    }
+  }
   return res_data;
 }
 function convertImg2D(data, imgs) {
@@ -492,7 +501,23 @@ exports.getSavePostsByUserid = async (req, res) => {
     })
     .then((data) => {
       //console.log(len(data));
-      res.json(data);
+      const ids = []
+      const meta = []
+      l = Object.keys(data).length
+      for(var i  = 0; i < l; i++){
+        ids.push(data[i].saveid)
+      }
+      db.images.findAll({where:{postid:ids}})
+      .then(image_data =>{
+        const posts = convertImg1D(data, image_data);
+        for(var j = 0 ; j <l; j++) 
+        return res.send({posts});
+      })
+      .catch((err) =>{
+        res.status(500).send({
+          message: err.message || "Cannot get image data"
+        });
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -524,3 +549,14 @@ exports.deleteSavePosts = async (req, res) => {
       });
     });
 };
+
+exports.getPostById = async(req, res, next) =>{
+  const [data, images] = await Promise.all([
+    db.posts.findAll({where:{postid:req.params.pid}}),
+    db.images.findAll({where:{postid:req.params.pid}})
+  ])
+  return res.send({
+    'data':data[0],
+    'images': images
+  });
+}
