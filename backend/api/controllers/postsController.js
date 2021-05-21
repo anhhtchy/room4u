@@ -516,7 +516,6 @@ exports.getSavePostsByUserid = async (req, res) => {
     .then((data) => {
       //console.log(len(data));
       const ids = []
-      const meta = []
       l = Object.keys(data).length
       if(l < 1){
         return res.send({posts:{}})
