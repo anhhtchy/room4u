@@ -34,77 +34,10 @@ import img from "../../../img/img.jpg";
 import img1 from "../../../img/img1.jpg";
 import img2 from "../../../img/img2.jpg";
 import img3 from "../../../img/img3.jpg";
+import Loading from '../../loading';
 
 const { Option } = Select;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-
-const mockData = [
-    {
-        id: 1,
-        name: "name1",
-        img: [item1, img, img1, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 4.5,
-        count_rating: "10",
-        price: 4500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 2,
-        name: "name2",
-        img: [img, item2, img1, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 2.5,
-        count_rating: "10",
-        price: 6500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 3,
-        name: "name3",
-        img: [img1, item1, img, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 4.0,
-        count_rating: "10",
-        price: 4000000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 4,
-        name: "name4",
-        img: [img2, item1, img, img1, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 3.0,
-        count_rating: "10",
-        price: 4500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 5,
-        name: "name5",
-        img: [img3, item2, img, img1, img2],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 5.0,
-        count_rating: "10",
-        price: 5500000,
-        square: "40",
-        count_room: "2",
-    },
-];
 
 const Tab2 = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -116,6 +49,7 @@ const Tab2 = () => {
     const [userPost, setUserPost] = useState([]);
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(1);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -132,12 +66,15 @@ const Tab2 = () => {
                     if (res.status == 200) {
                         console.log("post", res);
                         setUserPost(res.data.posts);
+                        setLoading(false);
                     } else {
-                        console.log("post", res)
+                        console.log("post", res);
+                        setLoading(false);
                     }
 
                 } catch (err) {
                     console.log("err mes:", err.response.data);
+                    setLoading(false);
                 }
             }
 
@@ -194,26 +131,28 @@ const Tab2 = () => {
                     onClick={showModal}
                 >Đăng tin mới</Button>
             </div>
-            <div className={styles.content}>
-                <Row gutter={[32, 32]}>
-                    {userPost && userPost.slice(start * 3, end * 3).map((item, idx) => (
-                        <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                            <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}>
-                                <Item
-                                    img={item.images[0]}
-                                    type={estate[item.data.estatetype]}
-                                    title={`${item.data.title}`}
-                                    location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
-                                    rating={4.5}
-                                    price={item.data.price}
-                                    square={item.data.area}
-                                    count_room={item.data.roomnum}
-                                />
-                            </Link>
-                        </Col>
-                    ))}
-                </Row>
-            </div>
+            {loading ? <Loading /> :
+                <div className={styles.content}>
+                    <Row gutter={[32, 32]}>
+                        {userPost && userPost.slice(start * 3, end * 3).map((item, idx) => (
+                            <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                                {/* <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}> */}
+                                    <Item
+                                        img={item.images[0]}
+                                        type={estate[item.data.estatetype]}
+                                        title={`${item.data.title}`}
+                                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                        rating={4.5}
+                                        price={item.data.price}
+                                        square={item.data.area}
+                                        count_room={item.data.roomnum}
+                                    />
+                                {/* </Link> */}
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            }
             <Pagination
                 defaultCurrent={1}
                 defaultPageSize={3}
