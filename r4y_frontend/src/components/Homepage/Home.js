@@ -57,7 +57,7 @@ const Home = () => {
         if (res.status == 200) {
           const temp = await res.data.filter((item, ind) => item.type == "Quận");
           setDisData(temp);
-          setLoading(false);
+          // setLoading(false);
         }
 
       } catch (err) {
@@ -73,11 +73,11 @@ const Home = () => {
         const res = await axios.get("http://localhost:3001/home");
         if (res.status == 200) {
           console.log("res", res.data.posts);
-          dispatch(getData(res.data.posts));
-          setDataPhongTroSV(res.data.posts[0]);
-          setDataNhaNguyenCan(res.data.posts[1]);
-          setDataVanPhong(res.data.posts[2]);
-          setDataChungCu(res.data.posts[3]);
+          await dispatch(getData(res.data.posts));
+          await setDataPhongTroSV(res.data.posts[0]);
+          await setDataNhaNguyenCan(res.data.posts[1]);
+          await setDataVanPhong(res.data.posts[2]);
+          await setDataChungCu(res.data.posts[3]);
           setLoading(false);
         } else {
           console.log("res", res);

@@ -257,7 +257,7 @@ const ChungCu = () => {
                                                 rating={4.5}
                                                 price={item.data.price}
                                                 square={item.data.area}
-                                                count_room={item.data.room_num}
+                                                count_room={item.data.roomnum}
                                             />
                                         </Link>
                                     </Col>

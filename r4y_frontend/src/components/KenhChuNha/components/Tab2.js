@@ -73,9 +73,12 @@ const Tab2 = () => {
                     }
 
                 } catch (err) {
-                    console.log("err mes:", err.response.data);
+                    console.log("err mes:", err);
                     setLoading(false);
                 }
+            } else {
+                setLoading(false);
+                console.log("userData null", userData);
             }
 
         })();
