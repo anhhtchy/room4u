@@ -94,7 +94,7 @@ exports.searchPost = async (req, res) => {
       //res.json(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         message: err.message || "Some errors occur while searching posts",
       });
     });
@@ -104,10 +104,10 @@ exports.getAllPosts = (req, res, next) => {
   db.posts
     .findAll()
     .then((data) => {
-      res.json(data);
+      return res.json(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message: err.message || "Error happens when trying to retrieve posts",
       });
@@ -137,7 +137,7 @@ exports.getPostsByUserId = async (req, res, next) => {
         });
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message:
           err.message ||
@@ -172,10 +172,10 @@ exports.createPost = (req, res, next) => {
   db.posts
     .create(postFile)
     .then((data) => {
-      res.status(200).send(data);
+      return res.status(200).send(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message: err.message || "Error when add posts",
       });
@@ -221,10 +221,10 @@ exports.createPostWithImages = (req, res, next) => {
           });
         }
       }
-      res.status(200).send(data);
+      return res.status(200).send(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message: err.message || "Error when add posts",
       });
@@ -233,7 +233,7 @@ exports.createPostWithImages = (req, res, next) => {
 
 exports.updatePost = async (req, res, next) => {
   file = req.files;
-  res.send(file);
+  //res.send(file);
   const updatePost = {
     title: req.body.title,
     estatetype: req.body.estatetype,
@@ -303,11 +303,11 @@ exports.deletePost = async (req, res, next) => {
         },
       }),
     ]);
-    res.status(200).send({
+    return res.status(200).send({
       message: "Deleted post with id ${req.params.pid}",
     });
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).send({
       status: 0,
       message: err.message || "Cannot delete that post!",
     });
@@ -320,13 +320,13 @@ exports.deleteAllPostByUserId = (req, res, next) => {
       where: { userid: req.params.id },
     })
     .then((data) => {
-      res.status(200).send({
+      return res.status(200).send({
         message:
           "Deleted post with id all post of user with id" + req.params.id,
       });
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message: err.message || "Cannot delete all posts!",
       });
@@ -341,10 +341,10 @@ exports.getDistricts = (req, res, next) => {
       },
     })
     .then((data) => {
-      res.json(data);
+      return res.json(data);
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         message: err.message || "Cannot get disctricts",
       });
     });
@@ -390,15 +390,15 @@ exports.getHomePosts = async (req, res, next) => {
       })
       .then((image_data) => {
         const posts = convertImg2D(dataX, image_data);
-        res.send({ posts });
+        return res.send({ posts });
       })
       .catch((err) => {
-        res.status(500).send({
+        return res.status(500).send({
           message: err.message || "Failed to get images",
         });
       });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       status: 0,
       message: error.message || "Error when trying to get data",
     });
@@ -478,12 +478,12 @@ exports.savePosts = async (req, res) => {
     db.savedPosts
       .create(newRow)
       .then((data) => {
-        res.status(200).send({
+        return res.status(200).send({
           status: "1",
         });
       })
       .catch((err) => {
-        res.status(500).send({
+        return res.status(500).send({
           status: 0,
           message: err.message || "Error when add post in user's saved list",
         });
@@ -519,13 +519,13 @@ exports.getSavePostsByUserid = async (req, res) => {
         return res.send({posts});
       })
       .catch((err) =>{
-        res.status(500).send({
+        return res.status(500).send({
           message: err.message || "Cannot get image data"
         });
       });
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         message: err.message || "Some errors occur while searching posts",
       });
     });
@@ -538,7 +538,7 @@ exports.deleteSavePosts = async (req, res) => {
       where: { postid: req.params.postid, userid: req.params.userid },
     })
     .then((data) => {
-      res.status(200).send({
+      return res.status(200).send({
         status: "1",
         message:
           "Userid " +
@@ -548,7 +548,7 @@ exports.deleteSavePosts = async (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(500).send({
+      return res.status(500).send({
         status: 0,
         message: err.message || "Cannot delete!",
       });

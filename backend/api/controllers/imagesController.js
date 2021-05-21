@@ -9,7 +9,7 @@ exports.uploadImages = (req, res, next)=>{
 
             data.push(process.env.BACKEND_HOST+":"+process.env.PORT + files[i].path.substring(2));
         }
-        res.send({data})
+        return res.send({data})
     }
 }
 
@@ -20,7 +20,7 @@ exports.getImagesByPostId = (req,res,next)=>{
     }).then(data =>{
         res.send(data);
     }).catch(err=>{
-        res.status(500).send({
+        return res.status(500).send({
             message: err.message || "Cannot get images for post "
         });
     });
