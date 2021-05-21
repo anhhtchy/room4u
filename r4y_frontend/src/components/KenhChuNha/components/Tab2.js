@@ -137,7 +137,7 @@ const Tab2 = () => {
             {loading ? <Loading /> :
                 <div className={styles.content}>
                     <Row gutter={[32, 32]}>
-                        {userPost && userPost.slice(start * 3, end * 3).map((item, idx) => (
+                        {userPost ? userPost.slice(start * 3, end * 3).map((item, idx) => (
                             <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                 {/* <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}> */}
                                     <Item
@@ -152,7 +152,8 @@ const Tab2 = () => {
                                     />
                                 {/* </Link> */}
                             </Col>
-                        ))}
+                        )) : <div>Bạn chưa có bài đăng nào.</div>
+                    }
                     </Row>
                 </div>
             }
