@@ -34,6 +34,7 @@ const Register = () => {
 
     const onFinish = async (values, images) => {
         console.log('Received values of form: ', values);
+        console.log('Received values of form img: ', images);
         try {
             const res = await axios.post('http://localhost:3001/register', { 
                 ...values,
@@ -226,9 +227,9 @@ const Register = () => {
 
                         <div>Chọn ảnh đại diện: </div>
                         <br />
-                        <Form.Item
+                        {/* <Form.Item
                             name="upload"
-                        >
+                        > */}
                             {/* <Upload name="logo" action="/upload.do" listType="picture">
                                 <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
                             </Upload> */}
@@ -269,7 +270,6 @@ const Register = () => {
                                         }
                                         if (info.file.status === 'done') {
                                             console.log(" if done", info.fileList);
-                                            let lastItem = await fileList[fileList.length - 1]
                                             setFileList(info.fileList);
                                         } else if (info.file.status === 'error') {
                                             console.log(" if error", info.file.error);
@@ -321,7 +321,7 @@ const Register = () => {
                                 </Upload>
                             </div>
 
-                        </Form.Item>
+                        {/* </Form.Item> */}
 
                         <Form.Item
                             name="agreement"
