@@ -87,7 +87,7 @@ const Tab2 = () => {
     return (
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
-                <div>Phòng trọ đã lưu <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userSave.length}`} tin đã lưu</span></div>
+                <div>Phòng trọ đã lưu <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userSave.length ? userSave.length : 0}`} tin đã lưu</span></div>
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>

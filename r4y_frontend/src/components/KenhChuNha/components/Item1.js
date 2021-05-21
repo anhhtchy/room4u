@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 
 import {
@@ -30,12 +30,30 @@ const { Option } = Select;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const Item1 = (props) => {
+    const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isModalDelVisible, setIsModalDelVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [visibleImg, setVisibleImg] = useState(false);
     const [srcPre, setSrcPre] = useState();
+    const userData = JSON.parse(window.localStorage.getItem('userData'));
+    const [district, setDisData] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("http://localhost:3001/getDistricts");
+                if (res.status == 200) {
+                    const temp = await res.data.filter((item, ind) => item.type == "Quận");
+                    setDisData(temp);
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, []);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -53,9 +71,19 @@ const Item1 = (props) => {
         setIsModalDelVisible(true);
     };
 
-    const handleOkDel = () => {
+    const handleOkDel = async () => {
+        const url = `http://localhost:3001/${userData.userData.userid}/deletePost/${props.postid}`
+        try {
+            const res = await axios.delete(url);
+            if (res == 200) {
+                message.success(res.message);
+                setIsModalDelVisible(false);
+            }
+            window.location.reload();
+        } catch (err) {
+            console.log(err);
+        }
         setIsModalDelVisible(false);
-        message.success('Đã xóa!');
     };
 
     const handleCancelDel = () => {
@@ -88,8 +116,8 @@ const Item1 = (props) => {
             <div className={styles.imgItem} style={{ backgroundImage: `url(${props.img})` }}></div>
             <div className={styles.itemContent}>
                 <div className={styles.itemType}>{props.type}</div>
-                <div className={styles.itemTitle}>{props.title.slice(0,50)}...</div>
-                <div className={styles.addressPost}>{props.location.slice(0,40)}...</div>
+                <div className={styles.itemTitle}>{props.title.slice(0, 50)}...</div>
+                <div className={styles.addressPost}>{props.location.slice(0, 40)}...</div>
                 <div className={styles.itemPrice}>{new Intl.NumberFormat().format(props.price)}{" đ/tháng"}</div>
                 <div className={styles.square}>{props.square}m<sup>2</sup>{" - "}{props.count_room}{" phòng"}</div>
             </div>
@@ -120,131 +148,176 @@ const Item1 = (props) => {
                 footer={null}
             >
                 <Form
+                    form={form}
+                    initialValues={{
+                        title: props.title,
+                        estatetype: props.estatetype,
+                        district: props.district,
+                        address: props.address,
+                        area: props.area,
+                    }}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                 >
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="title"
-                    // rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
                         <Input
-                            placeholder="Nhập tiêu đề bài viết"
+                            // placeholder="Nhập tiêu đề bài viết"
                             size="large"
                             value={props.title}
                         />
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Loại bất động sản: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
-                        name="type"
-                    // rules={[{ required: true, message: 'Vui lòng chọn loại bất động sản!' }]}
+                        name="estatetype"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại bất động sản!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Loại bất động sản: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Select
                             placeholder="Chọn loại BĐS"
                             allowClear
                             size="large"
                             style={{ width: 'calc(50% - 8px)' }}
-                            value={1}
+                            value={props.estateType}
                         >
-                            <Option value={1}>Phòng trọ sinh viên</Option>
-                            <Option value={2}>Chung cư</Option>
-                            <Option value={3}>Chung cư mini</Option>
-                            <Option value={4}>Nhà nguyên căn</Option>
+                            <Option value={0}>Phòng trọ sinh viên</Option>
+                            <Option value={3}>Chung cư</Option>
+                            <Option value={2}>Văn phòng - Mặt bằng kinh doanh</Option>
+                            <Option value={1}>Nhà nguyên căn</Option>
                         </Select>
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Quận/ huyện: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="district"
+                        rules={[{ required: true, message: 'Vui lòng chọn quận , huyện!' }]}
+                    >
+                        <Select
+                            placeholder="Quận/ huyện"
+                            allowClear
+                            size="large"
+                            defaultValue={props.district}
+                        >
+                            {
+                                district.length ? district.map((item, ind) => (
+                                    <Option value={item.districtid} key={ind}>{item.name}</Option>
+                                )) : <></>
+                            }
+                        </Select>
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Địa chỉ chi tiết: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="address"
+                        rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+                    >
+                        <Input
+                            placeholder="Nhập địa chỉ BĐS"
+                            size="large"
+                        />
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Diện tích: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="area"
+                        rules={[{ required: true, message: 'Vui lòng nhập diện tích!' }]}
+                    >
+
+                        <Input
+                            placeholder="Nhập diện tích phòng"
+                            size="large"
+                            type="number"
+                        />
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá phòng (đồng/tháng): <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="price"
-                    // rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá phòng: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Input
                             placeholder="Nhập giá phòng"
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
-                            value={props.price}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Số phòng: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
-                        name="address"
-                    // rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+                        name="roomnum"
+                        rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Địa chỉ: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Input
-                            placeholder="Nhập địa chỉ BĐS"
+                            placeholder="Nhập số lượng phòng"
                             size="large"
-                            value={props.location}
+                            type="number"
+                            style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
                         />
                     </Form.Item>
 
-                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá dịch vụ: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá dịch vụ (đồng/tháng): <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         label="Giá điện"
-                        name="elecPrice"
-                        // rules={[{ required: true, message: 'Vui lòng nhập giá điện!' }]}
+                        name="electricity"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá điện!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
                         <Input
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
-                            value={props.price}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá nước"
-                        name="waterPrice"
-                        // rules={[{ required: true, message: 'Vui lòng nhập giá nước!' }]}
+                        name="water"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá nước!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
                         <Input
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
-                            value={props.price}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá wifi"
-                        name="wifiPrice"
-                        // rules={[{ required: true, message: 'Vui lòng nhập giá wifi!' }]}
+                        name="wifi"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá wifi!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
                         <Input
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
-                            value={props.price}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá gửi xe"
-                        name="packingPrice"
-                        // rules={[{ required: true, message: 'Vui lòng nhập giá gửi xe!' }]}
+                        name="ultility"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá gửi xe!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
                         <Input
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
-                            value={props.price}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
-
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Mô tả: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="description"
-                    // rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Mô tả: <span style={{ color: '#f5222d' }}>*</span></div>
-                        <Input.TextArea rows={8} value={'Moo ta thosdkf'} />
+
+                        <Input.TextArea rows={8} />
                     </Form.Item>
 
                     <div style={{ marginBottom: '6px', fontWeight: '500' }}>Thêm ảnh: <span style={{ color: '#f5222d' }}>*</span></div>

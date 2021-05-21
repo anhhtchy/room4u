@@ -53,13 +53,14 @@
 
 .button {
     height: 48px;
-    padding: 6px 30px;
+    padding: 6px 20px;
     background: #faad14;
     color: white;
     font-weight: 500;
     font-size: 16px;
     border-radius: 8px;
-    border: 1px solid #faad14;
+    border: none;
+    margin-left: 20px;
 }
 
 .bottomItem {

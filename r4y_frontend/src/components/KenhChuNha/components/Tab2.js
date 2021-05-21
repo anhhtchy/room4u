@@ -52,25 +52,26 @@ const Tab2 = () => {
     const [end, setEnd] = useState(1);
     const [loading, setLoading] = useState(true);
     const [district, setDisData] = useState([]);
+    const [visibleModalDeleteAll, setVisibleModalDeleteAll] = useState(false);
 
     useEffect(() => {
         (async () => {
             await setUserData(JSON.parse(window.localStorage.getItem('userData')));
-            console.log("user id", userData.userData.userid);
+            console.log("user data", userData.userData);
             if (userData) {
                 try {
                     const res = await axios.get(`http://localhost:3001/home/${userData.userData.userid}`, {
-                        headers: {
-                            // 'content-type': 'application/x-www-form-urlencoded',
-                            'x-access-token': userData.accessToken,
-                        }
+                        // headers: {
+                        //     // 'content-type': 'application/x-www-form-urlencoded',
+                        //     'x-access-token': userData.accessToken,
+                        // }
                     });
                     if (res.status == 200) {
-                        console.log("post", res);
+                        console.log("get post data", res);
                         setUserPost(res.data.posts);
                         setLoading(false);
                     } else {
-                        console.log("post", res);
+                        console.log("get post data", res);
                         setLoading(false);
                     }
 
@@ -80,7 +81,6 @@ const Tab2 = () => {
                 }
             } else {
                 setLoading(false);
-                console.log("userData null", userData);
             }
 
         })();
@@ -120,7 +120,7 @@ const Tab2 = () => {
         setIsModalVisible(false);
         message.success('Đăng bài thành công!');
         try {
-            const res = await axios.post('http://localhost:3001/1/createPost', {
+            const res = await axios.post(`http://localhost:3001/${userData.userData.userid}/createPost`, {
                 ...values,
                 images,
                 ward: '',
@@ -132,8 +132,7 @@ const Tab2 = () => {
 
             });
             if (res.status == 200) {
-                console.log("success");
-                console.log("res", res);
+                console.log("Post created", res);
                 notification.success({
                     message: 'Post created!',
                 });
@@ -169,43 +168,88 @@ const Tab2 = () => {
         setEnd(page);
     }
 
+    const handleDeleteAll = () => {
+        console.log("delete all");
+        setVisibleModalDeleteAll(false);
+    }
+
     return (
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
                 <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userPost.length ? userPost.length : 0}`} tin đã đăng</span></div>
-                <Button
-                    className={styles.button}
-                    icon={<PlusCircleOutlined />}
-                    onClick={showModal}
-                >Đăng tin mới</Button>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Button
+                        style={{
+                            background: '#cf1322',
+                        }}
+                        className={styles.button}
+                        icon={<PlusCircleOutlined />}
+                        onClick={() => setVisibleModalDeleteAll(true)}
+                    >Xóa tất cả</Button>
+
+                    <Modal
+                        centered={window.innerWidth > 600}
+                        visible={visibleModalDeleteAll}
+                        onCancel={() => setVisibleModalDeleteAll(false)}
+                        onOk={handleDeleteAll}
+                        okText="Delete All"
+                        width={400}
+                    >Xác nhận xóa tất cả bài đăng ?
+                     </Modal>
+
+                    <Button
+                        className={styles.button}
+                        icon={<PlusCircleOutlined />}
+                        onClick={showModal}
+                    >Đăng tin mới</Button>
+                </div>
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    <Row gutter={[32, 32]}>
-                        {console.log("user post", userPost)}
-                        {userPost.length ? userPost.slice(start * 3, end * 3).map((item, idx) => (
-                            <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                {/* <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}> */}
-                                <Item
-                                    img={item.images[0]}
-                                    type={estate[item.data.estatetype]}
-                                    title={`${item.data.title}`}
-                                    location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
-                                    rating={4.5}
-                                    price={item.data.price}
-                                    square={item.data.area}
-                                    count_room={item.data.roomnum}
-                                />
-                                {/* </Link> */}
-                            </Col>
-                        )) : <div>Bạn chưa có bài đăng nào.</div>
-                        }
-                    </Row>
+                    {/* <Row gutter={[32, 32]}> */}
+                    {console.log("user post", userPost)}
+                    {userPost.length ? (userPost.length > 2 ? (
+                        <Row gutter={[32, 32]}>
+                            {userPost.slice(start * 6, end * 6).map((item, idx) => (
+                                <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                                    <Item
+                                        postid={item.data.postid}
+                                        img={item.images[0]}
+                                        type={estate[item.data.estatetype]}
+                                        title={`${item.data.title}`}
+                                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                        rating={4.5}
+                                        price={item.data.price}
+                                        square={item.data.area}
+                                        count_room={item.data.roomnum}
+                                        description={item.data.description}
+                                    />
+                                </Col>))}
+                        </Row>
+                    ) : userPost.map((item, idx) => (
+                        <div style={{ width: '32%', marginRight: '3%' }}>
+                            <Item
+                                postid={item.data.postid}
+                                img={item.images[0]}
+                                type={estate[item.data.estatetype]}
+                                title={`${item.data.title}`}
+                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                rating={4.5}
+                                price={item.data.price}
+                                square={item.data.area}
+                                count_room={item.data.roomnum}
+                                description={item.data.description}
+                            />
+                        </div>
+                    ))
+                    ) : <div>Bạn chưa có bài đăng nào.</div>
+                    }
+                    {/* </Row> */}
                 </div>
             }
             <Pagination
                 defaultCurrent={1}
-                defaultPageSize={3}
+                defaultPageSize={6}
                 total={userPost.length}
                 responsive={true}
                 style={{ textAlign: 'right' }}
@@ -308,6 +352,7 @@ const Tab2 = () => {
                         <Input
                             placeholder="Nhập diện tích phòng"
                             size="large"
+                            type="number"
                         />
                     </Form.Item>
 
@@ -413,11 +458,9 @@ const Tab2 = () => {
                                 );
                             })
                         }
-                        {console.log("file list", fileList)}
                         <Upload
                             style={{ marginTop: '10px' }}
                             beforeUpload={(file) => {
-                                console.log("file before", file);
                                 if (!file.type.includes('image/')) {
                                     notification.error({
                                         message: `${file.name} is not a image file`,
@@ -426,17 +469,13 @@ const Tab2 = () => {
                                 return file.type.includes('image/');
                             }}
                             onChange={async (info) => {
-                                console.log("onchange info", info.file)
                                 if (info.file.status === 'uploading') {
-                                    console.log("onchange", info.file.status);
                                     setUploading(true);
                                 } else {
-                                    console.log("onchange", info.file.status);
                                     setUploading(false);
                                 }
                                 if (info.file.status === 'done') {
                                     console.log(" if done", info.fileList);
-                                    let lastItem = await fileList[fileList.length - 1]
                                     setFileList(info.fileList);
                                 } else if (info.file.status === 'error') {
                                     console.log(" if error", info.file.error);
@@ -464,11 +503,9 @@ const Tab2 = () => {
                                         console.log("200", url);
                                         onSuccess(null, file);
                                     } else {
-                                        console.log("not 200", res)
                                         onError(res);
                                     }
                                 } catch (error) {
-                                    console.log("axios err", error);
                                     onError(error);
                                 }
                             }}
