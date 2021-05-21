@@ -127,7 +127,7 @@ const Tab2 = () => {
     return (
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
-                <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userPost.length}`} tin đã đăng</span></div>
+                <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userPost.length ? userPost.length : 0}`} tin đã đăng</span></div>
                 <Button
                     className={styles.button}
                     icon={<PlusCircleOutlined />}
@@ -137,7 +137,8 @@ const Tab2 = () => {
             {loading ? <Loading /> :
                 <div className={styles.content}>
                     <Row gutter={[32, 32]}>
-                        {userPost ? userPost.slice(start * 3, end * 3).map((item, idx) => (
+                        {console.log("user post", userPost)}
+                        {userPost.length ? userPost.slice(start * 3, end * 3).map((item, idx) => (
                             <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                 {/* <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}> */}
                                     <Item
