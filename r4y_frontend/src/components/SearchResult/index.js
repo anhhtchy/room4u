@@ -217,8 +217,8 @@ const SearchResult = () => {
                                 {``}
                             </div>
                             <Row gutter={[32, 32]}>
-                                {!searchResult.length && <div>Không tìm thấy kết quả nào!</div>}
-                                {searchResult && searchResult.map((item, idx) => (
+                                {!searchResult.length ? <div>Không tìm thấy kết quả nào!</div>
+                                : searchResult && searchResult.map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                         <Link to={`/phong-tro-sv/${item.data.postid}-${item.data.title}`}>
                                             <Item
