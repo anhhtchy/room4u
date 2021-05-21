@@ -35,6 +35,7 @@ import img from "../../../img/img.jpg";
 import img1 from "../../../img/img1.jpg";
 import img2 from "../../../img/img2.jpg";
 import img3 from "../../../img/img3.jpg";
+import Loading from '../../loading';
 
 const { Option } = Select;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -50,25 +51,28 @@ const Tab2 = () => {
     const [userSave, setUserSave] = useState([]);
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(1);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
             await setUserData(JSON.parse(window.localStorage.getItem('userData')));
             console.log("user id", userData.userData.userid);
+            const userId = userData.userData.userid.toString();
             if (userData) {
                 try {
-                    const res = await axios.get(`http://localhost:3001/save/${userData.userData.userid}`, {
-
-                    });
+                    const res = await axios.get(`http://localhost:3001/save/${userId}`);
                     if (res.status == 200) {
                         console.log("save", res.data);
-                        setUserSave(res.data);
+                        setUserSave(res.data.posts);
+                        setLoading(false);
                     } else {
-                        console.log("save", res)
+                        console.log("save", res);
+                        setLoading(false);
                     }
 
                 } catch (err) {
                     console.log("err mes:", err);
+                    setLoading(false);
                 }
             }
         })();
@@ -76,7 +80,7 @@ const Tab2 = () => {
 
     const handleChangePage = (page) => {
         console.log(page);
-        setStart(page-1);
+        setStart(page - 1);
         setEnd(page);
     }
 
@@ -84,34 +88,29 @@ const Tab2 = () => {
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
                 <div>Phòng trọ đã lưu <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userSave.length}`} tin đã lưu</span></div>
-                {/* <Button
-                    className={styles.button}
-                    icon={<PlusCircleOutlined />}
-                    onClick={showModal}
-                >Đăng tin mới</Button> */}
             </div>
-            <div className={styles.content}>
-                <Row gutter={[32, 32]}>
-                    {userSave ? userSave.slice(start*3, end*3).map((item, idx) => (
-                        <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                            <Link to={`/${estateLink[item.post.estatetype]}/${item.post.postid}-${item.post.title}`}>
-                                <Item
-                                    // img={item.images[0]}
-                                    img={img}
-                                    type={estate[item.post.estatetype]}
-                                    title={`${item.post.title}`}
-                                    location={`${item.post.address} - ${item.post.ward} - ${item.post.city}`}
-                                    rating={4.5}
-                                    price={item.post.price}
-                                    square={item.post.area}
-                                    count_room={item.post.roomnum}
-                                />
-                            </Link>
-                        </Col>
-                    )) : <div>Chưa có bài viết nào được lưu</div>}
-                </Row>
-            </div>
-
+            {loading ? <Loading /> :
+                <div className={styles.content}>
+                    <Row gutter={[32, 32]}>
+                        {userSave.length ? userSave.slice(start * 3, end * 3).map((item, idx) => (
+                            <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                                {/* <Link to={`/${estateLink[item.post.estatetype]}/${item.post.postid}-${item.post.title}`}> */}
+                                    <Item
+                                        img={item.images[0]}
+                                        type={estate[item.post.estatetype]}
+                                        title={`${item.post.title}`}
+                                        location={`${item.post.address} - ${item.post.ward} - ${item.post.city}`}
+                                        rating={4.5}
+                                        price={item.post.price}
+                                        square={item.post.area}
+                                        count_room={item.post.roomnum}
+                                    />
+                                {/* </Link> */}
+                            </Col>
+                        )) : <div>Chưa có bài viết nào được lưu</div>}
+                    </Row>
+                </div>
+            }
             <Pagination
                 defaultCurrent={1}
                 defaultPageSize={3}
@@ -122,6 +121,6 @@ const Tab2 = () => {
             />
         </div>
     )
-} 
+}
 
 export default Tab2;
