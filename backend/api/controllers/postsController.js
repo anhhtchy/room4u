@@ -258,16 +258,25 @@ exports.updatePost = async (req, res, next) => {
   try {
     const [pst, image_data] = await Promise.all([
       db.posts.updatePost(updateProfile, { where: { postid: req.params.pid } }),
-      db.images.findAll({ where: { postid: req.params.pid } }),
+      db.images.destroy({ where: { postid: req.params.pid } }),
     ]);
-    img_urls = [];
-    for (var i = 0; i < image_data.length; i++) {
-      img_urls.push(image_data[i].url);
+    // img_urls = [];
+    // for (var i = 0; i < image_data.length; i++) {
+    //   img_urls.push(image_data[i].url);
+    // }
+    const images = req.body.images;
+    if (images != null) {
+      for (var i = 0; i < images.length; i++) {
+        const image = {
+          postid: req.params.pid,
+          url: images[i],
+          created: Date.now(),
+        };
+        db.images.create(image).then((result) => {
+          status: 1
+        });
+      }
     }
-
-    return res.send({
-      data: img_urls,
-    });
   } catch {}
   // db.posts
   //   .update(updatePost, {
@@ -509,6 +518,9 @@ exports.getSavePostsByUserid = async (req, res) => {
       const ids = []
       const meta = []
       l = Object.keys(data).length
+      if(l < 1){
+        return res.send({posts:{}})
+      }
       for(var i  = 0; i < l; i++){
         ids.push(data[i].saveid)
       }
