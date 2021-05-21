@@ -119,6 +119,7 @@ exports.getPostsByUserId = async (req, res, next) => {
   db.posts
     .findAll({
       where: { userid: userId },
+      order: [["updated", "DESC"]]
     })
     .then((data) => {
       ids = [];
@@ -232,8 +233,6 @@ exports.createPostWithImages = (req, res, next) => {
 };
 
 exports.updatePost = async (req, res, next) => {
-  file = req.files;
-  //res.send(file);
   const updatePost = {
     title: req.body.title,
     estatetype: req.body.estatetype,
@@ -254,7 +253,6 @@ exports.updatePost = async (req, res, next) => {
     updated: Date.now(),
     expired: req.body.expired,
   };
-  //const imgs = req.body.images;
   try {
     const [pst, image_data] = await Promise.all([
       db.posts.updatePost(updateProfile, { where: { postid: req.params.pid } }),
@@ -323,23 +321,40 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-exports.deleteAllPostByUserId = (req, res, next) => {
-  db.posts
-    .destroy({
-      where: { userid: req.params.id },
-    })
-    .then((data) => {
-      return res.status(200).send({
-        message:
-          "Deleted post with id all post of user with id" + req.params.id,
+exports.deleteAllPostByUserId = async (req, res, next) => {
+
+  const data = await db.posts.findAll({ where:{userid:req.params.id}})
+  if(data.length < 1){
+    return res.send({messange: "no posts to delete"});
+  };
+
+  const ids = []
+  for(var i = 0; i < data.length; i++)
+  {
+    ids.push(data[i].postid)
+  }
+  try{
+    [saved_data, image_data, review_data] = await Promise.all([
+      db.savedPosts.destroy({ where: { postid: ids } }),
+      db.images.destroy({ where: { postid: ids } }),
+      db.reviews.destroy({where:{postid:ids}})
+    ]);
+    db.posts.destroy({where: { userid: req.params.id }})
+      .then(result =>{
+        return res.status(200).send({
+          message: "Deleted post with id all post of user with id" + req.params.id,
+        });
+      })
+      .catch((err) => {
+        return res.status(500).send({
+          status: 0,
+          message: err.message || "Cannot delete all posts!",
+        });
       });
-    })
-    .catch((err) => {
-      return res.status(500).send({
-        status: 0,
-        message: err.message || "Cannot delete all posts!",
-      });
-    });
+  }catch(err){
+      return res.send({message: err.message})
+  }
+   
 };
 
 exports.getDistricts = (req, res, next) => {
@@ -365,22 +380,22 @@ exports.getHomePosts = async (req, res, next) => {
       db.posts.findAll({
         where: { estatetype: 0 },
         order: [["updated", "DESC"]],
-        limit: 10,
+        //limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 1 },
         order: [["updated", "DESC"]],
-        limit: 10,
+        //limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 2 },
         order: [["updated", "DESC"]],
-        limit: 10,
+        //limit: 10,
       }),
       db.posts.findAll({
         where: { estatetype: 3 },
         order: [["updated", "DESC"]],
-        limit: 10,
+        //limit: 10,
       }),
     ]);
     var ids = [];
@@ -390,7 +405,10 @@ exports.getHomePosts = async (req, res, next) => {
         ids.push(dataX[i][j].postid);
       }
     }
-
+    if (ids.length < 1){
+      return res.send({
+        posts: {}})
+    }
     db.images
       .findAll({
         where: {
