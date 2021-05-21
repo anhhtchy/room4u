@@ -522,12 +522,11 @@ exports.getSavePostsByUserid = async (req, res) => {
         return res.send({posts:{}})
       }
       for(var i  = 0; i < l; i++){
-        ids.push(data[i].saveid)
+        ids.push(data[i].post.postid)
       }
       db.images.findAll({where:{postid:ids}})
       .then(image_data =>{
         const posts = convertImg1D(data, image_data);
-        for(var j = 0 ; j <l; j++) 
         return res.send({posts});
       })
       .catch((err) =>{
