@@ -409,6 +409,7 @@ exports.getHomePosts = async (req, res, next) => {
 function convertImg1D(data, imgs) {
   var dict = {};
   var res_data = [];
+
   for (var i = 0; i < imgs.length; i++) {
     if (dict.hasOwnProperty(String(imgs[i].postid))) {
       dict[String(imgs[i].postid)].push(imgs[i].url);
@@ -418,6 +419,10 @@ function convertImg1D(data, imgs) {
     }
   }
   len = Object.keys(data).length;
+  if (len < 1)
+  {
+    return {}
+  } 
   for (var i = 0; i < len; i++) {
     res_data[i] = {};
     res_data[i].data = data[i];

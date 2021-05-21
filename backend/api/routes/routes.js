@@ -25,10 +25,11 @@ module.exports = function (app) {
   app.route("/:id/changeProfile").post(accountsController.updateProfile);
 
   app.route("/home").get(postsController.getHomePosts);
+  // app
+  //   .route("/home/:id")
+  //   .get(authMiddleWare.isOwner, postsController.getPostsByUserId);
   app
-    .route("/home/:id")
-    .get(authMiddleWare.isOwner, postsController.getPostsByUserId);
-
+    .route("/home/:id").get(postsController.getPostsByUserId);
   app.route('/getPost/:pid').get(postsController.getPostById);
 
   app.route("/:id/createPost").post(postsController.createPostWithImages);
