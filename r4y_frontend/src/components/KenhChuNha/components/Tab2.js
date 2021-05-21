@@ -40,6 +40,7 @@ const { Option } = Select;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const Tab2 = () => {
+    const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [fileList, setFileList] = useState([]);
@@ -50,6 +51,7 @@ const Tab2 = () => {
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [district, setDisData] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -84,6 +86,21 @@ const Tab2 = () => {
         })();
     }, []);
 
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("http://localhost:3001/getDistricts");
+                if (res.status == 200) {
+                    const temp = await res.data.filter((item, ind) => item.type == "Quận");
+                    setDisData(temp);
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, []);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -97,11 +114,39 @@ const Tab2 = () => {
         setIsModalVisible(false);
     };
 
-    const onFinish = (values) => {
-        console.log("edit", values);
+    const onFinish = async (values, images) => {
+        console.log('Form values: ', values);
+        console.log('Form images: ', images);
         setIsModalVisible(false);
         message.success('Đăng bài thành công!');
-    }
+        try {
+            const res = await axios.post('http://localhost:3001/1/createPost', {
+                ...values,
+                images,
+                ward: '',
+                city: "Hà Nội",
+                restroom: '',
+                rented: 0,
+                userid: userData.userData.userid,
+                expired: Date.now(),
+
+            });
+            if (res.status == 200) {
+                console.log("success");
+                console.log("res", res);
+                notification.success({
+                    message: 'Post created!',
+                });
+            }
+            window.location.reload();
+        } catch (error) {
+            console.log(error.response.data);
+            notification.error({
+                message: 'Create post Error!',
+                description: error.response.data.message,
+            });
+        }
+    };
 
     const onFinishFailed = (errInfo) => {
         console.log("edit err", errInfo);
@@ -141,20 +186,20 @@ const Tab2 = () => {
                         {userPost.length ? userPost.slice(start * 3, end * 3).map((item, idx) => (
                             <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                 {/* <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}-${item.data.title}`}> */}
-                                    <Item
-                                        img={item.images[0]}
-                                        type={estate[item.data.estatetype]}
-                                        title={`${item.data.title}`}
-                                        location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
-                                        rating={4.5}
-                                        price={item.data.price}
-                                        square={item.data.area}
-                                        count_room={item.data.roomnum}
-                                    />
+                                <Item
+                                    img={item.images[0]}
+                                    type={estate[item.data.estatetype]}
+                                    title={`${item.data.title}`}
+                                    location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                    rating={4.5}
+                                    price={item.data.price}
+                                    square={item.data.area}
+                                    count_room={item.data.roomnum}
+                                />
                                 {/* </Link> */}
                             </Col>
                         )) : <div>Bạn chưa có bài đăng nào.</div>
-                    }
+                        }
                     </Row>
                 </div>
             }
@@ -177,74 +222,127 @@ const Tab2 = () => {
                 >ĐĂNG TIN MỚI</div>}
                 width={700}
                 visible={isModalVisible}
-                onOk={handleOk}
+                // onOk={handleOk}
                 onCancel={handleCancel}
                 okText="Đăng"
                 cancelText="Hủy"
                 footer={null}
             >
                 <Form
-                    onFinish={onFinish}
+                    form={form}
+                    onFinish={(values) =>
+                        onFinish(
+                            values,
+                            fileList.map((file) => file.originFileObj.url),
+                        )
+                    }
                     onFinishFailed={onFinishFailed}
                 >
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="title"
                         rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
                         <Input
                             placeholder="Nhập tiêu đề bài viết"
                             size="large"
                         />
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Loại bất động sản: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
-                        name="type"
+                        name="estatetype"
                         rules={[{ required: true, message: 'Vui lòng chọn loại bất động sản!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Loại bất động sản: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Select
                             placeholder="Chọn loại BĐS"
                             allowClear
                             size="large"
                             style={{ width: 'calc(50% - 8px)' }}
                         >
-                            <Option value="Phòng trọ sinh viên">Phòng trọ sinh viên</Option>
-                            <Option value="Chung cư">Chung cư</Option>
-                            <Option value="Chung cư mini">Chung cư mini</Option>
-                            <Option value="Nhà nguyên căn">Nhà nguyên căn</Option>
+                            <Option value={0}>Phòng trọ sinh viên</Option>
+                            <Option value={3}>Chung cư</Option>
+                            <Option value={2}>Văn phòng - Mặt bằng kinh doanh</Option>
+                            <Option value={1}>Nhà nguyên căn</Option>
                         </Select>
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Quận/ huyện: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
-                        name="price"
-                        rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                        name="district"
+                        rules={[{ required: true, message: 'Vui lòng chọn quận , huyện!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá phòng: <span style={{ color: '#f5222d' }}>*</span></div>
-                        <Input
-                            placeholder="Nhập giá phòng"
+
+                        <Select
+                            placeholder="Quận/ huyện"
+                            allowClear
                             size="large"
-                            type="number"
-                            style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
-                        />
-                        <span>(đồng/tháng)</span>
+                        >
+                            {
+                                district.length ? district.map((item, ind) => (
+                                    <Option value={item.districtid} key={ind}>{item.name}</Option>
+                                )) : <></>
+                            }
+                        </Select>
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Địa chỉ chi tiết: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="address"
                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Địa chỉ: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Input
                             placeholder="Nhập địa chỉ BĐS"
                             size="large"
                         />
                     </Form.Item>
 
-                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá dịch vụ: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Diện tích: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="area"
+                        rules={[{ required: true, message: 'Vui lòng nhập diện tích!' }]}
+                    >
+
+                        <Input
+                            placeholder="Nhập diện tích phòng"
+                            size="large"
+                        />
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá phòng (đồng/tháng): <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="price"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                    >
+
+                        <Input
+                            placeholder="Nhập giá phòng"
+                            size="large"
+                            type="number"
+                            style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
+                        />
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Số phòng: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <Form.Item
+                        name="roomnum"
+                        rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
+                    >
+
+                        <Input
+                            placeholder="Nhập số lượng phòng"
+                            size="large"
+                            type="number"
+                            style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
+                        />
+                    </Form.Item>
+
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá dịch vụ (đồng/tháng): <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         label="Giá điện"
-                        name="elecPrice"
+                        name="electricity"
                         rules={[{ required: true, message: 'Vui lòng nhập giá điện!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
@@ -253,11 +351,10 @@ const Tab2 = () => {
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá nước"
-                        name="waterPrice"
+                        name="water"
                         rules={[{ required: true, message: 'Vui lòng nhập giá nước!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
@@ -266,11 +363,10 @@ const Tab2 = () => {
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá wifi"
-                        name="wifiPrice"
+                        name="wifi"
                         rules={[{ required: true, message: 'Vui lòng nhập giá wifi!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
@@ -279,11 +375,10 @@ const Tab2 = () => {
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
                     <Form.Item
                         label="Giá gửi xe"
-                        name="packingPrice"
+                        name="ultility"
                         rules={[{ required: true, message: 'Vui lòng nhập giá gửi xe!' }]}
                         labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}
                     >
@@ -292,14 +387,14 @@ const Tab2 = () => {
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
-                        <span>(đồng/tháng)</span>
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '500' }}>Mô tả: <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="description"
                         rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
                     >
-                        <div style={{ marginBottom: '6px', fontWeight: '500' }}>Mô tả: <span style={{ color: '#f5222d' }}>*</span></div>
+
                         <Input.TextArea rows={8} />
                     </Form.Item>
 
@@ -393,31 +488,30 @@ const Tab2 = () => {
                         </Upload>
                     </div>
 
-                    <Modal
-                        centered={window.innerWidth > 600}
-                        style={{ top: -10 }}
-                        visible={visibleImg}
-                        onCancel={() => setVisibleImg(false)}
-                        onOk={handleOkImg}
-                        okText="Delete"
-                        // footer={null}
-                        width={500}
-                    >
-                        <img
-                            src={srcPre}
-                            style={{
-                                width: 450,
-                                height: 450,
-                            }}
-                        />
-                    </Modal>
-
                     <Form.Item style={{ marginTop: '20px', textAlign: 'center' }}>
                         <Button type="primary" htmlType="submit" className={styles.button}>
                             ĐĂNG
                         </Button>
                     </Form.Item>
                 </Form>
+                <Modal
+                    centered={window.innerWidth > 600}
+                    style={{ top: -10 }}
+                    visible={visibleImg}
+                    onCancel={() => setVisibleImg(false)}
+                    onOk={handleOkImg}
+                    okText="Delete"
+                    // footer={null}
+                    width={500}
+                >
+                    <img
+                        src={srcPre}
+                        style={{
+                            width: 450,
+                            height: 450,
+                        }}
+                    />
+                </Modal>
             </Modal>
         </div>
     )
