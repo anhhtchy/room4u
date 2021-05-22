@@ -233,6 +233,7 @@ exports.createPostWithImages = (req, res, next) => {
 };
 
 exports.updatePost = async (req, res, next) => {
+ 
   const updatePost = {
     title: req.body.title,
     estatetype: req.body.estatetype,
@@ -255,7 +256,7 @@ exports.updatePost = async (req, res, next) => {
   };
   try {
     const [pst, image_data] = await Promise.all([
-      db.posts.updatePost(updateProfile, { where: { postid: req.params.pid } }),
+      db.posts.update(updatePost, { where: { postid: req.params.pid } }),
       db.images.destroy({ where: { postid: req.params.pid } }),
     ]);
     // img_urls = [];
@@ -270,30 +271,17 @@ exports.updatePost = async (req, res, next) => {
           url: images[i],
           created: Date.now(),
         };
-        db.images.create(image).then((result) => {
-          status: 1
-        });
+        db.images.create(image).then();
       }
     }
-  } catch {}
-  // db.posts
-  //   .update(updatePost, {
-  //     where: {
-  //       postid: req.body.postid,
-  //     },
-  //   })
-  //   .then((data) => {
-  //     res.status(200).send({
-  //       message: "Ok updated!",
-  //     });
-  //   })
-  //   .catch((err) => {
-  //     res.status(500).send({
-  //       status: 0,
-  //       message:
-  //         err.message || "Error when update post with id ${req.body.postid}",
-  //     });
-  //   });
+    return res.status(200).send({
+      message:"Added successfully"
+    })
+  } catch(err){
+    return res.send({
+      message:err.message
+    })
+  }
 };
 
 exports.deletePost = async (req, res, next) => {
