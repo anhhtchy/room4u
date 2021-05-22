@@ -39,6 +39,7 @@ const Item1 = (props) => {
     const [srcPre, setSrcPre] = useState();
     const userData = JSON.parse(window.localStorage.getItem('userData'));
     const [district, setDisData] = useState([]);
+    const [listImg, setListImg] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -55,7 +56,9 @@ const Item1 = (props) => {
         })();
     }, []);
 
-    const showModal = () => {
+    const showModal = async () => {
+        await setListImg(props.images);
+        console.log("list img", listImg);
         setIsModalVisible(true);
     };
 
@@ -76,7 +79,7 @@ const Item1 = (props) => {
         try {
             const res = await axios.delete(url);
             if (res == 200) {
-                message.success(res.message);
+                message.success("Đã xóa!");
                 setIsModalDelVisible(false);
             }
             window.location.reload();
@@ -90,10 +93,36 @@ const Item1 = (props) => {
         setIsModalDelVisible(false);
     };
 
-    const onFinish = (values) => {
+    const onFinish = async (values, images) => {
         console.log("edit", values);
+        console.log("edit", images);
+        try {
+            const res = await axios.put(`http://localhost:3001/${userData.userData.userid}/updatePost/${props.postid}`, {
+                ...values,
+                images,
+                ward: '',
+                city: "Hà Nội",
+                restroom: '',
+                rented: 0,
+                expired: Date.now(),
+
+            });
+            if (res.status == 200) {
+                console.log("Post update", res);
+                notification.success({
+                    message: 'Update success!',
+                });
+            }
+            setIsModalVisible(false);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+            notification.error({
+                message: 'Update post Error!',
+                description: error,
+            });
+        }
         setIsModalVisible(false);
-        message.success('Đã lưu!');
     }
 
     const onFinishFailed = (errInfo) => {
@@ -107,7 +136,9 @@ const Item1 = (props) => {
 
     const handleOkImg = async () => {
         let list = await fileList.filter((item, ind) => item.url !== srcPre);
+        let newListImg = await listImg.filter((item, ind) => item !== srcPre)
         setFileList(list);
+        setListImg(newListImg)
         setVisibleImg(false);
     }
 
@@ -154,9 +185,21 @@ const Item1 = (props) => {
                         estatetype: props.estatetype,
                         district: props.district,
                         address: props.address,
-                        area: props.area,
+                        area: props.square,
+                        price: props.price,
+                        description: props.description,
+                        roomnum: props.count_room,
+                        electricity: props.electricity,
+                        water: props.water,
+                        wifi: props.wifi,
+                        ultility: props.ultility,
                     }}
-                    onFinish={onFinish}
+                    onFinish={(values) =>
+                        onFinish(
+                            values,
+                            listImg.map((url) => url),
+                        )
+                    }
                     onFinishFailed={onFinishFailed}
                 >
                     <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
@@ -165,9 +208,8 @@ const Item1 = (props) => {
                         rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
                     >
                         <Input
-                            // placeholder="Nhập tiêu đề bài viết"
+                            placeholder="Nhập tiêu đề bài viết"
                             size="large"
-                            value={props.title}
                         />
                     </Form.Item>
 
@@ -182,7 +224,6 @@ const Item1 = (props) => {
                             allowClear
                             size="large"
                             style={{ width: 'calc(50% - 8px)' }}
-                            value={props.estateType}
                         >
                             <Option value={0}>Phòng trọ sinh viên</Option>
                             <Option value={3}>Chung cư</Option>
@@ -200,7 +241,6 @@ const Item1 = (props) => {
                             placeholder="Quận/ huyện"
                             allowClear
                             size="large"
-                            defaultValue={props.district}
                         >
                             {
                                 district.length ? district.map((item, ind) => (
@@ -327,9 +367,31 @@ const Item1 = (props) => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        {fileList
-                            // .filter((file) => file.originFileObj.url)
+                        {listImg
+                            .map((url, idx) => {
+                                return (
+                                    <div
+                                        className={styles.card} key={idx}
+                                        onClick={() => onPreview(url)}
+                                    >
+                                        <img
+                                            src={url}
+                                            className={styles.img}
+                                            style={{
+                                                borderRadius: '6px',
+                                                width: '80px',
+                                                height: '80px',
+                                                marginRight: '10px',
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })
+                        }
+
+                        {/* {fileList
                             .map((file, idx) => {
+                                console.log("file url", file);
                                 return (
                                     <div
                                         className={styles.card} key={idx}
@@ -348,8 +410,8 @@ const Item1 = (props) => {
                                     </div>
                                 );
                             })
-                        }
-                        {console.log("file list", fileList)}
+                        } */}
+
                         <Upload
                             style={{ marginTop: '10px' }}
                             beforeUpload={(file) => {
@@ -362,17 +424,16 @@ const Item1 = (props) => {
                                 return file.type.includes('image/');
                             }}
                             onChange={async (info) => {
-                                console.log("onchange info", info.file)
+                                console.log("onchange info", info)
                                 if (info.file.status === 'uploading') {
-                                    console.log("onchange", info.file.status);
                                     setUploading(true);
                                 } else {
-                                    console.log("onchange", info.file.status);
                                     setUploading(false);
                                 }
                                 if (info.file.status === 'done') {
-                                    console.log(" if done", info.fileList);
-                                    setFileList(info.fileList);
+                                    console.log(" if done", info);
+                                    setFileList([...fileList, info.file]);
+                                    setListImg([...listImg, info.file.url])
                                 } else if (info.file.status === 'error') {
                                     console.log(" if error", info.file.error);
                                     notification.error({
@@ -396,7 +457,6 @@ const Item1 = (props) => {
                                     if (res.status === 200) {
                                         let url = "http://" + res.data.data[0].replace(/\\/g, "/")
                                         file.url = url;
-                                        console.log("200", url);
                                         onSuccess(null, file);
                                     } else {
                                         console.log("not 200", res)
