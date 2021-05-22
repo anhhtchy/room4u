@@ -39,6 +39,7 @@ const Item1 = (props) => {
     const [srcPre, setSrcPre] = useState();
     const userData = JSON.parse(window.localStorage.getItem('userData'));
     const [district, setDisData] = useState([]);
+    const [listImg, setListImg] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -55,8 +56,9 @@ const Item1 = (props) => {
         })();
     }, []);
 
-    const showModal = () => {
-        // setFileList(props.images);
+    const showModal = async () => {
+        await setListImg(props.images);
+        console.log("list img", listImg);
         setIsModalVisible(true);
     };
 
@@ -134,7 +136,9 @@ const Item1 = (props) => {
 
     const handleOkImg = async () => {
         let list = await fileList.filter((item, ind) => item.url !== srcPre);
+        let newListImg = await listImg.filter((item, ind) => item !== srcPre)
         setFileList(list);
+        setListImg(newListImg)
         setVisibleImg(false);
     }
 
@@ -193,7 +197,7 @@ const Item1 = (props) => {
                     onFinish={(values) =>
                         onFinish(
                             values,
-                            fileList.map((file) => file.originFileObj.url),
+                            listImg.map((url) => url),
                         )
                     }
                     onFinishFailed={onFinishFailed}
@@ -363,9 +367,31 @@ const Item1 = (props) => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        {fileList
-                            // .filter((file) => file.originFileObj.url)
+                        {listImg
+                            .map((url, idx) => {
+                                return (
+                                    <div
+                                        className={styles.card} key={idx}
+                                        onClick={() => onPreview(url)}
+                                    >
+                                        <img
+                                            src={url}
+                                            className={styles.img}
+                                            style={{
+                                                borderRadius: '6px',
+                                                width: '80px',
+                                                height: '80px',
+                                                marginRight: '10px',
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })
+                        }
+
+                        {/* {fileList
                             .map((file, idx) => {
+                                console.log("file url", file);
                                 return (
                                     <div
                                         className={styles.card} key={idx}
@@ -384,8 +410,8 @@ const Item1 = (props) => {
                                     </div>
                                 );
                             })
-                        }
-                        {console.log("file list", fileList)}
+                        } */}
+
                         <Upload
                             style={{ marginTop: '10px' }}
                             beforeUpload={(file) => {
@@ -398,17 +424,16 @@ const Item1 = (props) => {
                                 return file.type.includes('image/');
                             }}
                             onChange={async (info) => {
-                                console.log("onchange info", info.file)
+                                console.log("onchange info", info)
                                 if (info.file.status === 'uploading') {
-                                    console.log("onchange", info.file.status);
                                     setUploading(true);
                                 } else {
-                                    console.log("onchange", info.file.status);
                                     setUploading(false);
                                 }
                                 if (info.file.status === 'done') {
-                                    console.log(" if done", info.fileList);
-                                    setFileList(info.fileList);
+                                    console.log(" if done", info);
+                                    setFileList([...fileList, info.file]);
+                                    setListImg([...listImg, info.file.url])
                                 } else if (info.file.status === 'error') {
                                     console.log(" if error", info.file.error);
                                     notification.error({
@@ -432,7 +457,6 @@ const Item1 = (props) => {
                                     if (res.status === 200) {
                                         let url = "http://" + res.data.data[0].replace(/\\/g, "/")
                                         file.url = url;
-                                        console.log("200", url);
                                         onSuccess(null, file);
                                     } else {
                                         console.log("not 200", res)

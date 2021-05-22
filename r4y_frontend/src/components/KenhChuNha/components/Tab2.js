@@ -506,7 +506,7 @@ const Tab2 = () => {
                                 }
                                 if (info.file.status === 'done') {
                                     console.log(" if done", info.fileList);
-                                    setFileList(info.fileList);
+                                    setFileList([...fileList, info.file]);
                                 } else if (info.file.status === 'error') {
                                     console.log(" if error", info.file.error);
                                     notification.error({
