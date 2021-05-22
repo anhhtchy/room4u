@@ -23,6 +23,7 @@ import {
     PlusCircleOutlined,
     PlusOutlined,
     LoadingOutlined,
+    PropertySafetyFilled,
 } from '@ant-design/icons';
 
 import Item from './Item1';
@@ -117,8 +118,8 @@ const Tab2 = () => {
     const onFinish = async (values, images) => {
         console.log('Form values: ', values);
         console.log('Form images: ', images);
-        setIsModalVisible(false);
-        message.success('Đăng bài thành công!');
+        // setIsModalVisible(false);
+        // message.success('Đăng bài thành công!');
         try {
             const res = await axios.post(`http://localhost:3001/${userData.userData.userid}/createPost`, {
                 ...values,
@@ -137,6 +138,7 @@ const Tab2 = () => {
                     message: 'Post created!',
                 });
             }
+            setIsModalVisible(false);
             window.location.reload();
         } catch (error) {
             console.log(error.response.data);
@@ -145,6 +147,7 @@ const Tab2 = () => {
                 description: error.response.data.message,
             });
         }
+        setIsModalVisible(false);
     };
 
     const onFinishFailed = (errInfo) => {
@@ -168,8 +171,19 @@ const Tab2 = () => {
         setEnd(page);
     }
 
-    const handleDeleteAll = () => {
-        console.log("delete all");
+    const handleDeleteAll = async () => {
+        const url = `http://localhost:3001/${userData.userData.userid}/deleteallPosts`
+        try {
+            const res = await axios.delete(url);
+            if (res == 200) {
+                console.log("delete all", res);
+                message.success("Đã xóa!");
+                setVisibleModalDeleteAll(false);
+            }
+            window.location.reload();
+        } catch (err) {
+            console.log(err);
+        }
         setVisibleModalDeleteAll(false);
     }
 
@@ -223,22 +237,38 @@ const Tab2 = () => {
                                         square={item.data.area}
                                         count_room={item.data.roomnum}
                                         description={item.data.description}
+                                        estatetype={item.data.estatetype}
+                                        district={item.data.district}
+                                        address={item.data.address}
+                                        electricity={item.data.electricity}
+                                        water={item.data.water}
+                                        wifi={item.data.wifi}
+                                        ultility={item.data.ultility}
+                                        images={item.images}
                                     />
                                 </Col>))}
                         </Row>
                     ) : userPost.map((item, idx) => (
                         <div style={{ width: '32%', marginRight: '3%' }}>
                             <Item
-                                postid={item.data.postid}
-                                img={item.images[0]}
-                                type={estate[item.data.estatetype]}
-                                title={`${item.data.title}`}
-                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
-                                rating={4.5}
-                                price={item.data.price}
-                                square={item.data.area}
-                                count_room={item.data.roomnum}
-                                description={item.data.description}
+                                 postid={item.data.postid}
+                                 img={item.images[0]}
+                                 type={estate[item.data.estatetype]}
+                                 title={`${item.data.title}`}
+                                 location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                 rating={4.5}
+                                 price={item.data.price}
+                                 square={item.data.area}
+                                 count_room={item.data.roomnum}
+                                 description={item.data.description}
+                                 estatetype={item.data.estatetype}
+                                 district={item.data.district}
+                                 address={item.data.address}
+                                 electricity={item.data.electricity}
+                                 water={item.data.water}
+                                 wifi={item.data.wifi}
+                                 ultility={item.data.ultility}
+                                 images={item.images}
                             />
                         </div>
                     ))

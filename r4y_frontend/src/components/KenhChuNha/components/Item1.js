@@ -56,6 +56,7 @@ const Item1 = (props) => {
     }, []);
 
     const showModal = () => {
+        // setFileList(props.images);
         setIsModalVisible(true);
     };
 
@@ -76,7 +77,7 @@ const Item1 = (props) => {
         try {
             const res = await axios.delete(url);
             if (res == 200) {
-                message.success(res.message);
+                message.success("Đã xóa!");
                 setIsModalDelVisible(false);
             }
             window.location.reload();
@@ -90,10 +91,36 @@ const Item1 = (props) => {
         setIsModalDelVisible(false);
     };
 
-    const onFinish = (values) => {
+    const onFinish = async (values, images) => {
         console.log("edit", values);
+        console.log("edit", images);
+        try {
+            const res = await axios.put(`http://localhost:3001/${userData.userData.userid}/updatePost/${props.postid}`, {
+                ...values,
+                images,
+                ward: '',
+                city: "Hà Nội",
+                restroom: '',
+                rented: 0,
+                expired: Date.now(),
+
+            });
+            if (res.status == 200) {
+                console.log("Post update", res);
+                notification.success({
+                    message: 'Update success!',
+                });
+            }
+            setIsModalVisible(false);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+            notification.error({
+                message: 'Update post Error!',
+                description: error,
+            });
+        }
         setIsModalVisible(false);
-        message.success('Đã lưu!');
     }
 
     const onFinishFailed = (errInfo) => {
@@ -154,9 +181,21 @@ const Item1 = (props) => {
                         estatetype: props.estatetype,
                         district: props.district,
                         address: props.address,
-                        area: props.area,
+                        area: props.square,
+                        price: props.price,
+                        description: props.description,
+                        roomnum: props.count_room,
+                        electricity: props.electricity,
+                        water: props.water,
+                        wifi: props.wifi,
+                        ultility: props.ultility,
                     }}
-                    onFinish={onFinish}
+                    onFinish={(values) =>
+                        onFinish(
+                            values,
+                            fileList.map((file) => file.originFileObj.url),
+                        )
+                    }
                     onFinishFailed={onFinishFailed}
                 >
                     <div style={{ marginBottom: '6px', fontWeight: '500' }}>Tiêu đề: <span style={{ color: '#f5222d' }}>*</span></div>
@@ -165,9 +204,8 @@ const Item1 = (props) => {
                         rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
                     >
                         <Input
-                            // placeholder="Nhập tiêu đề bài viết"
+                            placeholder="Nhập tiêu đề bài viết"
                             size="large"
-                            value={props.title}
                         />
                     </Form.Item>
 
@@ -182,7 +220,6 @@ const Item1 = (props) => {
                             allowClear
                             size="large"
                             style={{ width: 'calc(50% - 8px)' }}
-                            value={props.estateType}
                         >
                             <Option value={0}>Phòng trọ sinh viên</Option>
                             <Option value={3}>Chung cư</Option>
@@ -200,7 +237,6 @@ const Item1 = (props) => {
                             placeholder="Quận/ huyện"
                             allowClear
                             size="large"
-                            defaultValue={props.district}
                         >
                             {
                                 district.length ? district.map((item, ind) => (
