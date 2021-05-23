@@ -69,15 +69,15 @@ const Tab1 = () => {
         const url = `http://localhost:3001/${userData.userData.userid}/changeProfile`
 
         try {
-            const res = await axios.post(url);
-            if (res == 200) {
+            const res = await axios.put(url, {...values, images});
+            if (res.status == 200) {
                 console.log("change Pro", res);
                 setIsModalVisible(false);
                 message.success('Đã lưu!');
+                window.location.reload();
             }
         } catch (err) {
             console.log(err);
-            setIsModalVisible(false);
         }
 
         // setIsModalVisible(false);
@@ -125,7 +125,7 @@ const Tab1 = () => {
             >
                 <Form
                     initialValues={{
-                        name: userData.userData.fullname,
+                        fullname: userData.userData.fullname,
                         email: userData.userData.email,
                         phone: userData.userData.phone,
                         address: userData.userData.address,
@@ -142,7 +142,7 @@ const Tab1 = () => {
                     {/* <div style={{ marginBottom: '6px' }}>Tên người dùng: <span style={{ color: '#f5222d' }}>*</span></div> */}
                     <Form.Item
                         label="Tên người dùng"
-                        name="name"
+                        name="fullname"
                         rules={[
                             {
                                 required: true,
