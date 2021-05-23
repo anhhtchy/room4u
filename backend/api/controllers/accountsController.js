@@ -375,14 +375,13 @@ exports.changePassword = async (req, res) => {
     }
 }
 exports.updateProfile = (req, res, next) => {
-    const user = {
+    db.accounts.update({
         fullname: req.body.fullname,
         email: req.body.email,
         avatar: req.body.avatar,
         address: req.body.address,
         phone: req.body.phone
-    }
-    db.accounts.update(user, { where: { userid: req.params.id } })
+    }, { where: { userid: req.params.id } })
         .then(data => {
             return res.status(200).send({
                 status: 1
