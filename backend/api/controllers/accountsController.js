@@ -378,7 +378,7 @@ exports.updateProfile = (req, res, next) => {
     db.accounts.update({
         fullname: req.body.fullname,
         email: req.body.email,
-        avatar: req.body.avatar,
+        avatar: req.body.images[0],
         address: req.body.address,
         phone: req.body.phone
     }, { where: { userid: req.params.id } })

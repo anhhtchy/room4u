@@ -69,7 +69,8 @@ const Tab2 = () => {
                     });
                     if (res.status == 200) {
                         console.log("get post data", res);
-                        setUserPost(res.data.posts);
+                        await setUserPost(res.data.posts);
+                        await window.localStorage.setItem("userPostLength", userPost.length ? userPost.length : 0)
                         setLoading(false);
                     } else {
                         console.log("get post data", res);
