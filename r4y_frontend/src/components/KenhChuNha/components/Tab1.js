@@ -13,6 +13,7 @@ import {
     notification,
     Upload,
     Rate,
+    Image,
 } from 'antd';
 
 import {
@@ -37,13 +38,19 @@ const Tab1 = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [userData, setUserData] = useState(JSON.parse((window.localStorage.getItem('userData'))));
+    const [listImg, setListImg] = useState([]);
+    const [visibleImg, setVisibleImg] = useState(false);
+    const [srcPre, setSrcPre] = useState();
+    const [fileList, setFileList] = useState([]);
+    const [visibleModalChangePass, setVisibleModalChangePass] = useState(false);
 
     useEffect(() => {
         setUserData(JSON.parse(window.localStorage.getItem('userData')));
         console.log("header user data", userData);
     }, []);
 
-    const showModal = () => {
+    const showModal = async () => {
+        await setListImg([userData.userData.avatar]);
         setIsModalVisible(true);
     };
 
@@ -55,14 +62,43 @@ const Tab1 = () => {
         setIsModalVisible(false);
     };
 
-    const onFinish = (values) => {
-        console.log("edit", values);
-        setIsModalVisible(false);
-        message.success('Đã lưu!');
+    const onFinish = async (values, images) => {
+        console.log("edit profile", values);
+        console.log("edit profile", images);
+
+        const url = `http://localhost:3001/${userData.userData.userid}/changeProfile`
+
+        try {
+            const res = await axios.post(url);
+            if (res == 200) {
+                console.log("change Pro", res);
+                setIsModalVisible(false);
+                message.success('Đã lưu!');
+            }
+        } catch (err) {
+            console.log(err);
+            setIsModalVisible(false);
+        }
+
+        // setIsModalVisible(false);
+        // message.success('Đã lưu!');
     }
 
     const onFinishFailed = (errInfo) => {
         console.log("edit err", errInfo);
+    }
+
+    const onPreview = (src) => {
+        setVisibleImg(true);
+        setSrcPre(src);
+    }
+
+    const handleOkImg = async () => {
+        let list = await fileList.filter((item, ind) => item.url !== srcPre);
+        let newListImg = await listImg.filter((item, ind) => item !== srcPre)
+        setFileList(list);
+        setListImg(newListImg)
+        setVisibleImg(false);
     }
 
     return (
@@ -88,7 +124,18 @@ const Tab1 = () => {
                 footer={null}
             >
                 <Form
-                    onFinish={onFinish}
+                    initialValues={{
+                        name: userData.userData.fullname,
+                        email: userData.userData.email,
+                        phone: userData.userData.phone,
+                        address: userData.userData.address,
+                    }}
+                    onFinish={(values) =>
+                        onFinish(
+                            values,
+                            listImg.map((url) => url),
+                        )
+                    }
                     onFinishFailed={onFinishFailed}
                     labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}
                 >
@@ -111,11 +158,11 @@ const Tab1 = () => {
                             }
                         ]}
                     >
-                        <Input value="Hoàng Thế Anh" />
+                        <Input />
                     </Form.Item>
 
                     {/* <div style={{ marginBottom: '6px' }}>Tên đăng nhập: <span style={{ color: '#f5222d' }}>*</span></div> */}
-                    <Form.Item
+                    {/* <Form.Item
                         label="Tên đăng nhập"
                         name="username"
                         rules={[
@@ -129,8 +176,8 @@ const Tab1 = () => {
                             }
                         ]}
                     >
-                        <Input value="abc20202" />
-                    </Form.Item>
+                        <Input />
+                    </Form.Item> */}
 
                     {/* <div style={{ marginBottom: '6px' }}>Email: <span style={{ color: '#f5222d' }}>*</span></div> */}
                     <Form.Item
@@ -147,7 +194,7 @@ const Tab1 = () => {
                             },
                         ]}
                     >
-                        <Input value="abc@gmail/com" />
+                        <Input />
                     </Form.Item>
 
                     {/* <div style={{ marginBottom: '6px' }}>SĐT: <span style={{ color: '#f5222d' }}>*</span></div> */}
@@ -169,53 +216,9 @@ const Tab1 = () => {
                             }
                         ]}
                     >
-                        <Input style={{ width: '100%' }} value="0961274321" />
+                        <Input style={{ width: '100%' }} />
                     </Form.Item>
 
-                    {/* <div style={{ marginBottom: '6px' }}>Thay đổi mật khẩu: <span style={{ color: '#f5222d' }}>*</span></div> */}
-                    <Form.Item
-                        label="Thay đổi mật khẩu"
-                        name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập mật khẩu của bạn!',
-                            },
-                            {
-                                min: 6,
-                                message: 'Độ dài mật khẩu tối thiểu là 6 kí tự',
-                            }
-                        ]}
-                        hasFeedback
-                    >
-                        <Input.Password />
-                    </Form.Item>
-
-                    {/* <div style={{ marginBottom: '6px' }}>Xác nhận lại mật khẩu: <span style={{ color: '#f5222d' }}>*</span></div> */}
-                    <Form.Item
-                        label="Xác nhận mật khẩu"
-                        name="confirm"
-                        dependencies={['password']}
-                        hasFeedback
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng xác nhận lại mật khẩu!',
-                            },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve();
-                                    }
-                                    return Promise.reject(new Error('Mật khẩu không khớp!'));
-                                },
-                            }),
-                        ]}
-                    >
-                        <Input.Password />
-                    </Form.Item>
-
-                    {/* <div>Địa chỉ: <span style={{ color: '#f5222d' }}>*</span></div> */}
                     <Form.Item
                         label="Địa chỉ"
                         name="address"
@@ -233,13 +236,136 @@ const Tab1 = () => {
                         <Input value="Số 1, đường Đại Cồ Việt, Hai Bà Trưng, Hà Nội " />
                     </Form.Item>
 
+                    <div style={{ marginBottom: '6px', fontWeight: '600', textAlign: 'center' }}>Thay đổi mật khẩu
+                    <Button className={styles.button} onClick={() => setVisibleModalChangePass(true)}>Đổi mật khẩu</Button>
+                    </div>
+                    <Modal
+                        title={<div
+                            style={{
+                                fontSize: '20px',
+                                textAlign: 'center',
+                                color: '#faad14',
+                                marginTop: '20px'
+                            }}
+                        >CHỈNH SỬA THÔNG TIN CÁ NHÂN</div>}
+                        visible={visibleModalChangePass}
+                        footer={null}
+                        onCancel={() => setVisibleModalChangePass(false)}
+                    >
+                        <Form
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                            labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
+                        >
+                            <Form.Item
+                                label="Nhập mật khẩu cũ"
+                                name="old_password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng nhập mật khẩu cũ của bạn!',
+                                    },
+                                    {
+                                        min: 6,
+                                        message: 'Độ dài mật khẩu tối thiểu là 6 kí tự',
+                                    }
+                                ]}
+                                hasFeedback
+                            >
+                                <Input.Password />
+                            </Form.Item>
 
+                            <Form.Item
+                                label="Nhập mật khẩu mới"
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng nhập mật khẩu mới!',
+                                    },
+                                    {
+                                        min: 6,
+                                        message: 'Độ dài mật khẩu tối thiểu là 6 kí tự',
+                                    }
+                                ]}
+                                hasFeedback
+                            >
+                                <Input.Password />
+                            </Form.Item>
+
+                            <Form.Item
+                                label="Xác nhận mật khẩu mới"
+                                name="confirm"
+                                dependencies={['password']}
+                                hasFeedback
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng xác nhận lại mật khẩu mới!',
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            if (!value || getFieldValue('password') === value) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Mật khẩu không khớp!'));
+                                        },
+                                    }),
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
+
+                            <div style={{ textAlign: 'center' }}>
+                                <Button type="primary" htmlType="submit" className={styles.button}
+                                    style={{
+                                        width: '20%',
+                                        marginRight: '20px',
+                                        border: '1px solid #faad14',
+                                        height: '48px',
+                                        padding: '6px 30px',
+                                        fontWeight: '500',
+                                        fontSize: '16px',
+                                        borderRadius: '8px',
+                                        background: '#faad14',
+                                        color: 'white',
+                                    }}
+                                >
+                                    LƯU
+                                 </Button>
+                            </div>
+
+                        </Form>
+                    </Modal>
 
                     <span style={{ marginRight: '40px' }}> <span style={{ color: '#f5222d' }}>*</span>Chọn ảnh đại diện:</span>
+                    {listImg
+                        .map((url, idx) => {
+                            return (
+                                <div
+                                    className={styles.card} key={idx}
+                                    onClick={() => onPreview(url)}
+                                    style={{ width: 'fit-content' }}
+                                >
+                                    <img
+                                        src={url}
+                                        className={styles.img}
+                                    // style={{
+                                    //     borderRadius: '6px',
+                                    //     width: '80px',
+                                    //     height: '80px',
+                                    //     marginRight: '10px',
+                                    // }}
+                                    />
+                                </div>
+                            );
+                        })
+                    }
+
                     <Upload
                         style={{ marginTop: '10px' }}
                         beforeUpload={(file) => {
-                            console.log(file);
+                            console.log("file before", file);
                             if (!file.type.includes('image/')) {
                                 notification.error({
                                     message: `${file.name} is not a image file`,
@@ -248,21 +374,21 @@ const Tab1 = () => {
                             return file.type.includes('image/');
                         }}
                         onChange={async (info) => {
+                            console.log("onchange info", info)
                             if (info.file.status === 'uploading') {
-                                console.log(info.file.status);
                                 setUploading(true);
                             } else {
-                                console.log(info.file.status);
                                 setUploading(false);
                             }
                             if (info.file.status === 'done') {
-                                console.log(info.fileList);
-                                // setFileList(info.fileList);
+                                console.log(" if done", info);
+                                setFileList([...fileList, info.file]);
+                                setListImg([...listImg, info.file.url])
                             } else if (info.file.status === 'error') {
-                                console.log(info.file);
+                                console.log(" if error", info.file.error);
                                 notification.error({
-                                    message: info.file.error?.response?.data?.error?.message
-                                        ? info.file.error.response.data.error.message
+                                    message: info.file.error.status
+                                        ? info.file.error.status
                                         : 'An error occurred',
                                 });
                             }
@@ -272,24 +398,41 @@ const Tab1 = () => {
                         showUploadList={false}
                         customRequest={async ({ onSuccess, onError, file }) => {
                             const form = new FormData();
-                            form.append('image', file);
+                            form.append('files', file);
                             try {
                                 const res = await axios.post(
                                     "http://localhost:3001/upload",
                                     form,
                                 );
-                                if (res.data.status === 200) {
-                                    file.url = res.data.data.url;
+                                if (res.status === 200) {
+                                    let url = "http://" + res.data.data[0].replace(/\\/g, "/")
+                                    file.url = url;
                                     onSuccess(null, file);
                                 } else {
-                                    onError(res.data.error.message);
+                                    console.log("not 200", res)
+                                    onError(res);
                                 }
                             } catch (error) {
+                                console.log("axios err", error);
                                 onError(error);
                             }
                         }}
                     >
-                        <div className={styles.upload}>
+                        <div className={styles.upload}
+                            style={{
+                                width: '96px',
+                                height: '96px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                border: '1px dashed #c4d5e5',
+                                boxSizing: 'border-box',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                color: '#181818',
+                            }}
+                        >
                             {uploading ? (
                                 loadingIcon
                             ) : (
@@ -302,6 +445,25 @@ const Tab1 = () => {
                             )}
                         </div>
                     </Upload>
+
+                    <Modal
+                        centered={window.innerWidth > 600}
+                        style={{ top: -10 }}
+                        visible={visibleImg}
+                        onCancel={() => setVisibleImg(false)}
+                        onOk={handleOkImg}
+                        okText="Delete"
+                        // footer={null}
+                        width={500}
+                    >
+                        <img
+                            src={srcPre}
+                            style={{
+                                width: 450,
+                                height: 450,
+                            }}
+                        />
+                    </Modal>
 
                     <Form.Item style={{ marginTop: '30px', textAlign: 'right' }}>
                         <Button className={styles.buttonOutline}
@@ -341,8 +503,8 @@ const Tab1 = () => {
             <div className={styles.content}>
                 <div className={styles.leftContent}>
                     <div className={styles.item}>
-                        <Avatar />
-                        <div className={styles.value}>Tên đăng nhập</div>
+                        <Avatar src={<Image src={userData.userData.avatar} />} />
+                        <div className={styles.value}>{userData.userData.username}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><SendOutlined style={{ marginRight: '5px' }} />Họ và tên:</div>
@@ -369,7 +531,7 @@ const Tab1 = () => {
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Số tin đã đăng:</div>
-                        <div className={styles.itemValue}>8</div>
+                        <div className={styles.itemValue}>{window.localStorage.getItem("userPostLength")}</div>
                     </div>
                     <div className={styles.item}>
                         <div className={styles.itemTitle}><FieldTimeOutlined style={{ marginRight: '5px' }} />Ngày tham gia:</div>
@@ -382,7 +544,7 @@ const Tab1 = () => {
                                 <Rate
                                     allowHalf
                                     disabled
-                                    defaultValue={4}
+                                    defaultValue={0}
                                     style={{ fontSize: '14px', color: '#faad14' }}
                                 />
                             </div>
@@ -390,7 +552,7 @@ const Tab1 = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

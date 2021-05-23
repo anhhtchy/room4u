@@ -389,29 +389,6 @@ const Item1 = (props) => {
                             })
                         }
 
-                        {/* {fileList
-                            .map((file, idx) => {
-                                console.log("file url", file);
-                                return (
-                                    <div
-                                        className={styles.card} key={idx}
-                                        onClick={() => onPreview(file.originFileObj.url)}
-                                    >
-                                        <img
-                                            src={file.originFileObj.url}
-                                            className={styles.img}
-                                            style={{
-                                                borderRadius: '6px',
-                                                width: '80px',
-                                                height: '80px',
-                                                marginRight: '10px',
-                                            }}
-                                        />
-                                    </div>
-                                );
-                            })
-                        } */}
-
                         <Upload
                             style={{ marginTop: '10px' }}
                             beforeUpload={(file) => {
