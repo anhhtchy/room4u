@@ -134,7 +134,7 @@ exports.getAccount = async (req, res) => {
             user.password = null;
             return res.json({
                 status: 1,
-                user: user
+                userData: user
             })
         }
     } catch (error) {
