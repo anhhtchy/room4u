@@ -22,7 +22,7 @@ module.exports = function (app) {
   app.route("/refreshtoken").post(accountsController.refreshToken);
 
   //edit profile
-  app.route("/:id/changeProfile").post(accountsController.updateProfile);
+  app.route("/:id/changeProfile").put(accountsController.updateProfile);
 
   app.route("/home").get(postsController.getHomePosts);
   // app

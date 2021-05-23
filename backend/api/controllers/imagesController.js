@@ -1,5 +1,4 @@
 const db = require("../models");
-
 require("dotenv").config();
 exports.uploadImages = (req, res, next)=>{
     files = req.files
@@ -24,4 +23,14 @@ exports.getImagesByPostId = (req,res,next)=>{
             message: err.message || "Cannot get images for post "
         });
     });
+}
+
+exports.deleteImageByUrl = (req, res, next) =>{
+    url = req.body.url
+    db.images.destroy({where:{url:url}})
+    .then(data =>{
+        return res.send({
+            message: "OK 200"
+        })
+    })
 }
