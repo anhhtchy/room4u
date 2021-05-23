@@ -28,9 +28,8 @@ module.exports = function (app) {
   // app
   //   .route("/home/:id")
   //   .get(authMiddleWare.isOwner, postsController.getPostsByUserId);
-  app
-    .route("/home/:id").get(postsController.getPostsByUserId);
-  app.route('/getPost/:pid').get(postsController.getPostById);
+  app.route("/home/:id").get(postsController.getPostsByUserId);
+  app.route("/getPost/:pid").get(postsController.getPostById);
 
   app.route("/:id/createPost").post(postsController.createPostWithImages);
   app.route("/:id/updatePost/:pid").put(postsController.updatePost);
@@ -55,4 +54,7 @@ module.exports = function (app) {
   app
     .route("/save/unsave/:userid&:postid")
     .get(postsController.deleteSavePosts);
+
+  // quan ly nguoi dung
+  app.route("/searchUser").post(accountsController.searchUser);
 };
