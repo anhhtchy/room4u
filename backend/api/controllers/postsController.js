@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const e = require("express");
+const fs = require('fs')
 const { updateProfile } = require("./accountsController");
 
 exports.searchPost = async (req, res) => {
@@ -256,12 +257,16 @@ exports.updatePost = async (req, res, next) => {
   try {
     const [pst, image_data] = await Promise.all([
       db.posts.update(updatePost, { where: { postid: req.params.pid } }),
-      db.images.destroy({ where: { postid: req.params.pid } }),
+      db.images.findAll({ where: { postid: req.params.pid } }),
     ]);
-    // img_urls = [];
-    // for (var i = 0; i < image_data.length; i++) {
-    //   img_urls.push(image_data[i].url);
-    // }
+    x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
+    li = Object.keys(image_data).length;
+    for(var ix = 0; ix < li; ix++){
+      path = '..' + image_data[ix].url.substring(x);
+      fs.unlink(path, (err) => console.log(err));
+    }
+    const del_img = await db.image.destroy({where:{postid:req.params.pid}});
+
     const images = req.body.images;
     if (images != null) {
       for (var i = 0; i < images.length; i++) {
@@ -284,28 +289,30 @@ exports.updatePost = async (req, res, next) => {
 };
 
 exports.deletePost = async (req, res, next) => {
-  try {
-    const [del_imng, del_post] = await Promise.all([
-      db.images.destroy({
-        where: {
-          postid: req.params.pid,
-        },
-      }),
-      db.posts.destroy({
-        where: {
-          postid: req.params.pid,
-        },
-      }),
-    ]);
-    return res.status(200).send({
-      message: "Deleted post with id ${req.params.pid}",
-    });
-  } catch (err) {
-    return res.status(500).send({
-      status: 0,
-      message: err.message || "Cannot delete that post!",
-    });
+  const image_data = await db.images.findAll({where:{postid:req.params.pid}});
+  l = Object.keys(image_data).length;
+  x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
+  for(var i = 0; i < l ; i++){
+    path = '..' + image_data[i].url.substring(x);
+    fs.unlink(path, (err) => console.log(err));
   }
+  db.images.destroy({where:{postid:req.params.pid}})
+  .then(data=>{
+    db.posts.destroy({where:{postid:req.params.pid}})
+    .then(result=>{
+      return res.status(200).send({
+        status:1
+      })
+    }).catch(err=>{
+      return res.status(500).send({
+        message:err.message
+      })
+    })
+  }).catch(err=>{
+    return res.status(500).send({
+      message: err.message
+    })
+  })
 };
 
 exports.deleteAllPostByUserId = async (req, res, next) => {

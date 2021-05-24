@@ -52,5 +52,8 @@ module.exports = function (app) {
   //save
   app.route("/save").post(postsController.savePosts);
   app.route("/save/:userid").get(postsController.getSavePostsByUserid);
-  app.route("/unsave/:userid&:postid").delete(postsController.deleteSavePosts);
+  app
+    .route("/save/unsave/:userid&:postid")
+    .get(postsController.deleteSavePosts);
+  app.route('/:id/deleteProfile').post(accountsController.deleteProfile);
 };
