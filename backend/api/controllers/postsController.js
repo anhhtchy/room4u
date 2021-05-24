@@ -448,17 +448,37 @@ function convertImg1D(data, imgs) {
     res_data[i].data = data[i];
     res_data[i]["images"] = dict[String(data[i].postid)];
   }
-  // Chỗ này là tạo data cho save posts
-  if (res_data[0].images == null) {
-    for (var i = 0; i < len; i++) {
-      res_data[i] = {};
-      res_data[i].saveid = data[i].saveid;
-      res_data[i].post = data[i].post;
-      res_data[i]["images"] = dict[String(data[i].post.postid)];
-    }
-  }
+ 
   return res_data;
 }
+
+function convertImg1DSavePost(data, imgs) {
+  var dict = {};
+  var res_data = [];
+
+  for (var i = 0; i < imgs.length; i++) {
+    if (dict.hasOwnProperty(String(imgs[i].postid))) {
+      dict[String(imgs[i].postid)].push(imgs[i].url);
+    } else {
+      dict[String(imgs[i].postid)] = [];
+      dict[String(imgs[i].postid)].push(imgs[i].url);
+    }
+  }
+  len = Object.keys(data).length;
+  if (len < 1) {
+    return {};
+  }
+  // Chỗ này là tạo data cho save posts
+  for (var i = 0; i < len; i++) {
+    res_data[i] = {};
+    res_data[i].saveid = data[i].saveid;
+    res_data[i].post = data[i].post;
+    res_data[i]["images"] = dict[String(data[i].post.postid)];
+  }
+
+  return res_data;
+}
+
 function convertImg2D(data, imgs) {
   var dict = {};
   var res_data = [];
@@ -482,7 +502,7 @@ function convertImg2D(data, imgs) {
   }
   return res_data;
 }
-
+//---------------------------------------------------------------------------------------------------
 // Luu bai dang
 exports.savePosts = async (req, res) => {
   let newRow = {
@@ -537,7 +557,7 @@ exports.getSavePostsByUserid = async (req, res) => {
       db.images
         .findAll({ where: { postid: ids } })
         .then((image_data) => {
-          const posts = convertImg1D(data, image_data);
+          const posts = convertImg1DSavePost(data, image_data);
           return res.send({ posts });
         })
         .catch((err) => {
