@@ -40,7 +40,7 @@ exports.searchPost = async (req, res) => {
   }
 
   if (req.body.district !== "") {
-    //district = req.body.district.split(" ").join("").split(",");
+    // district = req.body.district.split(" ").join("").split(",");
     district = req.body.district;
   } else {
     district = await Promise.all([
@@ -54,21 +54,21 @@ exports.searchPost = async (req, res) => {
     district = district[0];
   }
 
-  // if (req.body.estatetype !== "") {
-  //   estatetype = req.body.estatetype
-  //     .split(" ")
-  //     .join("")
-  //     .split(",")
-  //     .map((value) => Number(value));
-  //   //console.log(typeof estatetype);
-  // } else {
-  //   estatetype = [0, 1, 2, 3];
-  // }
+  if (req.body.estatetype !== "") {
+    estatetype = req.body.estatetype;
+    // .split(" ")
+    // .join("")
+    // .split(",")
+    // .map((value) => Number(value));
+    //console.log(typeof estatetype);
+  } else {
+    estatetype = [0, 1, 2, 3];
+  }
 
   db.posts
     .findAll({
       where: {
-        //estatetype: estatetype,
+        estatetype: estatetype,
         district: district,
         price: { [Op.between]: [minPrice, maxPrice] },
         area: { [Op.between]: [minArea, maxArea] },
@@ -119,7 +119,7 @@ exports.getPostsByUserId = async (req, res, next) => {
   db.posts
     .findAll({
       where: { userid: userId },
-      order: [["updated", "DESC"]]
+      order: [["updated", "DESC"]],
     })
     .then((data) => {
       ids = [];
@@ -233,7 +233,6 @@ exports.createPostWithImages = (req, res, next) => {
 };
 
 exports.updatePost = async (req, res, next) => {
- 
   const updatePost = {
     title: req.body.title,
     estatetype: req.body.estatetype,
@@ -275,12 +274,12 @@ exports.updatePost = async (req, res, next) => {
       }
     }
     return res.status(200).send({
-      message:"Added successfully"
-    })
-  } catch(err){
+      message: "Added successfully",
+    });
+  } catch (err) {
     return res.send({
-      message:err.message
-    })
+      message: err.message,
+    });
   }
 };
 
@@ -310,27 +309,27 @@ exports.deletePost = async (req, res, next) => {
 };
 
 exports.deleteAllPostByUserId = async (req, res, next) => {
-
-  const data = await db.posts.findAll({ where:{userid:req.params.id}})
-  if(data.length < 1){
-    return res.send({messange: "no posts to delete"});
-  };
-
-  const ids = []
-  for(var i = 0; i < data.length; i++)
-  {
-    ids.push(data[i].postid)
+  const data = await db.posts.findAll({ where: { userid: req.params.id } });
+  if (data.length < 1) {
+    return res.send({ messange: "no posts to delete" });
   }
-  try{
+
+  const ids = [];
+  for (var i = 0; i < data.length; i++) {
+    ids.push(data[i].postid);
+  }
+  try {
     [saved_data, image_data, review_data] = await Promise.all([
       db.savedPosts.destroy({ where: { postid: ids } }),
       db.images.destroy({ where: { postid: ids } }),
-      db.reviews.destroy({where:{postid:ids}})
+      db.reviews.destroy({ where: { postid: ids } }),
     ]);
-    db.posts.destroy({where: { userid: req.params.id }})
-      .then(result =>{
+    db.posts
+      .destroy({ where: { userid: req.params.id } })
+      .then((result) => {
         return res.status(200).send({
-          message: "Deleted post with id all post of user with id" + req.params.id,
+          message:
+            "Deleted post with id all post of user with id" + req.params.id,
         });
       })
       .catch((err) => {
@@ -339,10 +338,9 @@ exports.deleteAllPostByUserId = async (req, res, next) => {
           message: err.message || "Cannot delete all posts!",
         });
       });
-  }catch(err){
-      return res.send({message: err.message})
+  } catch (err) {
+    return res.send({ message: err.message });
   }
-   
 };
 
 exports.getDistricts = (req, res, next) => {
@@ -393,9 +391,10 @@ exports.getHomePosts = async (req, res, next) => {
         ids.push(dataX[i][j].postid);
       }
     }
-    if (ids.length < 1){
+    if (ids.length < 1) {
       return res.send({
-        posts: {}})
+        posts: {},
+      });
     }
     db.images
       .findAll({
@@ -434,20 +433,19 @@ function convertImg1D(data, imgs) {
     }
   }
   len = Object.keys(data).length;
-  if (len < 1)
-  {
-    return {}
-  } 
+  if (len < 1) {
+    return {};
+  }
   for (var i = 0; i < len; i++) {
     res_data[i] = {};
     res_data[i].data = data[i];
     res_data[i]["images"] = dict[String(data[i].postid)];
   }
   // Chỗ này là tạo data cho save posts
-  if (res_data[0].images == null){
+  if (res_data[0].images == null) {
     for (var i = 0; i < len; i++) {
       res_data[i] = {};
-      res_data[i].saveid = data[i].saveid
+      res_data[i].saveid = data[i].saveid;
       res_data[i].post = data[i].post;
       res_data[i]["images"] = dict[String(data[i].post.postid)];
     }
@@ -521,24 +519,25 @@ exports.getSavePostsByUserid = async (req, res) => {
     })
     .then((data) => {
       //console.log(len(data));
-      const ids = []
-      l = Object.keys(data).length
-      if(l < 1){
-        return res.send({posts:{}})
+      const ids = [];
+      l = Object.keys(data).length;
+      if (l < 1) {
+        return res.send({ posts: {} });
       }
-      for(var i  = 0; i < l; i++){
-        ids.push(data[i].post.postid)
+      for (var i = 0; i < l; i++) {
+        ids.push(data[i].post.postid);
       }
-      db.images.findAll({where:{postid:ids}})
-      .then(image_data =>{
-        const posts = convertImg1D(data, image_data);
-        return res.send({posts});
-      })
-      .catch((err) =>{
-        return res.status(500).send({
-          message: err.message || "Cannot get image data"
+      db.images
+        .findAll({ where: { postid: ids } })
+        .then((image_data) => {
+          const posts = convertImg1D(data, image_data);
+          return res.send({ posts });
+        })
+        .catch((err) => {
+          return res.status(500).send({
+            message: err.message || "Cannot get image data",
+          });
         });
-      });
     })
     .catch((err) => {
       return res.status(500).send({
@@ -571,13 +570,13 @@ exports.deleteSavePosts = async (req, res) => {
     });
 };
 
-exports.getPostById = async(req, res, next) =>{
+exports.getPostById = async (req, res, next) => {
   const [data, images] = await Promise.all([
-    db.posts.findAll({where:{postid:req.params.pid}}),
-    db.images.findAll({where:{postid:req.params.pid}})
-  ])
+    db.posts.findAll({ where: { postid: req.params.pid } }),
+    db.images.findAll({ where: { postid: req.params.pid } }),
+  ]);
   return res.send({
-    'data':data[0],
-    'images': images
+    "data": data[0],
+    "images": images,
   });
-}
+};
