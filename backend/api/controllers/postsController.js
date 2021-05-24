@@ -289,6 +289,11 @@ exports.updatePost = async (req, res, next) => {
 };
 
 exports.deletePost = async (req, res, next) => {
+  const [comment, rate, save] = await Promise.all([
+    db.comments.destroy({where:{postid:req.params.pid}}),
+    db.ratings.destroy({ where: { postid: req.params.pid } }),
+    db.savedPosts.destroy({ where: { postid: req.params.pid } })
+  ]);
   const image_data = await db.images.findAll({where:{postid:req.params.pid}});
   l = Object.keys(image_data).length;
   x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
@@ -325,11 +330,19 @@ exports.deleteAllPostByUserId = async (req, res, next) => {
   for (var i = 0; i < data.length; i++) {
     ids.push(data[i].postid);
   }
+  image_data = await db.images.destroy({ where: { postid: ids } });
+  x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
+  li = Object.keys(image_data).length;
+  for (var j = 0; j < li; j++) {
+    path = '..' + image_data[j].url.substring(x);
+    fs.unlink(path, (err) => console.log(err));
+  }
   try {
-    [saved_data, image_data, review_data] = await Promise.all([
+    [saved_, image_, rate_, comment_] = await Promise.all([
       db.savedPosts.destroy({ where: { postid: ids } }),
       db.images.destroy({ where: { postid: ids } }),
-      db.reviews.destroy({ where: { postid: ids } }),
+      db.ratings.destroy({ where: { postid: ids } }),
+      db.comments.destroy({ where: { postid: ids } })
     ]);
     db.posts
       .destroy({ where: { userid: req.params.id } })
@@ -448,17 +461,37 @@ function convertImg1D(data, imgs) {
     res_data[i].data = data[i];
     res_data[i]["images"] = dict[String(data[i].postid)];
   }
-  // Chỗ này là tạo data cho save posts
-  if (res_data[0].images == null) {
-    for (var i = 0; i < len; i++) {
-      res_data[i] = {};
-      res_data[i].saveid = data[i].saveid;
-      res_data[i].post = data[i].post;
-      res_data[i]["images"] = dict[String(data[i].post.postid)];
-    }
-  }
+ 
   return res_data;
 }
+
+function convertImg1DSavePost(data, imgs) {
+  var dict = {};
+  var res_data = [];
+
+  for (var i = 0; i < imgs.length; i++) {
+    if (dict.hasOwnProperty(String(imgs[i].postid))) {
+      dict[String(imgs[i].postid)].push(imgs[i].url);
+    } else {
+      dict[String(imgs[i].postid)] = [];
+      dict[String(imgs[i].postid)].push(imgs[i].url);
+    }
+  }
+  len = Object.keys(data).length;
+  if (len < 1) {
+    return {};
+  }
+  // Chỗ này là tạo data cho save posts
+  for (var i = 0; i < len; i++) {
+    res_data[i] = {};
+    res_data[i].saveid = data[i].saveid;
+    res_data[i].post = data[i].post;
+    res_data[i]["images"] = dict[String(data[i].post.postid)];
+  }
+
+  return res_data;
+}
+
 function convertImg2D(data, imgs) {
   var dict = {};
   var res_data = [];
@@ -482,7 +515,7 @@ function convertImg2D(data, imgs) {
   }
   return res_data;
 }
-
+//---------------------------------------------------------------------------------------------------
 // Luu bai dang
 exports.savePosts = async (req, res) => {
   let newRow = {
@@ -537,7 +570,7 @@ exports.getSavePostsByUserid = async (req, res) => {
       db.images
         .findAll({ where: { postid: ids } })
         .then((image_data) => {
-          const posts = convertImg1D(data, image_data);
+          const posts = convertImg1DSavePost(data, image_data);
           return res.send({ posts });
         })
         .catch((err) => {
