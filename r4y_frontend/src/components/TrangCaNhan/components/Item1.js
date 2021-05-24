@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from "axios";
+import { Link } from 'react-router-dom';
 
 import {
     Button,
@@ -25,6 +26,7 @@ import img1 from '../../../img/item1.jpg';
 
 import styles from '../../Homepage/Home.module.css';
 import styles1 from './tab.module.css';
+import { estateLink } from "../../../constants/ActionType";
 
 const { Option } = Select;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -88,8 +90,10 @@ const Item1 = (props) => {
             <div className={styles.imgItem} style={{ backgroundImage: `url(${props.img})` }}></div>
             <div className={styles.itemContent}>
                 <div className={styles.itemType}>{props.type}</div>
-                <div className={styles.itemTitle}>{props.title.slice(0,50)}...</div>
-                <div className={styles.addressPost}>{props.location.slice(0,40)}...</div>
+                <Link to={`/${estateLink[props.estatetype]}/${props.postid}`}>
+                    <div className={styles.itemTitle}>{props.title.slice(0, 50)}...</div>
+                </Link>
+                <div className={styles.addressPost}>{props.location.slice(0, 40)}...</div>
                 {/* <div className={styles.itemRating}>
                     <Rate
                         allowHalf

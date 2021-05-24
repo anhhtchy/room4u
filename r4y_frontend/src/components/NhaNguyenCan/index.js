@@ -244,7 +244,7 @@ const NhaNguyenCan = () => {
                             <Row gutter={[32, 32]}>
                                 {dataNhaNguyenCan && dataNhaNguyenCan.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
+                                        <Link to={`/nha-nguyen-can/${item.data.postid}`}>
                                             <Item
                                                 img={item.images[0]}
                                                 type={estate[item.data.estatetype]}

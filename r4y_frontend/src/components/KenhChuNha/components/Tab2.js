@@ -221,9 +221,8 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    {/* <Row gutter={[32, 32]}> */}
-                    {console.log("user post", userPost)}
-                    {userPost.length ? (userPost.length > 2 ? (
+
+                    {userPost.length ? (userPost.length > 2 ? ( 
                         <Row gutter={[32, 32]}>
                             {userPost.slice(start * 6, end * 6).map((item, idx) => (
                                 <Col xs={24} sm={24} md={8} lg={8} key={idx}>

@@ -233,11 +233,11 @@ const Home = () => {
             <div className={styles.subGroup}>
               <div className={styles.rightTitle}>
                 <Link to="/phong-tro-sv">PHÒNG TRỌ SINH VIÊN</Link>
-              </div>
+              </div> 
               <Row gutter={[32, 32]}>
                 {dataPhongTroSV && dataPhongTroSV.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/phong-tro-sv/${item.data.postid}-${item.data.title}`}>
+                    <Link to={`/phong-tro-sv/${item.data.postid}`}>
                       <Item
                         img={item.images[0]}
                         type={estate[item.data.estatetype]}
@@ -267,7 +267,7 @@ const Home = () => {
               <Row gutter={[32, 32]}>
                 {dataChungCu && dataChungCu.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/chung-cu/${item.data.postid}-${item.data.title}`}>
+                    <Link to={`/chung-cu/${item.data.postid}`}>
                       <Item
                         img={item.images[0]}
                         type={estate[item.data.estatetype]}
@@ -297,7 +297,7 @@ const Home = () => {
               <Row gutter={[32, 32]}>
                 {dataVanPhong && dataVanPhong.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/chung-cu-mini/${item.data.postid}-${item.data.title}`}>
+                    <Link to={`/chung-cu-mini/${item.data.postid}`}>
                       <Item
                         img={item.images[0]}
                         type={estate[item.data.estatetype]}
@@ -327,7 +327,7 @@ const Home = () => {
               <Row gutter={[32, 32]}>
                 {dataNhaNguyenCan && dataNhaNguyenCan.slice(0, 3).map((item, idx) => (
                   <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                    <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
+                    <Link to={`/nha-nguyen-can/${item.data.postid}`}>
                       <Item
                         img={item.images[0]}
                         type={estate[item.data.estatetype]}
