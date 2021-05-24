@@ -45,6 +45,16 @@ module.exports = function (app) {
   app.route("/comments/:postid").get(commentsController.getComments);
   app.route("/comments/update").put(commentsController.updateComment);
   app.route("/comments/delete/:commentid").delete(commentsController.deleteComment);
+  // ratings apis
+  let ratingsController = require("../controllers/ratingsController");
+  app.route("/ratings/create").post(ratingsController.createRating);
+  app.route("/ratings/:postid").get(ratingsController.getRatings);
+  app.route("/ratings/update").put(ratingsController.updateRating);
+  app.route("/ratings/delete/:ratingid").delete(ratingsController.deleteRating);
+  // trung bình rating của post
+  app.route("/ratings/average/:postid").get(ratingsController.getPostAverageRatings);
+  // trung bình rating các post của user
+  app.route("/ratings/averageuser/:userid").get(ratingsController.getUserAverageRatings);
   // Đây là đoạn test up ảnh nhé
   app.route("/upload").post(fileUpload.any(), imagesComtroller.uploadImages);
   app.route("/:pid/imgs").get(imagesComtroller.getImagesByPostId);
