@@ -171,14 +171,14 @@ const PageDetail = () => {
                                                 <Rate
                                                     allowHalf
                                                     disabled
-                                                    defaultValue={1}
+                                                    defaultValue={4.5}
                                                     style={{
                                                         fontSize: '14px',
                                                         color: '#faad14',
                                                     }}
                                                 />
                                                 <div>
-                                                    {`${1}/5 của ${1} đánh giá`}
+                                                    {`${4.5}/5 của ${5} đánh giá`}
                                                 </div>
                                             </div>
                                         </div>

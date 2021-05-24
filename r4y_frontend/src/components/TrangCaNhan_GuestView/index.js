@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 
 import {
     Breadcrumb,
@@ -31,169 +32,141 @@ import img from "../../img/img.jpg";
 import img1 from "../../img/img1.jpg";
 import img2 from "../../img/img2.jpg";
 import img3 from "../../img/img3.jpg";
-
-const mockData = [
-    {
-        id: 1,
-        name: "name1",
-        img: [item1, img, img1, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 4.5,
-        count_rating: "10",
-        price: 4500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 2,
-        name: "name2",
-        img: [img, item2, img1, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 2.5,
-        count_rating: "10",
-        price: 6500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 3,
-        name: "name3",
-        img: [img1, item1, img, img2, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 4.0,
-        count_rating: "10",
-        price: 4000000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 4,
-        name: "name4",
-        img: [img2, item1, img, img1, img3],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 3.0,
-        count_rating: "10",
-        price: 4500000,
-        square: "40",
-        count_room: "2",
-    },
-    {
-        id: 5,
-        name: "name5",
-        img: [img3, item2, img, img1, img2],
-        type: "CHUNG CƯ MINI",
-        title: "Số 80, ngõ 317 Tây Sơn",
-        location: "Ngã Tư Sở, Đống Đa, Hà Nội",
-        rating: 5.0,
-        count_rating: "10",
-        price: 5500000,
-        square: "40",
-        count_room: "2",
-    },
-];
+import axios from 'axios';
+import Loading from '../loading';
+import { estateLink, estate } from "../../constants/ActionType";
 
 const GuestView = () => {
     const params = useParams();
+    const [userData, setUserData] = useState();
+    const [userPost, setUserPost] = useState();
+    const [loading, setLoading] = useState(true);
+    const count_post = window.localStorage.getItem("userPostLength");
 
     useEffect(async () => {
         try {
-            
+            const res = await axios.get(`http://localhost:3001/user/${params.id}`);
+            if (res.status == 200) {
+                console.log("get data user", res);
+                await setUserData(res.data);
+            }
         } catch (err) {
             console.log(err);
         }
-    })
-    
+
+        try {
+            const res = await axios.get(`http://localhost:3001/home/${params.id}`);
+            if (res.status == 200) {
+                console.log("g", res);
+                await setUserPost(res.data.posts);
+                setLoading(false);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }, []);
+
     return (
-        <div className={styles.container}>
-            <div className={styles.guestView}>
-                <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
-                    <Breadcrumb.Item href="/">
-                        <HomeOutlined />
-                        <span>Trang chủ</span>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item href="">
-                        <span>Trang cá nhân của {`${""}`}</span>
-                    </Breadcrumb.Item>
-                </Breadcrumb>
-                <div className={styles.top}>
-                    <div className={styles.topLeft}>
-                        <Avatar size={72} icon={<UserOutlined />} />
-                        <div style={{ marginLeft: '20px' }}>
-                            <div className={styles.fullname}>
-                                Nguyễn Văn A
-                            </div>
-                            <div className={styles.username}>
-                                nguyenvanabcd2021
-                            </div>
-                        </div>
-                    </div>
-                    <div className={styles.topRight}>
-                        <div className={styles.item}>
-                            <div className={styles.itemTitle}><EnvironmentOutlined style={{ marginRight: '5px' }} />Địa chỉ:</div>
-                            <div className={styles.itemValue}>BĐS 68 trần hưng đạo</div>
-                        </div>
-                        <div className={styles.item}>
-                            <div className={styles.itemTitle}><PhoneOutlined style={{ marginRight: '5px' }} />Số điện thoại:</div>
-                            <div className={styles.itemValue}>098****321</div>
-                        </div>
-                        <div className={styles.item}>
-                            <div className={styles.itemTitle}><FieldTimeOutlined style={{ marginRight: '5px' }} />Ngày tham gia:</div>
-                            <div className={styles.itemValue}>31/03/2021</div>
-                        </div>
-                        <div className={styles.item}>
-                            <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Số tin đã đăng:</div>
-                            <div className={styles.itemValue}>5</div>
-                        </div>
-                        <div className={styles.item}>
-                            <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Đánh giá:</div>
-                            <div className={styles.itemValue}>
-                                <Rate
-                                    allowHalf
-                                    disabled
-                                    defaultValue={3.5}
-                                    style={{
-                                        fontSize: '14px',
-                                        color: '#faad14',
-                                    }}
-                                />
+        loading ? <Loading />
+            : <div className={styles.container}>
+                <div className={styles.guestView}>
+                    <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
+                        <Breadcrumb.Item href="/">
+                            <HomeOutlined />
+                            <span>Trang chủ</span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item href="">
+                            <span>Trang cá nhân của {`${userData.userData.fullname}`}</span>
+                        </Breadcrumb.Item>
+                    </Breadcrumb>
+                    <div className={styles.top}>
+                        <div className={styles.topLeft}>
+                            <Avatar size={72} icon={userData.userData.avatar ? userData.userData.avatar : <UserOutlined />} />
+                            <div style={{ marginLeft: '20px' }}>
+                                <div className={styles.fullname}>
+                                    {userData.userData.fullname}
+                                </div>
+                                <div className={styles.username}>
+                                    {userData.userData.username}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className={styles.body}>
-                    <div className={styles.bodyTitle}>
-                        TIN ĐÃ ĐĂNG
-                        <span style={{ fontSize: '20px', color: '#fafafa' }}> 5 tin </span>
-                    </div>
-                    <Row gutter={[32, 32]}>
-                        {mockData.map((item, idx) => (
-                            <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                <Link to={`/phong-tro-sv/${item.id}-${item.name}`}>
-                                    <Item
-                                        img={item.img[0]}
-                                        type={item.type}
-                                        title={item.title}
-                                        location={item.location}
-                                        rating={item.rating}
-                                        price={item.price}
-                                        square={item.square}
-                                        count_room={item.count_room}
+                        <div className={styles.topRight}>
+                            <div className={styles.item}>
+                                <div className={styles.itemTitle}><EnvironmentOutlined style={{ marginRight: '5px' }} />Địa chỉ:</div>
+                                <div className={styles.itemValue}>{userData.userData.address}</div>
+                            </div>
+                            <div className={styles.item}>
+                                <div className={styles.itemTitle}><PhoneOutlined style={{ marginRight: '5px' }} />Số điện thoại:</div>
+                                <div className={styles.itemValue}>
+                                    {userData.userData.phone.slice(0, 3)
+                                        + "***" +
+                                        userData.userData.phone.slice(userData.userData.phone.length - 3, userData.userData.phone.length)
+                                    }
+                                </div>
+                            </div>
+                            <div className={styles.item}>
+                                <div className={styles.itemTitle}><FieldTimeOutlined style={{ marginRight: '5px' }} />Ngày tham gia:</div>
+                                <div className={styles.itemValue}>{moment(userData.userData.created).format("MMMM Do YYYY")}</div>
+                            </div>
+                            <div className={styles.item}>
+                                <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Số tin đã đăng:</div>
+                                <div className={styles.itemValue}>{userPost.length}</div>
+                            </div>
+                            <div className={styles.item}>
+                                <div className={styles.itemTitle}><FormOutlined style={{ marginRight: '5px' }} />Đánh giá:</div>
+                                <div className={styles.itemValue}>
+                                    <Rate
+                                        allowHalf
+                                        disabled
+                                        defaultValue={0}
+                                        style={{
+                                            fontSize: '14px',
+                                            color: '#faad14',
+                                        }}
                                     />
-                                </Link>
-                            </Col>
-                        ))}
-                    </Row>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.body}>
+                        <div className={styles.bodyTitle}>
+                            TIN ĐÃ ĐĂNG
+                        <span style={{ fontSize: '20px', color: '#fafafa' }}> {userPost.length} tin </span>
+                        </div>
+                        {!userPost.length ? <div>Chưa có bài đăng nào!</div>
+                            : <Row gutter={[32, 32]}>
+                                {userPost.map((item, idx) => (
+                                    <Col xs={24} sm={24} md={8} lg={8} key={idx}>
+                                        <Link to={`/${estateLink[item.data.estatetype]}/${item.id}`}>
+                                            <Item
+                                                postid={item.data.postid}
+                                                img={item.images[0]}
+                                                type={estate[item.data.estatetype]}
+                                                title={`${item.data.title}`}
+                                                location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
+                                                rating={4.5}
+                                                price={item.data.price}
+                                                square={item.data.area}
+                                                count_room={item.data.roomnum}
+                                                description={item.data.description}
+                                                estatetype={item.data.estatetype}
+                                                district={item.data.district}
+                                                address={item.data.address}
+                                                electricity={item.data.electricity}
+                                                water={item.data.water}
+                                                wifi={item.data.wifi}
+                                                ultility={item.data.ultility}
+                                                images={item.images}
+                                            />
+                                        </Link>
+                                    </Col>
+                                ))}
+                            </Row>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
     )
 }
 

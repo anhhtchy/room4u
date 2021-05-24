@@ -228,7 +228,7 @@ const Tab2 = () => {
                                 <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                     <Item
                                         postid={item.data.postid}
-                                        img={item.images[0]}
+                                        img={item.images ? item.images[0]: ""}
                                         type={estate[item.data.estatetype]}
                                         title={`${item.data.title}`}
                                         location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
@@ -252,7 +252,7 @@ const Tab2 = () => {
                         <div style={{ width: '32%', marginRight: '3%' }}>
                             <Item
                                  postid={item.data.postid}
-                                 img={item.images[0]}
+                                 img={item.images ? item.images[0]: ""}
                                  type={estate[item.data.estatetype]}
                                  title={`${item.data.title}`}
                                  location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
