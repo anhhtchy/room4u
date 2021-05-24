@@ -289,6 +289,11 @@ exports.updatePost = async (req, res, next) => {
 };
 
 exports.deletePost = async (req, res, next) => {
+  const [comment, rate, save] = await Promise.all([
+    db.comments.destroy({where:{postid:req.params.pid}}),
+    db.ratings.destroy({ where: { postid: req.params.pid } }),
+    db.savedPosts.destroy({ where: { postid: req.params.pid } })
+  ]);
   const image_data = await db.images.findAll({where:{postid:req.params.pid}});
   l = Object.keys(image_data).length;
   x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
@@ -325,11 +330,19 @@ exports.deleteAllPostByUserId = async (req, res, next) => {
   for (var i = 0; i < data.length; i++) {
     ids.push(data[i].postid);
   }
+  image_data = await db.images.destroy({ where: { postid: ids } });
+  x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
+  li = Object.keys(image_data).length;
+  for (var j = 0; j < li; j++) {
+    path = '..' + image_data[j].url.substring(x);
+    fs.unlink(path, (err) => console.log(err));
+  }
   try {
-    [saved_data, image_data, review_data] = await Promise.all([
+    [saved_, image_, rate_, comment_] = await Promise.all([
       db.savedPosts.destroy({ where: { postid: ids } }),
       db.images.destroy({ where: { postid: ids } }),
-      db.reviews.destroy({ where: { postid: ids } }),
+      db.ratings.destroy({ where: { postid: ids } }),
+      db.comments.destroy({ where: { postid: ids } })
     ]);
     db.posts
       .destroy({ where: { userid: req.params.id } })

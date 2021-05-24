@@ -413,7 +413,8 @@ exports.deleteProfile = (req, res, next) =>{
             }
             const [im, re,sa] = await Promise.all([
                 db.images.destroy({where:{postid:postids}}),
-                db.reviews.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }]}}),
+                db.ratings.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }]}}),
+                db.comments.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }] } }),
                 db.savedPosts.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }] } }),
             ])
             db.posts.destroy({where:{userid:req.params.id}})
