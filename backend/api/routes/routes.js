@@ -39,12 +39,12 @@ module.exports = function (app) {
     .route("/:id/deleteAllPosts")
     .delete(postsController.deleteAllPostByUserId);
   app.route("/getDistricts").get(postsController.getDistricts);
-  // reviews apis
-  let reviewsController = require("../controllers/reviewsController");
-  app.route("/reviews/create").post(reviewsController.createReview);
-  app.route("/reviews/:postid").get(reviewsController.getReviews);
-  app.route("/reviews/update").put(reviewsController.updateReview);
-  app.route("/reviews/delete/:reviewid").delete(reviewsController.deleteReview);
+  // comments apis
+  let commentsController = require("../controllers/commentsController");
+  app.route("/comments/create").post(commentsController.createComment);
+  app.route("/comments/:postid").get(commentsController.getComments);
+  app.route("/comments/update").put(commentsController.updateComment);
+  app.route("/comments/delete/:commentid").delete(commentsController.deleteComment);
   // Đây là đoạn test up ảnh nhé
   app.route("/upload").post(fileUpload.any(), imagesComtroller.uploadImages);
   app.route("/:pid/imgs").get(imagesComtroller.getImagesByPostId);
@@ -52,5 +52,8 @@ module.exports = function (app) {
   //save
   app.route("/save").post(postsController.savePosts);
   app.route("/save/:userid").get(postsController.getSavePostsByUserid);
-  app.route("/unsave/:userid&:postid").delete(postsController.deleteSavePosts);
+  app
+    .route("/save/unsave/:userid&:postid")
+    .get(postsController.deleteSavePosts);
+  app.route('/:id/deleteProfile').post(accountsController.deleteProfile);
 };
