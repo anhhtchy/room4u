@@ -16,6 +16,7 @@ module.exports = function (app) {
   app.route("/changepassword").post(accountsController.changePassword);
   // sentOtp
   app.route("/sendotp").post(accountsController.sendOtp);
+  app.route("/checkotp").post(accountsController.checkOtp);
   app.route("/forgetpassword").post(accountsController.forgetPassword);
 
   // refresh token
