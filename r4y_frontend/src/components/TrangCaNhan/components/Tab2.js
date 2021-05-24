@@ -63,7 +63,8 @@ const Tab2 = () => {
                     const res = await axios.get(`http://localhost:3001/save/${userId}`);
                     if (res.status == 200) {
                         console.log("save", res.data);
-                        setUserSave(res.data.posts);
+                        await setUserSave(res.data.posts);
+                        await window.localStorage.setItem("userSavePostLength", userSave.length ? userSave.length : 0)
                         setLoading(false);
                     } else {
                         console.log("save", res);
@@ -145,7 +146,7 @@ const Tab2 = () => {
                     }
                 </div>
             }
-            
+
             <Pagination
                 defaultCurrent={1}
                 defaultPageSize={6}

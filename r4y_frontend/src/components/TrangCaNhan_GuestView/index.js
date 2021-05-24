@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
     Breadcrumb,
@@ -19,7 +19,7 @@ import {
     FieldTimeOutlined,
 } from '@ant-design/icons';
 
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Item from '../Homepage/components/Item';
 
@@ -101,6 +101,16 @@ const mockData = [
 ];
 
 const GuestView = () => {
+    const params = useParams();
+
+    useEffect(async () => {
+        try {
+            
+        } catch (err) {
+            console.log(err);
+        }
+    })
+    
     return (
         <div className={styles.container}>
             <div className={styles.guestView}>

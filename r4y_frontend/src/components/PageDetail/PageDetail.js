@@ -209,7 +209,7 @@ const PageDetail = () => {
                                         <Avatar size="large" src={userPost.userData.avatar} />
                                         <div className={styles.username}>{userPost.userData.username}</div>
                                     </div>
-                                    <Link to="/xem-trang-ca-nhan">
+                                    <Link to={`/xem-trang-ca-nhan/${userPost.userData.userid}`}>
                                         <Button className={styles.btnOutline}>Xem trang</Button>
                                     </Link>
                                 </div>

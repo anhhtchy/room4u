@@ -38,6 +38,7 @@ const Item1 = (props) => {
     const [fileList, setFileList] = useState([]);
     const [visibleImg, setVisibleImg] = useState(false);
     const [srcPre, setSrcPre] = useState();
+    const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -55,9 +56,20 @@ const Item1 = (props) => {
         setIsModalDelVisible(true);
     };
 
-    const handleOkDel = () => {
-        setIsModalDelVisible(false);
-        message.success('Đã xóa!');
+    const handleOkDel = async () => {
+        let userid = userLogin.userData.userid;
+
+        try {
+            const res = await axios.delete(`http://localhost:3001/unsave/${userid}&${props.postid}`);
+            if (res.status = 200) {
+                console.log(res);
+                message.success("Đã xóa!");
+                setIsModalDelVisible(false);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleCancelDel = () => {
