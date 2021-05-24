@@ -4,6 +4,7 @@ const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
 const { Op } = require("sequelize");
 let jwtHelper = require("../../helpers/jwtHelper");
 let nodemailer = require('nodemailer');
+const fs = require('fs');
 
 const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || "0.5h";
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "room4u_access_secret";
@@ -392,4 +393,46 @@ exports.updateProfile = (req, res, next) => {
                 message: err.message || "Cannot update account"
             })
         })
+}
+exports.deleteProfile = (req, res, next) =>{
+    db.posts.findAll({where:{userid:req.params.id}})
+    .then(data=>{
+        const postids = []
+        l = Object.keys(data).length
+        for(var i = 0; i < l; i++){
+            postids.push(data[i].postid);
+        }
+        db.images.findAll({where:{postid:postids}})
+        .then(async(image_data)=>{
+            x = ('http://' + process.env.BACKEND_HOST+":"+process.env.PORT).length;
+            li = Object.keys(image_data).length;
+            for(var j = 0; j < li ; j++){
+                path = '..' + image_data[j].url.substring(x);
+                fs.unlink(path, (err)=>console.log(err));
+                
+            }
+            const [im, re,sa] = await Promise.all([
+                db.images.destroy({where:{postid:postids}}),
+                db.reviews.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }]}}),
+                db.savedPosts.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }] } }),
+            ])
+            db.posts.destroy({where:{userid:req.params.id}})
+            .then(data =>{
+                db.accounts.destroy({where:{userid:req.params.id}})
+            }).then(result=>{
+                return res.send({
+                   status:1
+                })
+            })
+           
+        }).catch(err=>{
+            return res.status(500).send({
+                message: err.message
+            });
+        })
+    }).catch(err=>{
+        return res.status(500).send({
+            message:err.message
+        });
+    })
 }
