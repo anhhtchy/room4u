@@ -35,15 +35,30 @@ db.posts.hasMany(db.images, {
   foreignKey: "postid",
   allowNull: false,
 });
-db.reviews = require("./reviewsModel")(sequelize, Sequelize);
-db.accounts.hasMany(db.reviews, {
+db.ratings = require("./ratingsModel")(sequelize, Sequelize);
+db.accounts.hasMany(db.ratings, {
   foreignKey: "userid",
   allowNull: false,
 });
 // db.reviews.belongsTo(db.accounts, {
 //   foreignKey: "userid"
 // });
-db.posts.hasMany(db.reviews, {
+db.posts.hasMany(db.ratings, {
+  foreignKey: "postid",
+  allowNull: false,
+});
+// db.reviews.belongsTo(db.posts, {
+//   foreignKey: "postid",
+// });
+db.comments = require("./commentsModel")(sequelize, Sequelize);
+db.accounts.hasMany(db.comments, {
+  foreignKey: "userid",
+  allowNull: false,
+});
+// db.reviews.belongsTo(db.accounts, {
+//   foreignKey: "userid"
+// });
+db.posts.hasMany(db.comments, {
   foreignKey: "postid",
   allowNull: false,
 });

@@ -41,15 +41,39 @@ CREATE TABLE `images` (
    FOREIGN KEY (postid) REFERENCES posts(postid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `reviews` (
-    `reviewid` BIGINT(35) NOT NULL AUTO_INCREMENT,
+-- CREATE TABLE `reviews` (
+--     `reviewid` BIGINT(35) NOT NULL AUTO_INCREMENT,
+--     `postid` BIGINT(35) NOT NULL,
+--     `userid` BIGINT(35) NOT NULL,
+--     `rating` INT NOT NULL,
+--     `comment` varchar(2048) DEFAULT NULL,
+--     `created` DATETIME NOT NULL,
+--     `updated` DATETIME NOT NULL,
+--     PRIMARY KEY(reviewid),
+--     FOREIGN KEY (postid) REFERENCES posts(postid),
+--     FOREIGN KEY (userid) REFERENCES accounts(userid)
+-- )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+CREATE TABLE `ratings` (
+    `ratingid` BIGINT(35) NOT NULL AUTO_INCREMENT,
     `postid` BIGINT(35) NOT NULL,
     `userid` BIGINT(35) NOT NULL,
     `rating` INT NOT NULL,
+    `created` DATETIME NOT NULL,
+    `updated` DATETIME NOT NULL,
+    PRIMARY KEY(ratingid),
+    FOREIGN KEY (postid) REFERENCES posts(postid),
+    FOREIGN KEY (userid) REFERENCES accounts(userid)
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+CREATE TABLE `comments` (
+    `commentid` BIGINT(35) NOT NULL AUTO_INCREMENT,
+    `postid` BIGINT(35) NOT NULL,
+    `userid` BIGINT(35) NOT NULL,
     `comment` varchar(2048) DEFAULT NULL,
     `created` DATETIME NOT NULL,
     `updated` DATETIME NOT NULL,
-    PRIMARY KEY(reviewid),
+    PRIMARY KEY(commentid),
     FOREIGN KEY (postid) REFERENCES posts(postid),
     FOREIGN KEY (userid) REFERENCES accounts(userid)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
