@@ -51,6 +51,8 @@ module.exports = function (app) {
   let ratingsController = require("../controllers/ratingsController");
   app.route("/ratings/create").post(ratingsController.createRating);
   app.route("/ratings/:postid").get(ratingsController.getRatings);
+  // rating của 1 user cho 1 post
+  app.route("/rating/:userid&:postid").get(ratingsController.getUserRating);
   app.route("/ratings/update").put(ratingsController.updateRating);
   app.route("/ratings/delete/:ratingid").delete(ratingsController.deleteRating);
   // trung bình rating của post
