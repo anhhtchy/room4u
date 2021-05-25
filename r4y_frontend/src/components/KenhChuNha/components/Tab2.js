@@ -121,6 +121,7 @@ const Tab2 = () => {
         console.log('Form images: ', images);
         // setIsModalVisible(false);
         // message.success('Đăng bài thành công!');
+        console.log("user id", userData.userData.userid);
         try {
             const res = await axios.post(`http://localhost:3001/${userData.userData.userid}/createPost`, {
                 ...values,
@@ -221,7 +222,6 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-
                     {userPost.length ? (userPost.length > 2 ? ( 
                         <Row gutter={[32, 32]}>
                             {userPost.slice(start * 6, end * 6).map((item, idx) => (

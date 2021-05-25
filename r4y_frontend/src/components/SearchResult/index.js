@@ -41,7 +41,7 @@ const SearchResult = () => {
     const searchResult = useSelector(state => state.homepage.searchResult);
 
     const [estateType, setEstateType] = React.useState("");
-    const [district, setDistrict] = React.useState([]);
+    const [district, setDistrict] = React.useState("");
     const [area, setArea] = React.useState("");
     const [minPrice, setMinPrice] = React.useState(0);
     const [maxPrice, setMaxPrice] = React.useState("");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Row, Col, Rate, message } from 'antd';
+import { Avatar, Button, Row, Col, Rate, message, notification } from 'antd';
 import {
     PhoneOutlined,
     DollarOutlined,
@@ -8,7 +8,7 @@ import {
     TagsOutlined,
     WhatsAppOutlined,
 } from '@ant-design/icons';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import Slider from "react-slick";
 
 import styles from './PageDetail.module.css';
@@ -43,28 +43,34 @@ const PageDetail = () => {
     const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
     const params = useParams();
+    const history = useHistory();
 
     useEffect(async () => {
         console.log("params", params);
-        try {
-            const post = await axios.get(`http://localhost:3001/reviews/${params.id}`);
-            if (post.status == 200) {
-                console.log("post review", post);
-                await setPostReview(post.data.reviews);
-            }
-        } catch (err) {
-            console.log(err);
-        }
+        getPostData();
+        // try {
+        //     const post = await axios.get(`http://localhost:3001/reviews/${params.id}`);
+        //     if (post.status == 200) {
+        //         console.log("post review", post);
+        //         await setPostReview(post.data.reviews);
+        //     }
+        // } catch (err) {
+        //     console.log(err);
+        // }
+
+    }, []);
+
+    const getPostData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/getPost/${params.id}`);
             if (res.status == 200) {
-                console.log("get post data", res.data);
+                console.log("get post data", res.data.data.userid);
                 await setPostData(res.data);
-                const userId = postData ? postData.data.userid : 1;
                 try {
+                    const userId = await res.data.data.userid;
                     const response = await axios.get(`http://localhost:3001/user/${userId}`);
                     if (response.status == 200) {
-                        console.log("get data user", response.data);
+                        console.log("get data user", response);
                         await setUserPost(response.data);
                         setLoading(false);
                     }
@@ -77,9 +83,14 @@ const PageDetail = () => {
         } catch (err) {
             console.log(err);
         }
-    }, []);
+    };
 
     const handleSave = async () => {
+        if (!window.localStorage.getItem('userData')) {
+            message.error("Bạn chưa đăng nhập!")
+            history.push("/login");
+        }
+
         try {
             const res = await axios.post("http://localhost:3001/save", {
                 userid: userLogin.userData.userid,

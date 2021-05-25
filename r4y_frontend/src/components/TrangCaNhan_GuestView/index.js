@@ -8,6 +8,8 @@ import {
     Row,
     Col,
     Avatar,
+    Pagination,
+    Image,
 } from "antd";
 
 import {
@@ -42,6 +44,8 @@ const GuestView = () => {
     const [userPost, setUserPost] = useState();
     const [loading, setLoading] = useState(true);
     const count_post = window.localStorage.getItem("userPostLength");
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(1);
 
     useEffect(async () => {
         try {
@@ -66,6 +70,12 @@ const GuestView = () => {
         }
     }, []);
 
+    const handleChangePage = (page) => {
+        console.log(page);
+        setStart(page - 1);
+        setEnd(page);
+    }
+
     return (
         loading ? <Loading />
             : <div className={styles.container}>
@@ -81,7 +91,11 @@ const GuestView = () => {
                     </Breadcrumb>
                     <div className={styles.top}>
                         <div className={styles.topLeft}>
-                            <Avatar size={72} icon={userData.userData.avatar ? userData.userData.avatar : <UserOutlined />} />
+                            <Avatar 
+                            size={72} 
+                            icon={userData.userData.avatar ? "": <UserOutlined />} 
+                            src={<Image src={userData.userData.avatar ? userData.userData.avatar : ""}/>}
+                            />
                             <div style={{ marginLeft: '20px' }}>
                                 <div className={styles.fullname}>
                                     {userData.userData.fullname}
@@ -136,9 +150,9 @@ const GuestView = () => {
                         </div>
                         {!userPost.length ? <div>Chưa có bài đăng nào!</div>
                             : <Row gutter={[32, 32]}>
-                                {userPost.map((item, idx) => (
+                                {userPost.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/${estateLink[item.data.estatetype]}/${item.id}`}>
+                                        <Link to={`/${estateLink[item.data.estatetype]}/${item.data.postid}`}>
                                             <Item
                                                 postid={item.data.postid}
                                                 img={item.images[0]}
@@ -164,6 +178,15 @@ const GuestView = () => {
                                 ))}
                             </Row>
                         }
+                        <br />
+                        <Pagination
+                            defaultCurrent={1}
+                            defaultPageSize={6}
+                            total={userPost.length}
+                            responsive={true}
+                            style={{ textAlign: 'right' }}
+                            onChange={handleChangePage}
+                        />
                     </div>
                 </div>
             </div>

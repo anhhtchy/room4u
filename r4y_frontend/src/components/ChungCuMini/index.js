@@ -46,7 +46,7 @@ const ChungCuMini = () => {
     const [dataVanPhong, setDataVanPhong] = useState([]);
 
     const [estateType, setEstateType] = useState("");
-    const [district, setDistrict] = useState([]);
+    const [district, setDistrict] = useState("");
     const [area, setArea] = useState("");
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState("");
