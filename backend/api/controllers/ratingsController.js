@@ -93,9 +93,11 @@ exports.getPostAverageRatings = async (req, res) => {
             sumRatings += ratings[i].rating;
         }
         let averageRating = ratings.length ? parseFloat((sumRatings/ratings.length).toFixed(1)) : 0;
+        let nRatings = ratings.length ? ratings.length : 0;
         return res.json({
             status: 1,
-            averageRating: averageRating
+            averageRating: averageRating,
+            nRatings: nRatings
         });
     } catch (error) {
         return res.status(500).send({
@@ -110,6 +112,7 @@ exports.getUserAverageRatings = async (req, res) => {
         let i;
         let sumUserRatings = 0;
         let countPost = 0;
+        let nRatings = 0;
         for(i = 0; i < posts.length; i++){
             let postid = posts[i].postid;
             const ratings = await db.ratings.findAll({ where: { postid: postid } });
@@ -118,6 +121,7 @@ exports.getUserAverageRatings = async (req, res) => {
             for(j = 0; j < ratings.length; j++){
                 sumPostRatings += ratings[j].rating;
             }
+            nRatings += ratings.length ? ratings.length : 0;
             if(sumPostRatings > 0) {
                 sumUserRatings += sumPostRatings/ratings.length;
                 countPost += 1;
@@ -129,7 +133,8 @@ exports.getUserAverageRatings = async (req, res) => {
         }
         return res.json({
             status: 1,
-            averageRating: averageRating
+            averageRating: averageRating,
+            nRatings: nRatings
         });
     } catch (error) {
         return res.status(500).send({
