@@ -121,6 +121,7 @@ const Tab2 = () => {
         console.log('Form images: ', images);
         // setIsModalVisible(false);
         // message.success('Đăng bài thành công!');
+        console.log("user id", userData.userData.userid);
         try {
             const res = await axios.post(`http://localhost:3001/${userData.userData.userid}/createPost`, {
                 ...values,
@@ -221,15 +222,13 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    {/* <Row gutter={[32, 32]}> */}
-                    {console.log("user post", userPost)}
-                    {userPost.length ? (userPost.length > 2 ? (
+                    {userPost.length ? (userPost.length > 2 ? ( 
                         <Row gutter={[32, 32]}>
                             {userPost.slice(start * 6, end * 6).map((item, idx) => (
                                 <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                     <Item
                                         postid={item.data.postid}
-                                        img={item.images[0]}
+                                        img={item.images ? item.images[0]: ""}
                                         type={estate[item.data.estatetype]}
                                         title={`${item.data.title}`}
                                         location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}
@@ -253,7 +252,7 @@ const Tab2 = () => {
                         <div style={{ width: '32%', marginRight: '3%' }}>
                             <Item
                                  postid={item.data.postid}
-                                 img={item.images[0]}
+                                 img={item.images ? item.images[0]: ""}
                                  type={estate[item.data.estatetype]}
                                  title={`${item.data.title}`}
                                  location={`${item.data.address} - ${item.data.ward} - ${item.data.city}`}

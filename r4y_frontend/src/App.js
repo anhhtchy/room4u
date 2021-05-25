@@ -77,7 +77,7 @@ function App() {
           <Route path="/kenh-chu-nha">
             <KenhChuNha />
           </Route>
-          <Route path="/xem-trang-ca-nhan">
+          <Route path="/xem-trang-ca-nhan/:id">
             <GuestView />
           </Route>
           <Route path="/trang-ca-nhan">

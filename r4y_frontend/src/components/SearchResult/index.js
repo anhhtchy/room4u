@@ -40,9 +40,9 @@ const SearchResult = () => {
 
     const searchResult = useSelector(state => state.homepage.searchResult);
 
-    const [estateType, setEstateType] = React.useState();
-    const [district, setDistrict] = React.useState();
-    const [area, setArea] = React.useState();
+    const [estateType, setEstateType] = React.useState("");
+    const [district, setDistrict] = React.useState("");
+    const [area, setArea] = React.useState("");
     const [minPrice, setMinPrice] = React.useState(0);
     const [maxPrice, setMaxPrice] = React.useState("");
     const [disData, setDisData] = React.useState("");
@@ -79,6 +79,11 @@ const SearchResult = () => {
         setArea(e.target.value);
     };
 
+    const chooseEstate = (e) => {
+        console.log("radio checked", e.target.value);
+        setEstateType(e.target.value);
+      };
+
     const onChangeMinPrice = (value) => {
         console.log("minPrice", value);
         setMinPrice(value);
@@ -95,6 +100,7 @@ const SearchResult = () => {
             area: area,
             minPrice: minPrice,
             maxPrice: maxPrice,
+            estatetype: estateType,
         };
 
         console.log(values);
@@ -105,12 +111,14 @@ const SearchResult = () => {
                 area: area,
                 minPrice: minPrice,
                 maxPrice: maxPrice,
+                estatetype: estateType,
             });
             if (response.status == 200) {
                 console.log("res search", response);
                 await dispatch(getSearchResult(response.data.posts));
                 setLoading(false);
                 history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+                // window.location.reload();
             }
         } catch (error) {
             console.error("err", error);
@@ -145,6 +153,26 @@ const SearchResult = () => {
                             />
               BỘ LỌC TÌM KIẾM
             </div>
+            <div className={styles.leftSubtitle}>Loại BĐS:</div>
+            <div>
+              <div className={styles.radioGroup}>
+                <Radio.Group onChange={chooseEstate} value={estateType}>
+                  <Radio className={styles.radioStyle} value={0}>
+                    Phòng trọ SV
+                  </Radio>
+                  <Radio className={styles.radioStyle} value={1}>
+                    Nhà nguyên căn
+                  </Radio>
+                  <Radio className={styles.radioStyle} value={2}>
+                    Văn phòng - Mặt bằng KD
+                  </Radio>
+                  <Radio className={styles.radioStyle} value={3}>
+                    Chung cư
+                  </Radio>
+                </Radio.Group>
+              </div>
+            </div>
+            <div className={styles.borderFilter}></div>
                         <div className={styles.leftSubtitle}>Khu vực</div>
                         <div>
                             <Checkbox.Group
@@ -166,20 +194,20 @@ const SearchResult = () => {
                         <div className={styles.leftSubtitle}>Diện tích</div>
                         <div className={styles.radioGroup}>
                             <Radio.Group onChange={chooseArea} value={area}>
-                                <Radio className={styles.radioStyle} value={1}>
+                                <Radio className={styles.radioStyle} value={0}>
                                     {"< 20m"}
                                     <sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={2}>
+                                <Radio className={styles.radioStyle} value={1}>
                                     20m<sup>2</sup> - 50m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={3}>
+                                <Radio className={styles.radioStyle} value={2}>
                                     50m<sup>2</sup> - 100m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={4}>
+                                <Radio className={styles.radioStyle} value={3}>
                                     100m<sup>2</sup> - 200m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={5}>
+                                <Radio className={styles.radioStyle} value={4}>
                                     {"> 200m"}
                                     <sup>2</sup>
                                 </Radio>

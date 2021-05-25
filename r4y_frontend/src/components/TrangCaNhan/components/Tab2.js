@@ -63,7 +63,8 @@ const Tab2 = () => {
                     const res = await axios.get(`http://localhost:3001/save/${userId}`);
                     if (res.status == 200) {
                         console.log("save", res.data);
-                        setUserSave(res.data.posts);
+                        await setUserSave(res.data.posts);
+                        await window.localStorage.setItem("userSavePostLength", userSave.length ? userSave.length : 0)
                         setLoading(false);
                     } else {
                         console.log("save", res);
@@ -91,11 +92,12 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    <Row gutter={[32, 32]}>
-                        {userSave.length ? userSave.slice(start * 3, end * 3).map((item, idx) => (
-                            <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                {/* <Link to={`/${estateLink[item.post.estatetype]}/${item.post.postid}-${item.post.title}`}> */}
+                    {userSave.length ? (userSave.length > 2 ? (
+                        <Row gutter={[32, 32]}>
+                            {userSave.slice(start * 6, end * 6).map((item, idx) => (
+                                <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                     <Item
+                                        postid={item.post.postid}
                                         img={item.images[0]}
                                         type={estate[item.post.estatetype]}
                                         title={`${item.post.title}`}
@@ -104,16 +106,50 @@ const Tab2 = () => {
                                         price={item.post.price}
                                         square={item.post.area}
                                         count_room={item.post.roomnum}
+                                        description={item.post.description}
+                                        estatetype={item.post.estatetype}
+                                        district={item.post.district}
+                                        address={item.post.address}
+                                        electricity={item.post.electricity}
+                                        water={item.post.water}
+                                        wifi={item.post.wifi}
+                                        ultility={item.post.ultility}
+                                        images={item.images}
                                     />
-                                {/* </Link> */}
-                            </Col>
-                        )) : <div>Chưa có bài viết nào được lưu</div>}
-                    </Row>
+                                </Col>))}
+                        </Row>
+                    ) : userSave.map((item, idx) => (
+                        <div style={{ width: '32%', marginRight: '3%' }}>
+                            <Item
+                                postid={item.post.postid}
+                                img={item.images[0]}
+                                type={estate[item.post.estatetype]}
+                                title={`${item.post.title}`}
+                                location={`${item.post.address} - ${item.post.ward} - ${item.post.city}`}
+                                rating={4.5}
+                                price={item.post.price}
+                                square={item.post.area}
+                                count_room={item.post.roomnum}
+                                description={item.post.description}
+                                estatetype={item.post.estatetype}
+                                district={item.post.district}
+                                address={item.post.address}
+                                electricity={item.post.electricity}
+                                water={item.post.water}
+                                wifi={item.post.wifi}
+                                ultility={item.post.ultility}
+                                images={item.images}
+                            />
+                        </div>
+                    ))
+                    ) : <div>Bạn chưa lưu bài viết nào.</div>
+                    }
                 </div>
             }
+
             <Pagination
                 defaultCurrent={1}
-                defaultPageSize={3}
+                defaultPageSize={6}
                 total={userSave.length}
                 responsive={true}
                 style={{ textAlign: 'right' }}

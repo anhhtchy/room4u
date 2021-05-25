@@ -43,9 +43,9 @@ const PhongTroSV = () => {
 
     const [dataPhongTroSV, setDataPhongTroSV] = useState([]);
 
-    const [estateType, setEstateType] = useState();
-    const [district, setDistrict] = useState();
-    const [area, setArea] = useState();
+    const [estateType, setEstateType] = useState("");
+    const [district, setDistrict] = useState("");
+    const [area, setArea] = useState("");
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState("");
     const [disData, setDisData] = useState("");
@@ -98,6 +98,11 @@ const PhongTroSV = () => {
         setArea(e.target.value);
     };
 
+    const chooseEstate = (e) => {
+        console.log("radio checked", e.target.value);
+        setEstateType(e.target.value);
+    };
+
     const onChangeMinPrice = (value) => {
         console.log("minPrice", value);
         setMinPrice(value);
@@ -114,6 +119,7 @@ const PhongTroSV = () => {
             area: area,
             minPrice: minPrice,
             maxPrice: maxPrice,
+            estatetype: estateType,
         };
 
         console.log(values);
@@ -123,6 +129,7 @@ const PhongTroSV = () => {
                 area: area,
                 minPrice: minPrice,
                 maxPrice: maxPrice,
+                estatetype: estateType,
             });
             console.log("res", response);
             if (response.status == 200) {
@@ -168,6 +175,26 @@ const PhongTroSV = () => {
                             />
                             BỘ LỌC TÌM KIẾM
                         </div>
+                        <div className={styles.leftSubtitle}>Loại BĐS:</div>
+                        <div>
+                            <div className={styles.radioGroup}>
+                                <Radio.Group onChange={chooseEstate} value={estateType}>
+                                    <Radio className={styles.radioStyle} value={0}>
+                                        Phòng trọ SV
+                  </Radio>
+                                    <Radio className={styles.radioStyle} value={1}>
+                                        Nhà nguyên căn
+                  </Radio>
+                                    <Radio className={styles.radioStyle} value={2}>
+                                        Văn phòng - Mặt bằng KD
+                  </Radio>
+                                    <Radio className={styles.radioStyle} value={3}>
+                                        Chung cư
+                  </Radio>
+                                </Radio.Group>
+                            </div>
+                        </div>
+                        <div className={styles.borderFilter}></div>
                         <div className={styles.leftSubtitle}>Khu vực</div>
                         <div>
                             <Checkbox.Group
@@ -189,20 +216,20 @@ const PhongTroSV = () => {
                         <div className={styles.leftSubtitle}>Diện tích</div>
                         <div className={styles.radioGroup}>
                             <Radio.Group onChange={chooseArea} value={area}>
-                                <Radio className={styles.radioStyle} value={1}>
+                                <Radio className={styles.radioStyle} value={0}>
                                     {"< 20m"}
                                     <sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={2}>
+                                <Radio className={styles.radioStyle} value={1}>
                                     20m<sup>2</sup> - 50m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={3}>
+                                <Radio className={styles.radioStyle} value={2}>
                                     50m<sup>2</sup> - 100m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={4}>
+                                <Radio className={styles.radioStyle} value={3}>
                                     100m<sup>2</sup> - 200m<sup>2</sup>
                                 </Radio>
-                                <Radio className={styles.radioStyle} value={5}>
+                                <Radio className={styles.radioStyle} value={4}>
                                     {"> 200m"}
                                     <sup>2</sup>
                                 </Radio>
@@ -243,7 +270,7 @@ const PhongTroSV = () => {
                             <Row gutter={[32, 32]}>
                                 {dataPhongTroSV && dataPhongTroSV.slice(start * 6, end * 6).map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
-                                        <Link to={`/nha-nguyen-can/${item.data.postid}-${item.data.title}`}>
+                                        <Link to={`/nha-nguyen-can/${item.data.postid}`}>
                                             <Item
                                                 img={item.images[0]}
                                                 type={estate[item.data.estatetype]}

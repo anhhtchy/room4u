@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { Form, Input, Button, Checkbox, notification } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, PicCenterOutlined } from '@ant-design/icons';
 
 import styles from './Login.module.css';
 
@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess } from '../../actions/auth';
 // import { saveState } from '../../localStorage';
 import { useStore } from 'react-redux';
+import Modal from 'antd/lib/modal/Modal';
 
 const Login = () => {
     const history = useHistory();
@@ -24,6 +25,8 @@ const Login = () => {
 
     const [userData, setUserData] = useState("");
     const [check, setCheck] = useState(null);
+    const [visibleForgotPassModal, setVisibleForgotPassModal] = useState(false);
+    const [inputForgot, setInputForgot] = useState();
 
     // store.subscribe(() => {
     //     saveState(store.getState.auth);
@@ -54,6 +57,25 @@ const Login = () => {
                 description: error.response.data.message,
             });
         }
+    }
+
+    const handleForgotPass = async () => {
+        console.log("true");
+        setVisibleForgotPassModal(true);
+    }
+
+    const sendRequest = async () => {
+        console.log("sent", inputForgot);
+        // !inputForgot ? notification.error("Vui lòng nhập username hoặc email!") : "";
+        // try {
+        //     const res = axios.post("http://localhost:3001/forgetpassword", )
+        // } catch (err) {
+        //     console.log(err);
+        // }
+    }
+
+    const handleInputForgotPass = (e) => {
+        setInputForgot(e.target.value);
     }
 
     return (
@@ -89,10 +111,16 @@ const Login = () => {
                         <Form.Item>
                             <Form.Item name="remember" valuePropName="checked" noStyle>
                                 <Checkbox>Remember me</Checkbox>
-                                <span style={{ float: 'right' }}><Link to="/">Bạn quên mật khẩu?</Link></span>
+                                <span
+                                    style={{
+                                        float: 'right',
+                                        color: "#faad14",
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={handleForgotPass}
+                                >Bạn quên mật khẩu?</span>
                             </Form.Item>
                         </Form.Item>
-
                         <Form.Item style={{ textAlign: 'center' }}>
                             <Button htmlType="submit" className="login-form-button" className={styles.button}>
                                 Đăng nhập
@@ -107,6 +135,35 @@ const Login = () => {
                     Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
                 </div>
             </div>
+            <Modal
+                visible={visibleForgotPassModal}
+                onCancel={() => setVisibleForgotPassModal(false)}
+                footer={null}
+                title={<div
+                    style={{
+                        fontSize: '20px',
+                        textAlign: 'center',
+                        color: '#faad14',
+                        marginTop: '20px'
+                    }}
+                >QUÊN MẬT KHẨU</div>}
+            >
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>Yêu cầu lấy lại mật khẩu:</div>
+                <Input
+                    placeholder="Nhập username hoặc email"
+                    size="large"
+                    onChange={handleInputForgotPass}
+                />
+                <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+                    <Button
+                        className="login-form-button"
+                        className={styles.button}
+                        onClick={sendRequest}
+                    >
+                        GỬI
+                    </Button>
+                </div>
+            </Modal>
         </div>
     )
 };

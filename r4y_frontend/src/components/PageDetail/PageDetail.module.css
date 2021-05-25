@@ -42,6 +42,10 @@
 
 .imgSlice {}
 
+.img {
+    height: 500px;
+}
+
 .rightCard {
     padding: 20px;
     background: #ffffff;
