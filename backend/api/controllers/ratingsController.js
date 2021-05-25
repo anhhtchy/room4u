@@ -15,53 +15,75 @@ exports.getRatings = async (req, res) => {
         });
     }
 };
+exports.getUserRating = async (req, res) => {
+    try {
+        const rating = await db.ratings.findOne({
+            where: {
+                [Op.and]: [
+                    { postid: req.params.postid },
+                    { userid: req.params.userid }
+                ]
+            }
+        });
+        let rating_result = rating ? rating.rating : 0;
+        return res.json({
+            status: 1,
+            rating: rating_result
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: 0,
+            message: error.message || "Some errors occur while finding ratings"
+        });
+    }
+};
 
 exports.createRating = (req, res) => {
     const rating = {
-        userid : req.body.userid,
-        postid : req.body.postid,
-        rating : req.body.rating,
-        created : Date.now(),
-        updated : Date.now()
+        userid: req.body.userid,
+        postid: req.body.postid,
+        rating: req.body.rating,
+        created: Date.now(),
+        updated: Date.now()
     }
     db.ratings.create(rating)
-    .then(data =>{
-        return res.json({
-            status: 1,
-            data: data
+        .then(data => {
+            return res.json({
+                status: 1,
+                data: data
+            });
+        })
+        .catch(err => {
+            return res.status(500).send({
+                status: 0,
+                message:
+                    err.message || "Some errors occur while creating new rating"
+            });
         });
-    })
-    .catch(err =>{
-        return res.status(500).send({
-            status: 0,
-            message:
-            err.message || "Some errors occur while creating new rating"
-        });
-    });
 };
 
 exports.updateRating = (req, res) => {
     const rating = {
-        rating : req.body.rating,
-        updated : Date.now()
+        rating: req.body.rating,
+        updated: Date.now()
     }
     db.ratings.update(rating, {
         where: {
             ratingid: req.body.ratingid,
         },
     })
-    .then(() => {
-        return res.json({
-            status: 1,
+        .then(() => {
+            return res.json({
+                status: 1,
+            });
+        })
+        .catch(err => {
+            return res.status(500).send({
+                status: 0,
+                message:
+                    err.message || "Some errors occur while updating rating"
+            });
         });
-    })
-    .catch(err =>{
-        return res.status(500).send({
-            status: 0,
-            message:
-            err.message || "Some errors occur while updating rating"
-        });
-    });
 };
 
 exports.deleteRating = (req, res) => {
@@ -70,18 +92,18 @@ exports.deleteRating = (req, res) => {
             ratingid: req.params.ratingid,
         },
     })
-    .then(() => {
-        return res.json({
-            status: 1,
+        .then(() => {
+            return res.json({
+                status: 1,
+            });
+        })
+        .catch(err => {
+            return res.status(500).send({
+                status: 0,
+                message:
+                    err.message || "Some errors occur while deleting rating"
+            });
         });
-    })
-    .catch(err =>{
-        return res.status(500).send({
-            status: 0,
-            message:
-            err.message || "Some errors occur while deleting rating"
-        });
-    });
 };
 
 exports.getPostAverageRatings = async (req, res) => {
@@ -89,10 +111,10 @@ exports.getPostAverageRatings = async (req, res) => {
         const ratings = await db.ratings.findAll({ where: { postid: req.params.postid } });
         let sumRatings = 0;
         let i;
-        for(i = 0; i < ratings.length; i++){
+        for (i = 0; i < ratings.length; i++) {
             sumRatings += ratings[i].rating;
         }
-        let averageRating = ratings.length ? parseFloat((sumRatings/ratings.length).toFixed(1)) : 0;
+        let averageRating = ratings.length ? parseFloat((sumRatings / ratings.length).toFixed(1)) : 0;
         let nRatings = ratings.length ? ratings.length : 0;
         return res.json({
             status: 1,
@@ -113,23 +135,23 @@ exports.getUserAverageRatings = async (req, res) => {
         let sumUserRatings = 0;
         let countPost = 0;
         let nRatings = 0;
-        for(i = 0; i < posts.length; i++){
+        for (i = 0; i < posts.length; i++) {
             let postid = posts[i].postid;
             const ratings = await db.ratings.findAll({ where: { postid: postid } });
             let sumPostRatings = 0;
             let j;
-            for(j = 0; j < ratings.length; j++){
+            for (j = 0; j < ratings.length; j++) {
                 sumPostRatings += ratings[j].rating;
             }
             nRatings += ratings.length ? ratings.length : 0;
-            if(sumPostRatings > 0) {
-                sumUserRatings += sumPostRatings/ratings.length;
+            if (sumPostRatings > 0) {
+                sumUserRatings += sumPostRatings / ratings.length;
                 countPost += 1;
             }
         }
         let averageRating = 0;
-        if(countPost > 0){
-            averageRating = parseFloat((sumUserRatings/countPost).toFixed(1));
+        if (countPost > 0) {
+            averageRating = parseFloat((sumUserRatings / countPost).toFixed(1));
         }
         return res.json({
             status: 1,
