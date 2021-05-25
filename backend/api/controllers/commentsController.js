@@ -3,7 +3,13 @@ const { Op } = require("sequelize");
 
 exports.getComments = async (req, res) => {
     try {
-        const comments = await db.comments.findAll({ where: { postid: req.params.postid } });
+        let comments = await db.comments.findAll({ where: { postid: req.params.postid }, raw : true });
+        for(i = 0; i < comments.length; i++){
+            const user = await db.accounts.findOne({ where: { userid: comments[i].userid } });
+            comments[i].username = user.username;
+            comments[i].fullname = user.fullname;
+            comments[i].avatar = user.avatar;
+        }
         return res.json({
             status: 1,
             comments: comments
