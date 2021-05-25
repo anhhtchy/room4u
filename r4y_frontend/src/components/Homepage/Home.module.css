@@ -90,11 +90,19 @@
 .button {
     height: 48px;
     padding: 6px 30px;
-    background: #faad14;
+    /* background: #faad14; */
+    background-image: linear-gradient(to right, #faad14, #ffc53d);
     color: white;
     font-weight: 500;
     font-size: 16px;
     width: 100%;
+}
+
+.button:hover {
+    background-image: linear-gradient(to right, #faad14, #fabb27);
+    color: white;
+    border: none;
+    transition-duration: 0.35s;
 }
 
 .borderFilter {
