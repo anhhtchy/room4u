@@ -29,9 +29,8 @@ module.exports = function (app) {
   // app
   //   .route("/home/:id")
   //   .get(authMiddleWare.isOwner, postsController.getPostsByUserId);
-  app
-    .route("/home/:id").get(postsController.getPostsByUserId);
-  app.route('/getPost/:pid').get(postsController.getPostById);
+  app.route("/home/:id").get(postsController.getPostsByUserId);
+  app.route("/getPost/:pid").get(postsController.getPostById);
 
   app.route("/:id/createPost").post(postsController.createPostWithImages);
   app.route("/:id/updatePost/:pid").put(postsController.updatePost);
@@ -45,7 +44,9 @@ module.exports = function (app) {
   app.route("/comments/create").post(commentsController.createComment);
   app.route("/comments/:postid").get(commentsController.getComments);
   app.route("/comments/update").put(commentsController.updateComment);
-  app.route("/comments/delete/:commentid").delete(commentsController.deleteComment);
+  app
+    .route("/comments/delete/:commentid")
+    .delete(commentsController.deleteComment);
   // ratings apis
   let ratingsController = require("../controllers/ratingsController");
   app.route("/ratings/create").post(ratingsController.createRating);
@@ -53,9 +54,13 @@ module.exports = function (app) {
   app.route("/ratings/update").put(ratingsController.updateRating);
   app.route("/ratings/delete/:ratingid").delete(ratingsController.deleteRating);
   // trung bình rating của post
-  app.route("/ratings/average/:postid").get(ratingsController.getPostAverageRatings);
+  app
+    .route("/ratings/average/:postid")
+    .get(ratingsController.getPostAverageRatings);
   // trung bình rating các post của user
-  app.route("/ratings/averageuser/:userid").get(ratingsController.getUserAverageRatings);
+  app
+    .route("/ratings/averageuser/:userid")
+    .get(ratingsController.getUserAverageRatings);
   // Đây là đoạn test up ảnh nhé
   app.route("/upload").post(fileUpload.any(), imagesComtroller.uploadImages);
   app.route("/:pid/imgs").get(imagesComtroller.getImagesByPostId);
@@ -63,8 +68,6 @@ module.exports = function (app) {
   //save
   app.route("/save").post(postsController.savePosts);
   app.route("/save/:userid").get(postsController.getSavePostsByUserid);
-  app
-    .route("/save/unsave/:userid&:postid")
-    .get(postsController.deleteSavePosts);
-  app.route('/:id/deleteProfile').post(accountsController.deleteProfile);
+  app.route("/unsave/:userid&:postid").delete(postsController.deleteSavePosts);
+  app.route("/:id/deleteProfile").post(accountsController.deleteProfile);
 };
