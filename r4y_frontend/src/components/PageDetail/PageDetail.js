@@ -16,16 +16,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import '../../components/Homepage/style.css';
 
-import item1 from '../../img/item1.jpg';
-import item2 from '../../img/item2.jpg';
-import img from '../../img/img.jpg';
-import img1 from '../../img/img1.jpg';
-import img2 from '../../img/img2.jpg';
-import img3 from '../../img/img3.jpg';
-import avatar from '../../img/hello.jpg';
 import axios from 'axios';
 import Loading from '../loading';
 import banner_quangcao1 from '../../img/banner_quangcao2.jpg';
+import Modal from 'antd/lib/modal/Modal';
 
 const PageDetail = () => {
     const settings = {
@@ -40,6 +34,13 @@ const PageDetail = () => {
     const [userPost, setUserPost] = useState();
     const [loading, setLoading] = useState(true);
     const [postReview, setPostReview] = useState();
+    const [ratingValue, setRatingValue] = useState();
+    const [visibleModalRating, setVisibleModalRating] = useState(false);
+    const [ratingAve, setRatingAve] = useState();
+    const [textBtn, setTextBtn] = useState(true);
+    const [visibleCancelRating, setVisibleCancelRating] = useState(false);
+    const [isRating, setIsRating] = useState();
+
     const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
     const params = useParams();
@@ -48,17 +49,34 @@ const PageDetail = () => {
     useEffect(async () => {
         console.log("params", params);
         getPostData();
-        // try {
-        //     const post = await axios.get(`http://localhost:3001/reviews/${params.id}`);
-        //     if (post.status == 200) {
-        //         console.log("post review", post);
-        //         await setPostReview(post.data.reviews);
-        //     }
-        // } catch (err) {
-        //     console.log(err);
-        // }
-
+        getAverageRatings();
+        checkRating();
     }, []);
+
+    const checkRating = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/rating/${userLogin.userData.userid}&${params.id}`);
+            if (res.status == 200) {
+                console.log(res);
+                setIsRating(res.data);
+                setTextBtn(!res.data.status);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const getAverageRatings = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/ratings/average/${params.id}`);
+            if (res.status == 200) {
+                console.log(res);
+                setRatingAve(res.data);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const getPostData = async () => {
         try {
@@ -102,6 +120,48 @@ const PageDetail = () => {
             }
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    const handleRating = async () => {
+        try {
+            const res = await axios.post("http://localhost:3001/ratings/create", {
+                userid: userLogin.userData.userid,
+                postid: postData.data.postid,
+                rating: ratingValue,
+            });
+            if (res.status == 200) {
+                message.success("Cảm ơn bạn đã gửi đánh giá!");
+                setVisibleModalRating(false);
+                setTextBtn(false);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.log(err);
+            message.error("ERROR!");
+        }
+    }
+
+    const handleDeleteRating = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:3001/ratings/delete/${isRating.ratingid}`);
+            if (res.status == 200) {
+                message.success("Đánh giá của bạn đã được xóa!");
+                setVisibleCancelRating(false);
+                setTextBtn(true);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.log(err);
+            message.error("ERROR!");
+        }
+    }
+
+    const handleOpenModal = () => {
+        if (!isRating.rating) {
+            setVisibleModalRating(true);
+        } else {
+            setVisibleCancelRating(true);
         }
     }
 
@@ -176,23 +236,88 @@ const PageDetail = () => {
                                     </Col>
                                     <Col sx={24} sm={24} md={12} lg={12}>
                                         <div className={styles.topDesRight}>
-                                            <div></div>
+                                            <br />
                                             <div style={{ textAlign: 'center' }}>
                                                 <div>Đánh giá</div>
                                                 <Rate
                                                     allowHalf
                                                     disabled
-                                                    defaultValue={4.5}
+                                                    defaultValue={ratingAve.averageRating}
                                                     style={{
                                                         fontSize: '14px',
                                                         color: '#faad14',
                                                     }}
                                                 />
                                                 <div>
-                                                    {`${4.5}/5 của ${5} đánh giá`}
+                                                    {`${ratingAve.averageRating}/5 của ${ratingAve.nRatings} người đánh giá`}
                                                 </div>
                                             </div>
                                         </div>
+                                        <br />
+                                        <div
+                                            style={{
+                                                textAlign: 'right',
+                                            }}
+
+                                            onClick={handleOpenModal}
+                                        >
+                                            <Button
+                                                className={styles.button2}
+                                                style={{ width: '55%' }}
+                                            >
+                                                {!isRating.rating ? "Đánh giá ngay" : "Xóa đánh giá"}
+                                            </Button>
+                                        </div>
+
+                                        <Modal
+                                            visible={visibleModalRating}
+                                            onCancel={() => setVisibleModalRating(false)}
+                                            footer={null}
+                                            width={360}
+                                        >
+                                            <div className={styles.ratingModal}>
+                                                <Rate
+                                                    allowHalf
+                                                    style={{
+                                                        fontSize: '14px',
+                                                        color: '#faad14',
+                                                    }}
+                                                    value={ratingValue}
+                                                    onChange={(value) => setRatingValue(value)}
+                                                />
+                                                <br />
+                                                <Button
+                                                    className={styles.button2}
+                                                    style={{ width: '50%', marginTop: '50px' }}
+                                                    onClick={handleRating}
+                                                >XONG</Button>
+                                            </div>
+                                        </Modal>
+
+                                        <Modal
+                                            visible={visibleCancelRating}
+                                            onCancel={() => setVisibleCancelRating(false)}
+                                            footer={null}
+                                            width={360}
+                                        >
+                                            <div className={styles.ratingModal}>
+                                                <Rate
+                                                    allowHalf
+                                                    disabled
+                                                    style={{
+                                                        fontSize: '14px',
+                                                        color: '#faad14',
+                                                    }}
+                                                    defaultValue={isRating.rating}
+                                                />
+                                                <br />
+                                                <Button
+                                                    className={styles.button2}
+                                                    style={{ width: '50%', marginTop: '50px' }}
+                                                    onClick={handleDeleteRating}
+                                                >XÓA</Button>
+                                            </div>
+                                        </Modal>
                                     </Col>
                                 </Row>
                                 <div className={styles.detailDes}>
@@ -236,6 +361,45 @@ const PageDetail = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className={styles.comment}>
+                        <div className={styles.title}>BÌNH LUẬN</div>
+                        <br />
+                        {!userLogin ?
+                            <div style={{ textAlign: 'center', color: "#bfbfbf" }}>
+                                Đăng nhập để bình luận bài viết
+                            </div>
+                            : <div className={styles.commentBody}>
+                                <div className={styles.inputComment}>
+                                    <input
+                                        type="text"
+                                        placeholder="Nhập bình luận ..."
+                                        className={styles.input}
+                                    />
+                                    <Button className={styles.button2} style={{ width: "100px" }}>GỬI</Button>
+                                </div>
+                                <br />
+                                <div className={styles.listComment}>
+                                    <div className={styles.oneComment}>
+                                        <div className={styles.oneCommentLeft}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Avatar size="large" src={userPost.userData.avatar} />
+                                                <div className={styles.username}>{userPost.userData.username}</div>
+                                            </div>
+                                            <div className={styles.textComment}>
+                                                Oo nah dheep qua sixn hqua slorem,
+                                                Oo nah dheep qua sixn hqua slorem
+                                            </div>
+                                        </div>
+                                        <div className={styles.oneCommentRight}>
+                                            <Button className={styles.btnOutline}>Xóa</Button>
+                                            <Button className={styles.btnOutline} style={{ marginLeft: '20px' }}>Chỉnh sửa</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

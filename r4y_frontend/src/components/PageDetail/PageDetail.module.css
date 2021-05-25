@@ -89,6 +89,7 @@
     background-image: linear-gradient(to right, #52c41a, #389e0d);
     color: white;
     border: none;
+    transition-duration: 0.35s;
 }
 
 .button2 {
@@ -106,12 +107,17 @@
     background-image: linear-gradient(to right, #faad14, #fabb27);
     color: white;
     border: none;
+    transition-duration: 0.35s;
 }
 
 .btnOutline {
     border: 1px solid #faad14;
     color: #faad14;
     border-radius: 20px;
+}
+
+.btnOutline:hover {
+    border: 1px solid #faad14;
 }
 
 .description {
@@ -167,4 +173,58 @@
 
 .detailDes {
     margin-top: 30px;
+}
+
+
+.ratingModal {
+    margin: 20px;
+    text-align: center;
+}
+
+.comment {
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 2px 8px rgba(148, 145, 128, 0.25);
+    margin: 20px 0px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.input {
+    width: 50%;
+    height: 48px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding-left: 20px;
+    margin-right: 20px;
+}
+
+.oneComment {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+
+.textComment {
+    color: #8c8c8c;
+    font-size: 14px;
+    margin: 10px;
+
+}
+
+.oneCommentLef {
+    mix-width: 60%;
+}
+
+.oneCommentRight {
+    mix-width: 35%;
 }
