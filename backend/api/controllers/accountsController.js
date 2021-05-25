@@ -17,6 +17,29 @@ const otpTokenLife = process.env.OTP_TOKEN_LIFE || "3m"
 const otpTokenSecret = process.env.OTP_TOKEN_SECRET || "room4u_otp_secret"
 let tokenList = {};
 
+exports.checkOtp = async (req, res) => {
+    const otpToken = req.body.otpToken
+    if (otpToken) {
+        try {
+            const { data } = await jwtHelper.verifyToken(otpToken, otpTokenSecret);
+            if(data) {
+                return res.json({
+                    status: 1,
+                });
+            }
+        } catch (error) {
+            return res.status(400).json({
+                status: 0,
+                message: error.message || 'Invalid OTP',
+            });
+        }
+    } else {
+        return res.status(400).send({
+            status: 0,
+            message: 'No otp token provided',
+        });
+    }
+}
 exports.forgetPassword = async (req, res) => {
     const otpToken = req.body.otpToken
     if (otpToken) {
@@ -413,7 +436,8 @@ exports.deleteProfile = (req, res, next) =>{
             }
             const [im, re,sa] = await Promise.all([
                 db.images.destroy({where:{postid:postids}}),
-                db.reviews.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }]}}),
+                db.ratings.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }]}}),
+                db.comments.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }] } }),
                 db.savedPosts.destroy({ where: { [Op.or]: [{ postid: postids }, { userid: req.params.id }] } }),
             ])
             db.posts.destroy({where:{userid:req.params.id}})
