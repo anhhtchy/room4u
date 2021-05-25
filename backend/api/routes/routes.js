@@ -72,4 +72,7 @@ module.exports = function (app) {
   app.route("/save/:userid").get(postsController.getSavePostsByUserid);
   app.route("/unsave/:userid&:postid").delete(postsController.deleteSavePosts);
   app.route("/:id/deleteProfile").post(accountsController.deleteProfile);
+
+  // quan ly nguoi dung
+  app.route("/searchUser").post(accountsController.searchUser);
 };
