@@ -39,6 +39,7 @@ const PageDetail = () => {
     const [ratingAve, setRatingAve] = useState();
     const [textBtn, setTextBtn] = useState(true);
     const [visibleCancelRating, setVisibleCancelRating] = useState(false);
+    const [isRating, setIsRating] = useState();
 
     const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
@@ -49,7 +50,21 @@ const PageDetail = () => {
         console.log("params", params);
         getPostData();
         getAverageRatings();
+        checkRating();
     }, []);
+
+    const checkRating = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/rating/${userLogin.userData.userid}&${params.id}`);
+            if (res.status == 200) {
+                console.log(res);
+                setIsRating(res.data);
+                setTextBtn(!res.data.status);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const getAverageRatings = async () => {
         try {
@@ -119,6 +134,22 @@ const PageDetail = () => {
                 message.success("Cảm ơn bạn đã gửi đánh giá!");
                 setVisibleModalRating(false);
                 setTextBtn(false);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.log(err);
+            message.error("ERROR!");
+        }
+    }
+
+    const handleDeleteRating = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:3001/ratings/delete/${isRating.ratingid}`);
+            if (res.status == 200) {
+                message.success("Đánh giá của bạn đã được xóa!");
+                setVisibleCancelRating(false);
+                setTextBtn(true);
+                window.location.reload();
             }
         } catch (err) {
             console.log(err);
@@ -127,7 +158,7 @@ const PageDetail = () => {
     }
 
     const handleOpenModal = () => {
-        if (textBtn) {
+        if (!isRating.rating) {
             setVisibleModalRating(true);
         } else {
             setVisibleCancelRating(true);
@@ -218,7 +249,7 @@ const PageDetail = () => {
                                                     }}
                                                 />
                                                 <div>
-                                                    {`${ratingAve.averageRating}/5 của ${5} đánh giá`}
+                                                    {`${ratingAve.averageRating}/5 của ${ratingAve.nRatings} người đánh giá`}
                                                 </div>
                                             </div>
                                         </div>
@@ -234,7 +265,7 @@ const PageDetail = () => {
                                                 className={styles.button2}
                                                 style={{ width: '55%' }}
                                             >
-                                                {textBtn ? "Đánh giá ngay" : "Xóa đánh giá"}
+                                                {!isRating.rating ? "Đánh giá ngay" : "Xóa đánh giá"}
                                             </Button>
                                         </div>
 
@@ -277,13 +308,13 @@ const PageDetail = () => {
                                                         fontSize: '14px',
                                                         color: '#faad14',
                                                     }}
-                                                    defaultValue={ratingValue}
+                                                    defaultValue={isRating.rating}
                                                 />
                                                 <br />
                                                 <Button
                                                     className={styles.button2}
                                                     style={{ width: '50%', marginTop: '50px' }}
-                                                    onClick={handleRating}
+                                                    onClick={handleDeleteRating}
                                                 >XÓA</Button>
                                             </div>
                                         </Modal>
