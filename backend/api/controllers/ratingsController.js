@@ -26,9 +26,11 @@ exports.getUserRating = async (req, res) => {
             }
         });
         let rating_result = rating ? rating.rating : 0;
+        let ratingid = rating ? rating.ratingid : -1;
         return res.json({
             status: 1,
-            rating: rating_result
+            rating: rating_result,
+            ratingid: ratingid
         });
     } catch (error) {
         return res.status(500).send({
