@@ -43,8 +43,8 @@ const Header = () => {
 
     const handleLogout = () => {
         window.localStorage.removeItem('userData');
-        window.location.reload();
         history.push("/");
+        window.location.reload();
     }
 
     const handleUserType1 = () => {
@@ -133,9 +133,11 @@ const Header = () => {
                                     </>
                                 }>
                                 {userData && <Menu.Item key="14">
-                                    <Link to="/" onClick={handleLogout}>
-                                        <b>Đăng xuất</b>
-                                    </Link>
+                                    <div onClick={handleLogout}>
+                                        <Link>
+                                            <b>Đăng xuất</b>
+                                        </Link>
+                                    </div>
                                 </Menu.Item>
                                 }
                                 {

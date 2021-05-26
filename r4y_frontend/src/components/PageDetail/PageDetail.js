@@ -7,6 +7,7 @@ import {
     HeartOutlined,
     TagsOutlined,
     WhatsAppOutlined,
+    YahooFilled,
 } from '@ant-design/icons';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import Slider from "react-slick";
@@ -40,6 +41,7 @@ const PageDetail = () => {
     const [textBtn, setTextBtn] = useState(true);
     const [visibleCancelRating, setVisibleCancelRating] = useState(false);
     const [isRating, setIsRating] = useState();
+    const [commentText, setCommentText] = useState();
 
     const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
@@ -54,15 +56,19 @@ const PageDetail = () => {
     }, []);
 
     const checkRating = async () => {
-        try {
-            const res = await axios.get(`http://localhost:3001/rating/${userLogin.userData.userid}&${params.id}`);
-            if (res.status == 200) {
-                console.log(res);
-                setIsRating(res.data);
-                setTextBtn(!res.data.status);
+        if (userLogin) {
+            try {
+                const res = await axios.get(`http://localhost:3001/rating/${userLogin.userData.userid}&${params.id}`);
+                if (res.status == 200) {
+                    console.log(res);
+                    setIsRating(res.data);
+                    setTextBtn(res.data.rating);
+                }
+            } catch (err) {
+                console.log(err);
             }
-        } catch (err) {
-            console.log(err);
+        } else {
+            setTextBtn(false);
         }
     }
 
@@ -158,10 +164,18 @@ const PageDetail = () => {
     }
 
     const handleOpenModal = () => {
-        if (!isRating.rating) {
+        if (!textBtn) {
             setVisibleModalRating(true);
         } else {
             setVisibleCancelRating(true);
+        }
+    }
+
+    const handleSendComment = async () => {
+        try {
+
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -265,7 +279,7 @@ const PageDetail = () => {
                                                 className={styles.button2}
                                                 style={{ width: '55%' }}
                                             >
-                                                {!isRating.rating ? "Đánh giá ngay" : "Xóa đánh giá"}
+                                                {!textBtn ? "Đánh giá ngay" : "Xóa đánh giá"}
                                             </Button>
                                         </div>
 
@@ -308,7 +322,7 @@ const PageDetail = () => {
                                                         fontSize: '14px',
                                                         color: '#faad14',
                                                     }}
-                                                    defaultValue={isRating.rating}
+                                                    defaultValue={isRating ? isRating.rating : 0}
                                                 />
                                                 <br />
                                                 <Button
@@ -376,8 +390,13 @@ const PageDetail = () => {
                                         type="text"
                                         placeholder="Nhập bình luận ..."
                                         className={styles.input}
+                                        onChange={(e) => setCommentText(e.target.value)}
                                     />
-                                    <Button className={styles.button2} style={{ width: "100px" }}>GỬI</Button>
+                                    <Button
+                                        className={styles.button2}
+                                        style={{ width: "100px" }}
+                                        onClick={handleSendComment}
+                                    >GỬI</Button>
                                 </div>
                                 <br />
                                 <div className={styles.listComment}>
