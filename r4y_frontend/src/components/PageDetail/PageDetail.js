@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import { Avatar, Button, Row, Col, Rate, message, notification } from 'antd';
 import {
     PhoneOutlined,
@@ -42,6 +43,8 @@ const PageDetail = () => {
     const [visibleCancelRating, setVisibleCancelRating] = useState(false);
     const [isRating, setIsRating] = useState();
     const [commentText, setCommentText] = useState();
+    const [listComment, setListComment] = useState();
+    const [visibleModalUpdateComment, setVisibleModalUpdateComment] = useState(false);
 
     const userLogin = JSON.parse((window.localStorage.getItem('userData')));
 
@@ -52,8 +55,21 @@ const PageDetail = () => {
         console.log("params", params);
         getPostData();
         getAverageRatings();
+        getListComment();
         checkRating();
     }, []);
+
+    const getListComment = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/comments/${params.id}`);
+            if (res.status == 200) {
+                console.log(res);
+                setListComment(res.data.comments);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const checkRating = async () => {
         if (userLogin) {
@@ -173,9 +189,65 @@ const PageDetail = () => {
 
     const handleSendComment = async () => {
         try {
-
+            const res = await axios.post(`http://localhost:3001/comments/create`, {
+                userid: userLogin.userData.userid,
+                postid: postData.data.postid,
+                comment: commentText,
+            });
+            if (res.status == 200) {
+                console.log(res);
+                message.success("Đã gửi bình luận!");
+                window.location.reload();
+            }
         } catch (err) {
             console.log(err);
+            message.error("ERROR!");
+        }
+    }
+
+    const handleDeleteComment = async (commentid, userid) => {
+        if (!userLogin) {
+            message.error("Bạn không thể xóa bình luận này!");
+        } else if (userLogin.userData.userid != userid) {
+            message.error("Bạn không thể xóa bình luận này!");
+        } else {
+            try {
+                const res = await axios.delete(`http://localhost:3001/comments/delete/${commentid}`);
+                if (res.status == 200) {
+                    message.success("Bình luận đã được xóa!");
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.log(err);
+                message.error("ERROR!");
+            }
+        }
+    }
+
+    const handleUpdateComment = async (commentid, userid) => {
+        try {
+            const res = await axios.put(`http://localhost:3001/comments/update/`, {
+                commentid: commentid,
+                comment: commentText,
+            });
+            if (res.status == 200) {
+                console.log("update comment", res);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.log(err);
+            notification.error("ERROR!");
+        }
+
+    }
+
+    const openModalUpdateComment = async(userid) => {
+        if (!userLogin) {
+            message.error("Bạn không thể xóa bình luận này!");
+        } else if (userLogin.userData.userid != userid) {
+            message.error("Bạn không thể xóa bình luận này!");
+        } else {
+            setVisibleModalUpdateComment(true);
         }
     }
 
@@ -380,11 +452,12 @@ const PageDetail = () => {
                     <div className={styles.comment}>
                         <div className={styles.title}>BÌNH LUẬN</div>
                         <br />
-                        {!userLogin ?
-                            <div style={{ textAlign: 'center', color: "#bfbfbf" }}>
-                                Đăng nhập để bình luận bài viết
+                        <div className={styles.commentBody}>
+                            {!userLogin ?
+                                <div style={{ textAlign: 'center', color: "#bfbfbf" }}>
+                                    Đăng nhập để bình luận bài viết
                             </div>
-                            : <div className={styles.commentBody}>
+                                :
                                 <div className={styles.inputComment}>
                                     <input
                                         type="text"
@@ -398,27 +471,62 @@ const PageDetail = () => {
                                         onClick={handleSendComment}
                                     >GỬI</Button>
                                 </div>
-                                <br />
-                                <div className={styles.listComment}>
-                                    <div className={styles.oneComment}>
-                                        <div className={styles.oneCommentLeft}>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <Avatar size="large" src={userPost.userData.avatar} />
-                                                <div className={styles.username}>{userPost.userData.username}</div>
+                            }
+                            <br />
+                            <div className={styles.listComment}>
+                                {!listComment ? <div className={styles.oneComment}>Chưa có bình luận nào</div>
+                                    : listComment.map((item, ind) => (
+                                        <div className={styles.oneComment} key={ind}>
+                                            <div className={styles.oneCommentLeft}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Avatar size="large" src={item.avatar} />
+                                                    <div className={styles.username}>{item.username}</div>
+                                                </div>
+                                                <div className={styles.textComment}>
+                                                    {item.comment}
+                                                </div>
+                                                <div style={{ textAlign: 'left', fontSize: '12px', color: "#bfbfbf" }}>
+                                                    {moment(item.updated).format('LLLL')}
+                                                </div>
                                             </div>
-                                            <div className={styles.textComment}>
-                                                Oo nah dheep qua sixn hqua slorem,
-                                                Oo nah dheep qua sixn hqua slorem
+                                            <div className={styles.oneCommentRight}>
+                                                <Button
+                                                    className={styles.btnOutline}
+                                                    onClick={() => handleDeleteComment(item.commentid, item.userid)}
+                                                >Xóa</Button>
+                                                <Button
+                                                    className={styles.btnOutline}
+                                                    style={{ marginLeft: '20px' }}
+                                                    onClick={() => openModalUpdateComment(item.userid)}
+                                                >Chỉnh sửa</Button>
                                             </div>
+                                            <Modal
+                                                visible={visibleModalUpdateComment}
+                                                onCancel={() => setVisibleModalUpdateComment(false)}
+                                                footer={null}
+                                                width={600}
+                                            >
+                                                <div className={styles.inputComment} style={{ display: 'flex', flexDirection: "column" }}>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Nhập bình luận ..."
+                                                        className={styles.input}
+                                                        style={{ width: '95%' }}
+                                                        onChange={(e) => setCommentText(e.target.value)}
+                                                    />
+                                                    <br />
+                                                    <Button
+                                                        className={styles.button2}
+                                                        style={{ width: "100px" }}
+                                                        onClick={() => handleUpdateComment(item.commentid, item.userid)}
+                                                    >GỬI</Button>
+                                                </div>
+                                            </Modal>
                                         </div>
-                                        <div className={styles.oneCommentRight}>
-                                            <Button className={styles.btnOutline}>Xóa</Button>
-                                            <Button className={styles.btnOutline} style={{ marginLeft: '20px' }}>Chỉnh sửa</Button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    ))
+                                }
                             </div>
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
