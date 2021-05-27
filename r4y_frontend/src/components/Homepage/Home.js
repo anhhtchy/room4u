@@ -35,10 +35,10 @@ const Home = () => {
   const [dataChungCu, setDataChungCu] = useState([]);
   const [dataVanPhong, setDataVanPhong] = useState([]);
   const [dataNhaNguyenCan, setDataNhaNguyenCan] = useState([]);
-  console.log("data search", searchResult);
+  console.log("data search result", searchResult);
 
   const [estateType, setEstateType] = useState("");
-  const [district, setDistrict] = useState([]);
+  const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState("");
@@ -136,9 +136,10 @@ const Home = () => {
       });
 
       if (response.status == 200) {
-        await dispatch(getSearchResult(response.data.posts));
+        let data = await response.data.posts;
+        await dispatch(getSearchResult(data));
         setLoading(false);
-        history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+        history.push(`/search?estatetype=${estateType}district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
       }
     } catch (error) {
       console.error("err", error);

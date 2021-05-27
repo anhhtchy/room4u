@@ -132,7 +132,7 @@ const ChungCu = () => {
             });
             console.log("res", response);
             if (response.status == 200) {
-                history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+                history.push(`/search?estatetype=${estateType}district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
             }
         } catch (error) {
             console.error("err", error);
