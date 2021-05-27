@@ -39,6 +39,7 @@ const SearchResult = () => {
     const dispatch = useDispatch();
 
     const searchResult = useSelector(state => state.homepage.searchResult);
+    console.log("data search result", searchResult);
 
     const [estateType, setEstateType] = React.useState("");
     const [district, setDistrict] = React.useState("");
@@ -117,7 +118,7 @@ const SearchResult = () => {
                 console.log("res search", response);
                 await dispatch(getSearchResult(response.data.posts));
                 setLoading(false);
-                history.push(`/search?district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+                history.push(`/search?estatetype=${estateType}district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
                 // window.location.reload();
             }
         } catch (error) {
