@@ -4,6 +4,36 @@ const e = require("express");
 const fs = require('fs')
 const { updateProfile } = require("./accountsController");
 
+exports.postStatistic = async (req, res) => {
+  try{
+    let i;
+    let nPosts = [];
+    for(i = 0; i <= 30; i++){
+      let today = new Date();
+      let date = new Date(today.setDate(today.getDate()-i));
+      let dateStr = date.getUTCDate() + "/" + (date.getUTCMonth()+1) + "/" + date.getUTCFullYear();
+      let nPostsInDate = await db.posts.count({ 
+        where: { 
+          created: {
+            [Op.gt]: date.setHours(0,0,0,0),
+            [Op.lt]: date.setHours(23, 59, 59, 999)
+          } 
+        } 
+      });
+      nPosts.push({[dateStr] : nPostsInDate});
+    }
+    return res.json({
+      status: 1,
+      nPosts: nPosts,
+    });
+  } catch(error) {
+    return res.status(500).json({
+      status: 0,
+      message: error.message || "Some errors occur while finding posts",
+    });
+  }
+};
+
 exports.searchPost = async (req, res) => {
   let minArea, maxArea, estatetype, minPrice, maxPrice, district;
   // Các tiêu chí lọc
