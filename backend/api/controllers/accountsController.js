@@ -19,11 +19,10 @@ const otpTokenLife = process.env.OTP_TOKEN_LIFE || "3m";
 const otpTokenSecret = process.env.OTP_TOKEN_SECRET || "room4u_otp_secret";
 let tokenList = {};
 
-const TODAY_START = new Date().setHours(0, 0, 0, 0);
-const NOW = new Date();
-
 exports.adminStatistic = async (req, res) => {
   try{
+    const TODAY_START = new Date().setHours(0, 0, 0, 0);
+    const NOW = new Date();
     const [nUsers, nOwners, nPosts, nPostsToday] = await Promise.all([
       db.accounts.count(),
       db.accounts.count({ where: { usertype: 0 } }),
