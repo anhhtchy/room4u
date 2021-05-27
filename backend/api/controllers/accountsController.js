@@ -19,6 +19,39 @@ const otpTokenLife = process.env.OTP_TOKEN_LIFE || "3m";
 const otpTokenSecret = process.env.OTP_TOKEN_SECRET || "room4u_otp_secret";
 let tokenList = {};
 
+const TODAY_START = new Date().setHours(0, 0, 0, 0);
+const NOW = new Date();
+
+exports.adminStatistic = async (req, res) => {
+  try{
+    const [nUsers, nOwners, nPosts, nPostsToday] = await Promise.all([
+      db.accounts.count(),
+      db.accounts.count({ where: { usertype: 0 } }),
+      db.posts.count(),
+      db.posts.count({ 
+        where: { 
+          created: {
+            [Op.gt]: TODAY_START,
+            [Op.lt]: NOW
+          } 
+        } 
+      })
+    ]);
+    return res.json({
+      status: 1,
+      nUsers: nUsers,
+      nOwners: nOwners,
+      nPosts: nPosts,
+      nPostsToday: nPostsToday
+    });
+  } catch(error) {
+    return res.status(500).json({
+      status: 0,
+      message: error.message || "Some errors occur while finding accounts and posts",
+    });
+  }
+};
+
 exports.checkOtp = async (req, res) => {
   const otpToken = req.body.otpToken;
   if (otpToken) {

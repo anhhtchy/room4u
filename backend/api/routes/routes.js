@@ -24,6 +24,8 @@ module.exports = function (app) {
 
   //edit profile
   app.route("/:id/changeProfile").put(accountsController.updateProfile);
+  //admin thống kê
+  app.route("/adminStatistic").get(accountsController.adminStatistic);
 
   app.route("/home").get(postsController.getHomePosts);
   // app
