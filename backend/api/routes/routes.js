@@ -13,6 +13,11 @@ module.exports = function (app) {
   // logout
   app.route("/logout").post(accountsController.logout);
   app.route("/user/:userid").get(accountsController.getAccount);
+  // get danh sách người dùng theo loại truyền tham số bằng query,
+  // ví dụ: /usertype?type=0
+  app.route("/usertype").get(accountsController.getUsersByType);
+  app.route("/username/:username").get(accountsController.getUsersByUsername);
+
   app.route("/changepassword").post(accountsController.changePassword);
   // sentOtp
   app.route("/sendotp").post(accountsController.sendOtp);
