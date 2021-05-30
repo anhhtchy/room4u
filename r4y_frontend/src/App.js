@@ -25,6 +25,7 @@ import SearchResult from './components/SearchResult';
 import KenhChuNha from './components/KenhChuNha';
 import GuestView from './components/TrangCaNhan_GuestView';
 import TrangCaNhan from './components/TrangCaNhan';
+import Admin from './components/Admin/Admin';
 
 function App() {
   return (
@@ -41,6 +42,9 @@ function App() {
           />
         </div> */}
         <Switch>
+          <Route path="/admin">
+            <Admin />
+          </Route>
           <Route path="/login">
             <Login />
           </Route>
