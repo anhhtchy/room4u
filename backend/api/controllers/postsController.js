@@ -18,13 +18,16 @@ exports.postStatistic = async (req, res) => {
             [Op.gt]: date.setHours(0,0,0,0),
             [Op.lt]: date.setHours(23, 59, 59, 999)
           } 
-        } 
+        }, 
       });
-      nPosts.push({[dateStr] : nPostsInDate});
+      nPosts.push({
+        "Date": dateStr,
+        "scales" : nPostsInDate
+      });
     }
     return res.json({
       status: 1,
-      nPosts: nPosts,
+      data: nPosts,
     });
   } catch(error) {
     return res.status(500).json({
