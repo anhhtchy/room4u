@@ -50,7 +50,17 @@ exports.getUsersByType = async (req, res, next) => {
         let users = await db.accounts
             .findAll({
                 where: { usertype: req.query.type },
+                raw: true,
             });
+        let i;
+        for(i = 0; i < users.length; i++){
+            let nPosts = await db.posts.count({
+                where: {
+                    userid: users[i].userid
+                },
+            })
+            users[i].nPosts = nPosts
+        }
         return res.json({
             status: 1,
             users: users
