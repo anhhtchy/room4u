@@ -182,3 +182,8 @@
     border: none;
     transition-duration: 0.35s;
 }
+
+.pageTitle {
+    font-size: 24px;
+    font-weight: bold;
+}

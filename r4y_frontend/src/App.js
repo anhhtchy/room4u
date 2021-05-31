@@ -26,6 +26,7 @@ import KenhChuNha from './components/KenhChuNha';
 import GuestView from './components/TrangCaNhan_GuestView';
 import TrangCaNhan from './components/TrangCaNhan';
 import Admin from './components/Admin/Admin';
+import ListUser from './components/Admin/components/ListUser';
 
 function App() {
   return (
@@ -42,8 +43,11 @@ function App() {
           />
         </div> */}
         <Switch>
-          <Route path="/admin">
+          <Route exact path="/admin">
             <Admin />
+          </Route>
+          <Route path="/admin/list-user/:id">
+            <ListUser />
           </Route>
           <Route path="/login">
             <Login />
