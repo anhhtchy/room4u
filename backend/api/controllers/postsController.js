@@ -290,7 +290,10 @@ exports.updatePost = async (req, res, next) => {
   try {
     const [pst, image_data] = await Promise.all([
       db.posts.update(updatePost, { where: { postid: req.params.pid } }),
-      db.images.findAll({ where: { postid: req.params.pid } }),
+      db.images.findAll({
+        where: {
+          [Op.and]: [{ postid: req.params.pid }, { url:{[Op.notIn]:req.body.images}}],
+        },}),
     ]);
     x = ('http://' + process.env.BACKEND_HOST + ":" + process.env.PORT).length;
     li = Object.keys(image_data).length;
@@ -298,7 +301,7 @@ exports.updatePost = async (req, res, next) => {
       path = '..' + image_data[ix].url.substring(x);
       fs.unlink(path, (err) => console.log(err));
     }
-    const del_img = await db.image.destroy({where:{postid:req.params.pid}});
+    const del_img = await db.images.destroy({where:{postid:req.params.pid}});
 
     const images = req.body.images;
     if (images != null) {
