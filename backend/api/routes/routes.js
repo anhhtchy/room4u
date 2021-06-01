@@ -79,7 +79,7 @@ module.exports = function (app) {
   app.route("/save").post(postsController.savePosts);
   app.route("/save/:userid").get(postsController.getSavePostsByUserid);
   app.route("/unsave/:userid&:postid").delete(postsController.deleteSavePosts);
-  app.route("/:id/deleteProfile").post(accountsController.deleteProfile);
+  app.route("/deleteProfile/:id").delete(accountsController.deleteProfile);
 
   // quan ly nguoi dung
   app.route("/searchUser").post(accountsController.searchUser);
