@@ -241,7 +241,7 @@ const PageDetail = () => {
 
     }
 
-    const openModalUpdateComment = async(userid) => {
+    const openModalUpdateComment = async (userid) => {
         if (!userLogin) {
             message.error("Bạn không thể xóa bình luận này!");
         } else if (userLogin.userData.userid != userid) {
@@ -480,7 +480,9 @@ const PageDetail = () => {
                                             <div className={styles.oneCommentLeft}>
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <Avatar size="large" src={item.avatar} />
-                                                    <div className={styles.username}>{item.username}</div>
+                                                    <Link to={`/xem-trang-ca-nhan/${item.userid}`} style={{ color: '#000000' }}>
+                                                        <div className={styles.username}>{item.username}</div>
+                                                    </Link>
                                                 </div>
                                                 <div className={styles.textComment}>
                                                     {item.comment}

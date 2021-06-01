@@ -376,7 +376,7 @@ const Admin = () => {
         data: chartData,
         xField: 'Date',
         yField: 'scales',
-        xAxis: { tickCount: 5 },
+        xAxis: { tickCount: 6 },
         height: 300,
         line: {
             color: "#faad14",

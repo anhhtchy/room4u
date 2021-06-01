@@ -96,6 +96,7 @@ const Item1 = (props) => {
     };
 
     const onFinish = async (values, images) => {
+        console.log("listimg", listImg);
         console.log("edit", values);
         console.log("edit", images);
         try {

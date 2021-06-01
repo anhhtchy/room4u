@@ -4,8 +4,8 @@ import moment from 'moment';
 
 import styles from '../Admin.module.css';
 
-import { Input, Button, Table, Radio, message, } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Input, Button, Table, Radio, message, Breadcrumb } from 'antd';
+import { SearchOutlined, HomeOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import Loading from '../../loading';
 import { useHistory, useParams } from 'react-router';
 import Modal from 'antd/lib/modal/Modal';
@@ -110,7 +110,7 @@ const ListUser = () => {
             console.log(err);
         }
     }
-    
+
 
     const handleSearch = async () => {
         // const key = e.target.defaultValue;
@@ -148,16 +148,27 @@ const ListUser = () => {
             {loading ? <Loading />
                 : <div>
                     <br />
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                        <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
+                            <Breadcrumb.Item href="/admin">
+                                <HomeOutlined />
+                                <span>Admin Page</span>
+                            </Breadcrumb.Item>
+                            <Breadcrumb.Item href="">
+                                <span>Danh sách</span>
+                            </Breadcrumb.Item>
+                        </Breadcrumb>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div className={styles.pageTitle}>
                             {param.id == 1 ? "Danh sách người dùng" : "Danh sách chủ nhà"}
                             <span style={{ fontSize: '20px', color: '#52c41a' }}> ({userData.length} users)</span>
-                            <div>
-                                <Radio.Group onChange={(e) => handleChangeType(e)} value={valueType} >
-                                    <Radio value={0}>Chủ nhà</Radio>
-                                    <Radio value={1}>Người dùng</Radio>
-                                </Radio.Group>
-                            </div>
+                        </div>
+                        <div style={{ fontWeight: '600' }}>
+                            <Radio.Group onChange={(e) => handleChangeType(e)} value={valueType} >
+                                <Radio value={0}>Chủ nhà</Radio>
+                                <Radio value={1}>Người dùng</Radio>
+                            </Radio.Group>
                         </div>
                         <div className={styles.search}>
                             <Input
