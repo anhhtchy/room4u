@@ -43,7 +43,7 @@ const Login = () => {
         console.log('form login: ', values);
         try {
             const response = await axios.post('http://localhost:3001/login', { ...values });
-            console.log("res", response);
+            console.log("res admin", response);
 
             if (response.status == 200) {
                 setUserData(response.data);
@@ -53,7 +53,12 @@ const Login = () => {
                 notification.success({
                     message: 'Login Success',
                 });
-                history.push("/");
+                let userType = await response.data.userData.usertype;
+                if (userType == 2) {
+                    history.push("/admin");
+                } else {
+                    history.push("/");
+                }
                 window.location.reload();
             };
 
