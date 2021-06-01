@@ -19,6 +19,7 @@ const ListUser = () => {
     const [visible, setVisible] = useState(false);
     const [keySearch, setKeySearch] = useState();
     const [valueType, setValueType] = useState(param.id);
+    const [idDelete, setIdDelete] = useState();
 
     const columns = [
         {
@@ -68,7 +69,7 @@ const ListUser = () => {
             key: 'delete',
             align: 'center',
             render: (id) => (
-                <Button className={styles.button1} onClick={handleDelete}>Xóa</Button>
+                <Button className={styles.button1} onClick={() => handleDelete(id)}>Xóa</Button>
             )
         }
     ];
@@ -90,9 +91,26 @@ const ListUser = () => {
         }
     }
 
-    const handleDelete = async () => {
+    const handleDelete = async (id) => {
         setVisible(true);
+        setIdDelete(id);
     }
+
+    const deleteUser = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:3001/deleteProfile/${idDelete}`);
+            if (res.status == 200) {
+                console.log("deleta", res);
+                message.success("Đã xóa!");
+                setVisible(false);
+                getUserData();
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
 
     const handleSearch = async () => {
         // const key = e.target.defaultValue;
@@ -160,7 +178,7 @@ const ListUser = () => {
                             centered={window.innerWidth > 600}
                             visible={visible}
                             onCancel={() => setVisible(false)}
-                            onOk={() => setVisible(false)}
+                            onOk={deleteUser}
                             okText="Xóa"
                             cancelText="Hủy"
                             width={400}
