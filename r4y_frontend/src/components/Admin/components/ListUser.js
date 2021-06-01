@@ -4,24 +4,28 @@ import moment from 'moment';
 
 import styles from '../Admin.module.css';
 
-import { Input, Button, Table } from 'antd';
+import { Input, Button, Table, Radio, message, } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Loading from '../../loading';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import Modal from 'antd/lib/modal/Modal';
 
 const ListUser = () => {
+    const param = useParams();
+    const history = useHistory();
+
     const [userData, setUserData] = useState();
     const [loading, setLoading] = useState(true);
-    const param = useParams();
     const [visible, setVisible] = useState(false);
     const [keySearch, setKeySearch] = useState();
+    const [valueType, setValueType] = useState(param.id);
 
     const columns = [
         {
             title: 'UserID',
             dataIndex: 'userid',
             key: 'userid',
+            align: 'center',
         },
         {
             title: 'Họ và tên',
@@ -45,13 +49,15 @@ const ListUser = () => {
         },
         {
             title: 'Số bài đăng',
-            dataIndex: 'age',
-            key: 'age',
+            dataIndex: 'nPosts',
+            key: 'nPosts',
+            align: 'center',
         },
         {
             title: "Ngày tham gia",
             dataIndex: 'created',
             key: 'created',
+            align: 'center',
             render: (date) => (
                 <span>{moment(date).format('L')}</span>
             )
@@ -60,6 +66,7 @@ const ListUser = () => {
             title: 'Xóa',
             dataIndex: 'userid',
             key: 'delete',
+            align: 'center',
             render: (id) => (
                 <Button className={styles.button1} onClick={handleDelete}>Xóa</Button>
             )
@@ -69,7 +76,7 @@ const ListUser = () => {
     useEffect(async () => {
         setLoading(true);
         getUserData();
-    }, []);
+    }, [param]);
 
     const getUserData = async () => {
         try {
@@ -91,20 +98,31 @@ const ListUser = () => {
         // const key = e.target.defaultValue;
         console.log(keySearch);
         setLoading(true);
-        const data = await userData.filter((item, id) => item.username == keySearch);
-        console.log(data);
-        setUserData(data);
-        setLoading(false);
-        // try {
-        //     const res = await axios.get(`http://localhost:3001/username/${keySearch}`);
-        //     if (res.status == 200) {
-        //         console.log("search res", res);
-        //         setUserData(res.data.user);
-        //         setLoading(false);
-        //     }
-        // } catch (err) {
-        //     console.log(err);
-        // }
+        // await getUserData();
+        // const data = await userData.filter((item, id) => item.username == keySearch);
+        // console.log(data);
+        // setUserData(data);
+        // setLoading(false);
+        try {
+            const res = await axios.get(`http://localhost:3001/username/${keySearch}`);
+            if (res.status == 200) {
+                console.log("search res", res);
+                setUserData([res.data.user]);
+                setLoading(false);
+            }
+        } catch (err) {
+            console.log(err.response.data.message);
+            if (err.response.data.status == 0) {
+                setUserData([]);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleChangeType = async (e) => {
+        setValueType(e.target.value);
+        history.push(`/admin/list-user/${e.target.value}`)
     }
 
     return (
@@ -116,12 +134,18 @@ const ListUser = () => {
                         <div className={styles.pageTitle}>
                             {param.id == 1 ? "Danh sách người dùng" : "Danh sách chủ nhà"}
                             <span style={{ fontSize: '20px', color: '#52c41a' }}> ({userData.length} users)</span>
+                            <div>
+                                <Radio.Group onChange={(e) => handleChangeType(e)} value={valueType} >
+                                    <Radio value={0}>Chủ nhà</Radio>
+                                    <Radio value={1}>Người dùng</Radio>
+                                </Radio.Group>
+                            </div>
                         </div>
                         <div className={styles.search}>
                             <Input
                                 className={styles.input}
                                 placeholder="Tìm kiếm theo username..."
-                                onChange={(e) => setKeySearch(e.target.defaultValue)}
+                                onChange={(e) => setKeySearch(e.target.value)}
                                 onPressEnter={handleSearch}
                             />
                             <Button className={styles.button} onClick={handleSearch}>
@@ -131,7 +155,7 @@ const ListUser = () => {
                     </div>
                     <br />
                     <div>
-                        <Table dataSource={userData} columns={columns} />
+                        <Table dataSource={userData} columns={columns} pagination={false} />
                         <Modal
                             centered={window.innerWidth > 600}
                             visible={visible}
@@ -143,6 +167,8 @@ const ListUser = () => {
                         >Xác nhận xóa người dùng?
                      </Modal>
                     </div>
+                    <br />
+                    <br />
                 </div>
             }
         </div>

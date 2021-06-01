@@ -373,7 +373,7 @@ const Admin = () => {
     }, []);
 
     const config = {
-        data: data,
+        data: chartData,
         xField: 'Date',
         yField: 'scales',
         xAxis: { tickCount: 5 },
@@ -393,6 +393,7 @@ const Admin = () => {
             title: 'UserID',
             dataIndex: 'userid',
             key: 'userid',
+            align: 'center',
         },
         {
             title: 'Họ và tên',
@@ -406,8 +407,9 @@ const Admin = () => {
         },
         {
             title: 'Số bài đăng',
-            dataIndex: 'age',
-            key: 'age',
+            dataIndex: 'nPosts',
+            key: 'nPosts',
+            align: 'center',
         },
     ];
 
@@ -428,7 +430,7 @@ const Admin = () => {
             const res = await axios.get("http://localhost:3001/postStatistic");
             if (res.status == 200) {
                 console.log("statistic", res);
-                setChartData(res.data.nPosts);
+                setChartData(res.data.data.reverse());
             }
         } catch (err) {
             console.log(err);
