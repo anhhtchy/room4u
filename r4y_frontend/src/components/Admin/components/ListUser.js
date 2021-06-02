@@ -122,17 +122,19 @@ const ListUser = () => {
         // setUserData(data);
         // setLoading(false);
         try {
-            const res = await axios.get(`http://localhost:3001/username/${keySearch}`);
+            const res = await axios.post(`http://localhost:3001/searchUser`, {
+                query: keySearch,
+            });
             if (res.status == 200) {
                 console.log("search res", res);
-                setUserData([res.data.user]);
+                setUserData(res.data);
                 setLoading(false);
             }
         } catch (err) {
-            console.log(err.response.data.message);
-            if (err.response.data.status == 0) {
-                setUserData([]);
-            }
+            console.log(err);
+            // if (err.response.data.status == 0) {
+            //     setUserData([]);
+            // }
         } finally {
             setLoading(false);
         }

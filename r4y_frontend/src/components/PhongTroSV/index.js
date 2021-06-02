@@ -30,7 +30,7 @@ import { Link, useHistory } from "react-router-dom";
 
 import { useSelector, useDispatch } from 'react-redux';
 import { estate } from "../../constants/ActionType";
-import { getData } from "../../actions/homepage";
+import { getData, getSearchResult } from '../../actions/homepage';
 
 import Loading from "../loading";
 
@@ -136,6 +136,7 @@ const PhongTroSV = () => {
             });
             console.log("res", response);
             if (response.status == 200) {
+                await dispatch(getSearchResult(response.data.posts));
                 history.push(`/search?estatetype=${estateType}district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
             }
         } catch (error) {

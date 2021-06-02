@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 import styles from './Admin.module.css';
 
-import { Input, Button, Table } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Input, Button, Table, Breadcrumb } from 'antd';
+import { SearchOutlined, HomeOutlined,DoubleRightOutlined } from '@ant-design/icons';
 import { Area } from '@ant-design/charts';
 
 import logo from '../../img/logo.png';
@@ -453,7 +453,7 @@ const Admin = () => {
         <div className={styles.container}>
             {loading ? <Loading />
                 : <div className={styles.admin}>
-                    <div className={styles.pageHeader}>
+                    {/* <div className={styles.pageHeader}>
                         <div className={styles.title}>Trang Admin</div>
                         <div className={styles.search}>
                             <Input
@@ -464,7 +464,13 @@ const Admin = () => {
                                 <SearchOutlined />
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
+                    <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
+                        <Breadcrumb.Item href="">
+                            <HomeOutlined />
+                            <span>Trang Admin</span>
+                        </Breadcrumb.Item>
+                    </Breadcrumb>
                     <div className={styles.top}>
                         <div className={styles.topLeft}>
                             <div className={styles.topTitle}>
