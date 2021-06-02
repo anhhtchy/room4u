@@ -122,6 +122,13 @@ const Header = () => {
                                     KÊNH CHỦ NHÀ
                                 </Link>
                             </Menu.Item>
+
+                            <Menu.Item key="20" >
+                                <Link to="/admin">
+                                    {userData ? userData.userData.usertype == 2 ? "TRANG ADMIN" : '' : ''}
+                                </Link>
+                            </Menu.Item>
+
                             <Modal title="Bạn không phải chủ nhà" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                                 <p>Đăng ký tài khoản với vai trò chủ nhà?</p>
                             </Modal>
