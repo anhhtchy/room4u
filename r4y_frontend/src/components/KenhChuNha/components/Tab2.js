@@ -193,7 +193,7 @@ const Tab2 = () => {
         <div className={styles.tab}>
             <div className={styles.tabTitle}>
                 <div>Quản lý phòng trọ <span style={{ fontSize: '20px', color: '#52c41a' }}>{`${userPost.length ? userPost.length : 0}`} tin đã đăng</span></div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className={styles.buttonGroup}>
                     <Button
                         style={{
                             background: '#cf1322',
