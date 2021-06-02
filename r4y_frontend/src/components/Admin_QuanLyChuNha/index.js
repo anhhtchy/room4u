@@ -46,8 +46,10 @@ const AdminView = () => {
     const count_post = window.localStorage.getItem("userPostLength");
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(1);
+    const [rating, setRating] = useState();
 
     useEffect(async () => {
+        getRating(params.id);
         try {
             const res = await axios.get(`http://localhost:3001/user/${params.id}`);
             if (res.status == 200) {
@@ -69,6 +71,17 @@ const AdminView = () => {
             console.log(err);
         }
     }, []);
+
+    const getRating = async (userId) => {
+        try {
+            const res = await axios.get(`http://localhost:3001/ratings/averageuser/${userId}`);
+            if (res.status == 200) {
+                setRating(res.data);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const handleChangePage = (page) => {
         console.log(page);
@@ -136,13 +149,14 @@ const AdminView = () => {
                                     <Rate
                                         allowHalf
                                         disabled
-                                        defaultValue={0}
+                                        value={rating ? rating.averageRating : 0}
                                         style={{
                                             fontSize: '14px',
                                             color: '#faad14',
                                         }}
                                     />
                                 </div>
+                                <div style={{ fontSize: '12px' }}>({rating ? rating.nRatings : 0} người đánh giá)</div>
                             </div>
                         </div>
                     </div>

@@ -594,12 +594,12 @@ const Tab1 = () => {
                                     <Rate
                                         allowHalf
                                         disabled
-                                        defaultValue={rating ? rating.averageRating : 0}
+                                        value={rating ? rating.averageRating : 0 }
                                         style={{ fontSize: '14px', color: '#faad14', marginRight: '10px' }}
                                     />
                                 </div>
                             </div>
-                            {/* <div style={{ fontSize: '12px' }}>({rating ? rating.nRatings : 0} người đánh giá)</div> */}
+                            <div style={{ fontSize: '12px' }}>({rating ? rating.nRatings : 0} người đánh giá)</div>
                         </div>
                     </div>
                 </div>

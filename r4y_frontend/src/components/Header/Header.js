@@ -136,7 +136,7 @@ const Header = () => {
                                 key="sub2"
                                 title={
                                     <>
-                                        <Avatar src={userData ? userData.userData.avatar : user} style={{ marginRight: '8px' }} />
+                                        <Avatar src={user} style={{ marginRight: '8px' }} />
                                         {/* <img src={userData ? userData.userData.avatar : user} alt="avatar" width={32} style={{ marginRight: '8px' }} /> */}
                                         <span style={{ color: '#fafafa' }}>{userData && userData.userData.username}</span>
                                     </>
