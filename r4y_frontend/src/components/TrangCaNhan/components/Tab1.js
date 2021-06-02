@@ -599,7 +599,7 @@ const Tab1 = () => {
                                     />
                                 </div>
                             </div>
-                            <div style={{ fontSize: '12px' }}>({rating.nRatings} người đánh giá)</div>
+                            {/* <div style={{ fontSize: '12px' }}>({rating.nRatings} người đánh giá)</div> */}
                         </div>
                     </div>
                 </div>

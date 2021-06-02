@@ -12,6 +12,7 @@ import logo from '../../img/logo.png';
 import user from '../../img/user.png';
 import Modal from 'antd/lib/modal/Modal';
 import axios from 'axios';
+import Avatar from 'antd/lib/avatar/avatar';
 
 const Header = () => {
     const history = useHistory();
@@ -128,7 +129,8 @@ const Header = () => {
                                 key="sub2"
                                 title={
                                     <>
-                                        <img src={user} alt="avatar" width={32} style={{ marginRight: '8px' }} />
+                                        <Avatar src={userData ? userData.userData.avatar : user} style={{ marginRight: '8px' }} />
+                                        {/* <img src={userData ? userData.userData.avatar : user} alt="avatar" width={32} style={{ marginRight: '8px' }} /> */}
                                         <span style={{ color: '#fafafa' }}>{userData && userData.userData.username}</span>
                                     </>
                                 }>
@@ -175,8 +177,8 @@ const Header = () => {
                         style={{ maxWidth: 320 }}
                         size="large"
                     /> */}
-                    {/* Lưu ý: chạy backend trước khi chạy frontend */}
-                </div>
+                {/* Lưu ý: chạy backend trước khi chạy frontend */}
+            </div>
 
         </div>
     )
