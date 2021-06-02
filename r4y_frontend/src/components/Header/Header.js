@@ -175,7 +175,7 @@ const Header = () => {
                         style={{ maxWidth: 320 }}
                         size="large"
                     /> */}
-                    Lưu ý: chạy backend trước khi chạy frontend
+                    {/* Lưu ý: chạy backend trước khi chạy frontend */}
                 </div>
 
         </div>

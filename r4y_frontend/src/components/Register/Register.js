@@ -167,7 +167,7 @@ const Register = () => {
                                 },
                                 {
                                     max: 10,
-                                    message: 'SĐT không dài quá 10 kí tự!',
+                                    message: 'SĐT không dài quá 10 kí tự!', 
                                 }
                             ]}
                         >

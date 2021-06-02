@@ -17,6 +17,21 @@
     display: flex;
 }
 
+@media screen and (max-width: 600px) {
+    .top {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .topLeft {
+        width: 100%;
+    }
+
+    .topRight {
+        width: 100%;
+    }
+}
+
 .body {
     margin-bottom: 20px;
     background: #ffffff;
