@@ -53,6 +53,9 @@ const ChungCu = () => {
     const [end, setEnd] = useState(1);
 
     useEffect(() => {
+        history.listen(() => {
+            window.scrollTo(0, 0);
+        });
         (async () => {
             try {
                 const res = await axios.get("http://localhost:3001/getDistricts");

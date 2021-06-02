@@ -70,7 +70,7 @@ const Tab2 = () => {
                     if (res.status == 200) {
                         console.log("get post data", res);
                         await setUserPost(res.data.posts);
-                        await window.localStorage.setItem("userPostLength", userPost.length ? userPost.length : 0)
+                        await window.localStorage.setItem("userPostLength", res.data.posts.length > 0 ? res.data.posts.length : 0)
                         setLoading(false);
                     } else {
                         console.log("get post data", res);
@@ -222,7 +222,7 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    {userPost.length ? (userPost.length > 2 ? ( 
+                    {userPost.length ? (userPost.slice(start * 6, end * 6).length > 2 ? ( 
                         <Row gutter={[32, 32]}>
                             {userPost.slice(start * 6, end * 6).map((item, idx) => (
                                 <Col xs={24} sm={24} md={8} lg={8} key={idx}>
@@ -248,7 +248,7 @@ const Tab2 = () => {
                                     />
                                 </Col>))}
                         </Row>
-                    ) : userPost.map((item, idx) => (
+                    ) : userPost.slice(start * 6, end * 6).map((item, idx) => (
                         <div style={{ width: '32%', marginRight: '3%' }}>
                             <Item
                                  postid={item.data.postid}
@@ -382,6 +382,7 @@ const Tab2 = () => {
                         <Input
                             placeholder="Nhập diện tích phòng"
                             size="large"
+                            min={0}
                             type="number"
                         />
                     </Form.Item>
@@ -389,7 +390,12 @@ const Tab2 = () => {
                     <div style={{ marginBottom: '6px', fontWeight: '500' }}>Giá phòng (đồng/tháng): <span style={{ color: '#f5222d' }}>*</span></div>
                     <Form.Item
                         name="price"
-                        rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                        rules={[
+                            { 
+                                required: true, 
+                                message: 'Vui lòng nhập giá phòng!' 
+                            }
+                        ]}
                     >
 
                         <Input
@@ -397,6 +403,7 @@ const Tab2 = () => {
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
+                            min={0}
                         />
                     </Form.Item>
 
@@ -410,6 +417,7 @@ const Tab2 = () => {
                             placeholder="Nhập số lượng phòng"
                             size="large"
                             type="number"
+                            min={0}
                             style={{ width: 'calc(50% - 8px)', marginRight: '10px' }}
                         />
                     </Form.Item>
@@ -425,6 +433,7 @@ const Tab2 = () => {
                             size="large"
                             type="number"
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
+                            min={0}
                         />
                     </Form.Item>
                     <Form.Item
@@ -436,6 +445,7 @@ const Tab2 = () => {
                         <Input
                             size="large"
                             type="number"
+                            min={0}
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
                     </Form.Item>
@@ -448,6 +458,7 @@ const Tab2 = () => {
                         <Input
                             size="large"
                             type="number"
+                            min={0}
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
                     </Form.Item>
@@ -460,6 +471,7 @@ const Tab2 = () => {
                         <Input
                             size="large"
                             type="number"
+                            min={0}
                             style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}
                         />
                     </Form.Item>

@@ -443,7 +443,7 @@ const PageDetail = () => {
                                 </div>
                                 <br /><br />
                                 <div>
-                                    <img src={banner_quangcao1} alt="quang-cao" />
+                                    <img src={banner_quangcao1} alt="quang-cao" width="100%" height="fit-content" />
                                 </div>
                             </div>
                         </div>

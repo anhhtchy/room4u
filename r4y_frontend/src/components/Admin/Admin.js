@@ -454,7 +454,7 @@ const Admin = () => {
             {loading ? <Loading />
                 : <div className={styles.admin}>
                     <div className={styles.pageHeader}>
-                        <div className={styles.title}>Admin Page</div>
+                        <div className={styles.title}>Trang Admin</div>
                         <div className={styles.search}>
                             <Input
                                 className={styles.input}
