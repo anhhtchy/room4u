@@ -22,7 +22,7 @@ exports.postStatistic = async (req, res) => {
       });
       nPosts.push({
         "Date": dateStr,
-        "scales" : nPostsInDate
+        "n_post" : nPostsInDate
       });
     }
     return res.json({

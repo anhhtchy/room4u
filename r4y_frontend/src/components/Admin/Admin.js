@@ -375,7 +375,7 @@ const Admin = () => {
     const config = {
         data: chartData,
         xField: 'Date',
-        yField: 'scales',
+        yField: 'n_post',
         xAxis: { tickCount: 6 },
         height: 300,
         line: {
