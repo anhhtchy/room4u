@@ -38,6 +38,14 @@
     .description {
         padding: 20px;
     }
+
+    .img {
+        height: 200px !important;
+    }
+
+    .button2 {
+        width: 96% !important;
+    }
 }
 
 .imgSlice {}
@@ -155,11 +163,19 @@
     border: none
 }
 
-.btnHeard:hover,
-.btnHeard:focus {
+.btnHeard:hover {
     background-color: #cf1322;
     color: white;
     border: none;
+}
+
+.btnHeard:focus {
+    background-color: #f5222d;
+    color: white;
+    border-radius: 32px;
+    height: 48px;
+    font-weight: 500;
+    border: none
 }
 
 

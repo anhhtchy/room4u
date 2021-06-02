@@ -45,11 +45,13 @@ const Tab1 = () => {
     const [fileList, setFileList] = useState([]);
     const [visibleModalChangePass, setVisibleModalChangePass] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [rating, setRating] = useState();
 
     useEffect(async () => {
         const data = JSON.parse((window.localStorage.getItem('userData')));
         const userId = data.userData.userid;
         console.log("user id", userId);
+        getRating(userId);
         try {
             const res = await axios.get(`http://localhost:3001/user/${userId}`);
             if (res.status == 200) {
@@ -61,7 +63,18 @@ const Tab1 = () => {
             console.log(err);
         }
         console.log("header user data", userData);
-    }, []);
+    }, [loading]);
+
+    const getRating = async (userId) => {
+        try {
+            const res = await axios.get(`http://localhost:3001/ratings/averageuser/${userId}`);
+            if (res.status == 200) {
+                setRating(res.data);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const showModal = async () => {
         await setListImg([userData.userData.avatar]);
@@ -79,7 +92,7 @@ const Tab1 = () => {
     const onFinish = async (values, images) => {
         console.log("edit profile", values);
         console.log("edit profile", images);
-
+        setLoading(true);
         const url = `http://localhost:3001/${userData.userData.userid}/changeProfile`
 
         try {
@@ -87,8 +100,9 @@ const Tab1 = () => {
             if (res.status == 200) {
                 console.log("change Pro", res);
                 setIsModalVisible(false);
+                setLoading(false);
                 message.success('Đã lưu!');
-                window.location.reload();
+                // window.location.reload();
             }
         } catch (err) {
             console.log(err);
@@ -571,7 +585,7 @@ const Tab1 = () => {
                         </div>
                         <div className={styles.item}>
                             <div className={styles.itemTitle}><FieldTimeOutlined style={{ marginRight: '5px' }} />Ngày tham gia:</div>
-                            <div className={styles.itemValue}>{moment(userData.userData.created).format("MMMM Do YYYY")}</div>
+                            <div className={styles.itemValue}>{moment(userData.userData.created).format('L')}</div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.itemTitle}><HeartOutlined style={{ marginRight: '5px' }} />Đánh giá:</div>
@@ -580,11 +594,12 @@ const Tab1 = () => {
                                     <Rate
                                         allowHalf
                                         disabled
-                                        defaultValue={0}
-                                        style={{ fontSize: '14px', color: '#faad14' }}
+                                        defaultValue={rating ? rating.averageRating : 0}
+                                        style={{ fontSize: '14px', color: '#faad14', marginRight: '10px' }}
                                     />
                                 </div>
                             </div>
+                            {/* <div style={{ fontSize: '12px' }}>({rating ? rating.nRatings : 0} người đánh giá)</div> */}
                         </div>
                     </div>
                 </div>

@@ -152,7 +152,7 @@ const ListUser = () => {
                         <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
                             <Breadcrumb.Item href="/admin">
                                 <HomeOutlined />
-                                <span>Admin Page</span>
+                                <span>Trang Admin</span>
                             </Breadcrumb.Item>
                             <Breadcrumb.Item href="">
                                 <span>Danh sách</span>

@@ -64,7 +64,7 @@ const Tab2 = () => {
                     if (res.status == 200) {
                         console.log("save", res.data);
                         await setUserSave(res.data.posts);
-                        await window.localStorage.setItem("userSavePostLength", userSave.length ? userSave.length : 0)
+                        await window.localStorage.setItem("userSavePostLength", res.data.posts.length ? res.data.posts.length : 0)
                         setLoading(false);
                     } else {
                         console.log("save", res);
@@ -92,7 +92,7 @@ const Tab2 = () => {
             </div>
             {loading ? <Loading /> :
                 <div className={styles.content}>
-                    {userSave.length ? (userSave.length > 2 ? (
+                    {userSave.length ? (userSave.slice(start * 6, end * 6).length > 2 ? (
                         <Row gutter={[32, 32]}>
                             {userSave.slice(start * 6, end * 6).map((item, idx) => (
                                 <Col xs={24} sm={24} md={8} lg={8} key={idx}>
@@ -116,10 +116,11 @@ const Tab2 = () => {
                                         ultility={item.post.ultility}
                                         images={item.images}
                                     />
-                                </Col>))}
+                                </Col>
+                            ))}
                         </Row>
-                    ) : userSave.map((item, idx) => (
-                        <div style={{ width: '32%', marginRight: '3%' }}>
+                    ) : userSave.slice(start * 6, end * 6).map((item, idx) => (
+                        <div style={{ width: '30%', marginRight: '3%' }}>
                             <Item
                                 postid={item.post.postid}
                                 img={item.images[0]}

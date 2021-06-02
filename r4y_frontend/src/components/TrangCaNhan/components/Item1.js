@@ -63,7 +63,7 @@ const Item1 = (props) => {
             const res = await axios.delete(`http://localhost:3001/unsave/${userid}&${props.postid}`);
             if (res.status = 200) {
                 console.log(res);
-                message.success("Đã xóa!");
+                // message.success("Đã xóa!");
                 setIsModalDelVisible(false);
                 window.location.reload();
             }
@@ -129,7 +129,7 @@ const Item1 = (props) => {
                         marginRight: '20px',
                         marginBottom: '20px',
                         borderRadius: '8px',
-                    }}><DeleteOutlined /> Xóa tin</Button>
+                    }}><DeleteOutlined />Bỏ lưu</Button>
             </div>
             {/* <div className={styles1.bottomItem}>
     
@@ -457,11 +457,11 @@ const Item1 = (props) => {
                 visible={isModalDelVisible}
                 onOk={handleOkDel}
                 onCancel={handleCancelDel}
-                okText="Xóa"
+                okText="OK"
                 cancelText="Hủy"
                 width={300}
             >
-                <p style={{ textAlign: 'center' }}>Xác nhận xóa bài viết ?</p>
+                <p style={{ textAlign: 'center', marginTop: '20px' }}>Xác nhận xóa bài viết khỏi danh sách các phòng đã lưu ?</p>
             </Modal>
 
         </div >

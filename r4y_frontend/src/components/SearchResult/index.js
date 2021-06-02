@@ -51,6 +51,10 @@ const SearchResult = () => {
     // const [dataSearch, setDataSearch] = React.useState([]);
 
     useEffect(() => {
+        history.listen(() => {
+            window.scrollTo(0, 0);
+        });
+    
         (async () => {
             try {
                 const res = await axios.get("http://localhost:3001/getDistricts");
@@ -117,6 +121,11 @@ const SearchResult = () => {
             if (response.status == 200) {
                 console.log("res search", response);
                 await dispatch(getSearchResult(response.data.posts));
+                setEstateType("");
+                setDistrict("");
+                setArea("");
+                setMinPrice(0);
+                setMaxPrice("");
                 setLoading(false);
                 history.push(`/search?estatetype=${estateType}district=${district}&area=${area}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
                 // window.location.reload();
@@ -157,7 +166,7 @@ const SearchResult = () => {
             <div className={styles.leftSubtitle}>Loại BĐS:</div>
             <div>
               <div className={styles.radioGroup}>
-                <Radio.Group onChange={chooseEstate} value={estateType}>
+                <Radio.Group onChange={chooseEstate} defaultValue="">
                   <Radio className={styles.radioStyle} value={0}>
                     Phòng trọ SV
                   </Radio>
@@ -179,6 +188,7 @@ const SearchResult = () => {
                             <Checkbox.Group
                                 onChange={chooseDistrict}
                                 className={styles.checkedboxGroup}
+                                defaultValue=""
                             >
                                 {
                                     disData && disData.map((item, ind) => (
@@ -194,7 +204,7 @@ const SearchResult = () => {
                         <div className={styles.borderFilter}></div>
                         <div className={styles.leftSubtitle}>Diện tích</div>
                         <div className={styles.radioGroup}>
-                            <Radio.Group onChange={chooseArea} value={area}>
+                            <Radio.Group onChange={chooseArea} defaultValue="">
                                 <Radio className={styles.radioStyle} value={0}>
                                     {"< 20m"}
                                     <sup>2</sup>
@@ -246,7 +256,7 @@ const SearchResult = () => {
                                 {``}
                             </div>
                             <Row gutter={[32, 32]}>
-                                {!searchResult.length ? <div>Không tìm thấy kết quả nào!</div>
+                                {!searchResult.length ? <div style={{ marginLeft: '20px' }}>Không tìm thấy kết quả nào!</div>
                                 : searchResult && searchResult.map((item, idx) => (
                                     <Col xs={24} sm={24} md={8} lg={8} key={idx}>
                                         <Link to={`/phong-tro-sv/${item.data.postid}-${item.data.title}`}>
