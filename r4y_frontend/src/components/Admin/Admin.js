@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import styles from './Admin.module.css';
 
 import { Input, Button, Table, Breadcrumb } from 'antd';
-import { SearchOutlined, HomeOutlined,DoubleRightOutlined } from '@ant-design/icons';
+import { SearchOutlined, HomeOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import { Area } from '@ant-design/charts';
 
 import logo from '../../img/logo.png';
@@ -364,6 +364,7 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [chartData, setChartData] = useState([]);
     const [userData, setUserData] = useState();
+    const history = useHistory();
 
     useEffect(async () => {
         setLoading(true);
@@ -521,7 +522,12 @@ const Admin = () => {
                             <br />
                             {console.log("userData", userData)}
                             <div>
-                                <Table dataSource={userData[0].data.users.slice(0, 10)} columns={columns} pagination={false} />
+                                <Table
+                                    rowKey={record => record.uid}
+                                    dataSource={userData[0].data.users.slice(0, 10)}
+                                    columns={columns}
+                                    pagination={false}
+                                />
                             </div>
                         </div>
                         <div className={styles.right}>
@@ -533,7 +539,12 @@ const Admin = () => {
                             </div>
                             <br />
                             <div>
-                                <Table dataSource={userData[1].data.users.slice(0, 10)} columns={columns} pagination={false} />
+                                <Table
+                                    rowKey={record => record.uid}
+                                    dataSource={userData[1].data.users.slice(0, 10)}
+                                    columns={columns}
+                                    pagination={false}
+                                />
                             </div>
                         </div>
                     </div>

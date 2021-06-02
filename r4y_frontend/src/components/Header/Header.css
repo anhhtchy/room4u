@@ -2,6 +2,7 @@
 
 .header {
     min-height: 80px;
+    /* background: linear-gradient(to right, #faad14, #ffc53d); */
     background: #faad14;
     width: 100%;
 }
@@ -35,7 +36,7 @@
 } */
 
 .ant-menu {
-    background: #faad14;
+    background: transparent;
 }
 
 /* :global(.ant-menu-horizontal) {
