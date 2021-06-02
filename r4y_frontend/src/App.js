@@ -27,6 +27,7 @@ import GuestView from './components/TrangCaNhan_GuestView';
 import TrangCaNhan from './components/TrangCaNhan';
 import Admin from './components/Admin/Admin';
 import ListUser from './components/Admin/components/ListUser';
+import AdminView from './components/Admin_QuanLyChuNha';
 
 function App() {
   return (
@@ -48,6 +49,9 @@ function App() {
           </Route>
           <Route path="/admin/list-user/:id">
             <ListUser />
+          </Route>
+          <Route path="/admin/user-detail/:id">
+            <AdminView />
           </Route>
           <Route path="/login">
             <Login />

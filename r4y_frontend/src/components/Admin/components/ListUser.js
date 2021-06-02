@@ -186,7 +186,17 @@ const ListUser = () => {
                     </div>
                     <br />
                     <div>
-                        <Table dataSource={userData} columns={columns} pagination={false} />
+                        <Table
+                            rowKey={record => record.uid}
+                            dataSource={userData}
+                            columns={columns}
+                            pagination={false}
+                            onRow={(record, index) => {
+                                return {
+                                    onClick: e => history.push(`/admin/user-detail/${record.userid}`),
+                                }
+                            }}
+                        />
                         <Modal
                             centered={window.innerWidth > 600}
                             visible={visible}

@@ -38,7 +38,7 @@ import axios from 'axios';
 import Loading from '../loading';
 import { estateLink, estate } from "../../constants/ActionType";
 
-const GuestView = () => {
+const AdminView = () => {
     const params = useParams();
     const [userData, setUserData] = useState();
     const [userPost, setUserPost] = useState();
@@ -81,9 +81,12 @@ const GuestView = () => {
             : <div className={styles.container}>
                 <div className={styles.guestView}>
                     <Breadcrumb separator={<DoubleRightOutlined style={{ fontSize: '12px' }} />}>
-                        <Breadcrumb.Item href="/">
+                        <Breadcrumb.Item href="/admin">
                             <HomeOutlined />
-                            <span>Trang chủ</span>
+                            <span>Trang Admin</span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item href="/admin/list-user/0">
+                            <span>Danh sách user</span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item href="">
                             <span>Trang cá nhân của {`${userData.userData.fullname}`}</span>
@@ -91,10 +94,10 @@ const GuestView = () => {
                     </Breadcrumb>
                     <div className={styles.top}>
                         <div className={styles.topLeft}>
-                            <Avatar 
-                            size={72} 
-                            icon={userData.userData.avatar ? "": <UserOutlined />} 
-                            src={<Image src={userData.userData.avatar ? userData.userData.avatar : ""}/>}
+                            <Avatar
+                                size={72}
+                                icon={userData.userData.avatar ? "" : <UserOutlined />}
+                                src={<Image src={userData.userData.avatar ? userData.userData.avatar : ""} />}
                             />
                             <div style={{ marginLeft: '20px' }}>
                                 <div className={styles.fullname}>
@@ -193,4 +196,4 @@ const GuestView = () => {
     )
 }
 
-export default GuestView;
+export default AdminView;
