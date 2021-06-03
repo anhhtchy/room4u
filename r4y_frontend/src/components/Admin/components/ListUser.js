@@ -71,6 +71,15 @@ const ListUser = () => {
             render: (id) => (
                 <Button className={styles.button1} onClick={() => handleDelete(id)}>Xóa</Button>
             )
+        },
+        {
+            title: 'Xem chi tiết',
+            dataIndex: 'userid',
+            key: 'detail',
+            align: 'center',
+            render: (id) => (
+                <Button className={styles.button2} onClick={() => history.push(`/admin/user-detail/${id}`)}>Chi tiết</Button>
+            )
         }
     ];
 
@@ -191,11 +200,11 @@ const ListUser = () => {
                             dataSource={userData}
                             columns={columns}
                             pagination={false}
-                            onRow={(record, index) => {
-                                return {
-                                    onClick: e => history.push(`/admin/user-detail/${record.userid}`),
-                                }
-                            }}
+                            // onRow={(record, index) => {
+                            //     return {
+                            //         onClick: e => history.push(`/admin/user-detail/${record.userid}`),
+                            //     }
+                            // }}
                         />
                         <Modal
                             centered={window.innerWidth > 600}

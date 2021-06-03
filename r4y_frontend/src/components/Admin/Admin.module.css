@@ -187,3 +187,22 @@
     font-size: 24px;
     font-weight: bold;
 }
+
+.button2 {
+    background-image: linear-gradient(to right, #60da1a, #52c41a, #389e0d);
+    border: none;
+    width: 96%;
+    height: 42px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 12px;
+}
+
+.button2:hover,
+.button2:focus {
+    background-image: linear-gradient(to right, #52c41a, #389e0d);
+    color: white;
+    border: none;
+    transition-duration: 0.35s;
+}

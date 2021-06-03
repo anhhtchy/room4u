@@ -238,9 +238,9 @@
 }
 
 .oneCommentLef {
-    mix-width: 60%;
+    min-width: 60%;
 }
 
 .oneCommentRight {
-    mix-width: 35%;
+    min-width: 35%;
 }
